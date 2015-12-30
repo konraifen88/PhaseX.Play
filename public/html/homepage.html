@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        /*
+         document.write("<table width='100%'>")
+         for(i=0;i < 30;i++) {
+         document.write("<tr>")
+         for(j=0;j < 43;j++) {
+         document.write("<td><div class='party'><div class='text' align='center'>Party Hard</div></div></td>");
+         }
+         document.write("</tr>")
+         }
+         document.write("</table>")
+         function getRGBVal() {
+         return Math.floor(Math.random()*255);
+         };
+         var randomNum = function() {
+         return Math.random() * 10 + 10;
+         }
+         var rand = function(elem) {
+         $(elem).css("background-color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")");
+         }
+         var randText = function(elem) {
+         $(elem).css("color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")");
+         }
+         acidVictim = 'div.party'
+         elements = $('body').find('div.party');
+         setInterval(rand,randomNum(),$('body'));
+         setInterval(randText, randomNum(), $('body'));
+         for(var i = 0; i < elements.length; i++){
+         setInterval(rand, randomNum(), elements[i]);
+         setInterval(randText, randomNum(), elements[i]);
+         }
+         //$(acidVictim).each(setInterval(function(x, y){$(this).css("background-color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")")}), Math.random() * 50 + 50);
+         //setInterval(function(){$(acidVictim).each(function(x, y){$(this).css("background-color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")")})}, Math.random()*100 +50);
+         //setInterval(function(){$('div.text').css("color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")");}, Math.random()*100 + 50);
+
+         for(var k = 0; k<100; k++) {
+         var snd = new Audio("trololo.wav"); // buffers automatically when created
+         snd.loop=true;
+         snd.play();
+         var currentTime = new Date().getTime();
+
+         }*/
+    </script>
+    <style>div.text {
+        font-weight: bold;
+        font-size-adjust: 1
+    }
+
+    td.party {
+        z-index = "100";
+    }
+
+    .description_text {
+        align: center;
+        text-align: center;
+    }
+    </style>
+    <div align="center">
+        <img src="assets/images/Logo.png"/>
+    </div>
+</head>
+<body>
+<div class="description_container">
+			<span class="description_text">
+				Update: 24.12.2015 17:55<br/>
+				PhaseX is a card game for 2 players.<br/>
+				The first player to finish all phases wins the game.<br/>
+				The Phases are:
+				<ol>
+                    <li>
+                        two triples
+                    </li>
+                    <li>
+                        a street of six numbers
+                    </li>
+                    <li>
+                        six cards of the same color
+                    </li>
+                    <li>
+                        a double and a quadruple
+                    </li>
+                    <li>
+                        two quadruples
+                    </li>
+                </ol>
+			</span>
+    <a href="start"> Play the Game</a>
+    <a href="ngApp">Link to the Angular App</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Securesocial
+GET        /                    @controllers.Application.index
+GET        /userAware           @controllers.Application.userAware
+GET        /only-twitter        @controllers.Application.onlyTwitter
+GET        /link-result         @controllers.Application.linkResult
+GET        /current-user        @controllers.Application.currentUser
+
+# Applicaton
+GET        /start               controllers.Assets.at(path="/public/html",file="homepage.html")
+
+# Map static resources from the /public folder to the /assets URL path
+GET        /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
+->         /auth                securesocial.Routes
