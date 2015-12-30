@@ -1,0 +1,75 @@
+@verschiebung: -7%;
+@StackCardScaling: 22%;
+@handCardsPadding: 3%;
+@handCardsScaling: 8%;
+@PileCardScaling: 40%;
+// #####################################
+// Overall Design
+// #####################################
+
+body {
+  overflow: hidden;
+}
+
+#playerCardsContainer {
+  padding-left: @handCardsPadding;
+  padding-right: @handCardsPadding;
+  padding-top: @handCardsPadding /2;
+
+}
+
+#opponentCardsContainer {
+  padding-left: @handCardsPadding;
+  padding-right: @handCardsPadding;
+  padding-bottom: @handCardsPadding;
+  padding-top: @handCardsPadding / 4;
+}
+
+// #####################################
+// Pile Design
+// #####################################
+
+.PileCard {
+  width: @PileCardScaling;
+  background-size: contain !important;
+}
+
+#textContainer {
+  font-size: 2vw;
+}
+
+// #####################################
+// Stack Design
+// #####################################
+
+#stackContainer {
+  padding-left: 3%;
+}
+
+.StackCard {
+  width: @StackCardScaling;
+  background-size: contain !important;
+}
+
+// #####################################
+// Hand Cards
+// #####################################
+
+.Card {
+  //width: @cardScaling;
+  background-size: contain !important;
+  width: @handCardsScaling;
+}
+
+.CardUp {
+  top: -25px;
+  position: relative;
+}
+
+.secondCard, .thirdCard, .fourthCard, .fifthCard, .sixthCard,
+.seventhCard, .eighthCard, .ninthCard, .tenthCard, .eleventhCard {
+  //left: @verschiebung;
+}
+
+
+
