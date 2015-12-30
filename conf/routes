@@ -8,7 +8,6 @@ GET        /userAware                       @controllers.Application.userAware
 GET        /only-twitter                    @controllers.Application.onlyTwitter
 GET        /link-result                     @controllers.Application.linkResult
 GET        /current-user                    @controllers.Application.currentUser
-GET        /auth/authenticate/:provider     securesocial.controllers.ProviderController.authenticate(provider)
 
 # Applicaton
 GET        /start                           controllers.Assets.at(path="/public/html",file="homepage.html")

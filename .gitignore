@@ -10,3 +10,4 @@ target
 .sbtserver
 .sbtserver.lock
 *.bak
+/conf/local.conf
