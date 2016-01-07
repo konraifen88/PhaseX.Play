@@ -10,7 +10,8 @@ GET        /link-result                                   @controllers.Applicati
 GET        /current-user                                  @controllers.Application.currentUser
 
 # Applicaton
-GET        /home                                          controllers.Assets.at(path="/public/html",file="homepage.html")
+GET        /home                                          controllers.Assets.at(path="/public/html",file="homepage.scala.html")
+GET        /lobby                                         @controllers.Application.getLobby
 GET        /start                                         controllers.WUIController.start()
 GET        /restart                                       controllers.WUIController.restart()
 GET        /ngApp                                         controllers.WUIController.ngApp()
@@ -22,6 +23,8 @@ GET        /json/drawDiscard                              controllers.WUIControl
 GET        /json/discard/:index                           controllers.WUIController.discard(index: Int)
 GET        /json/playPhase/*cards                         controllers.WUIController.playPhase(cards: String)
 GET        /json/addToPhase/*cardIndex/*stackIndex        controllers.WUIController.addToPhase(cardIndex: Int,stackIndex: Int)
+
+GET        /lobby/update                                  @controllers.Application.getUsers
 
 GET        /socket                                        controllers.WUIController.getSocket()
 

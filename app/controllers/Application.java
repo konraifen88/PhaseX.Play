@@ -16,6 +16,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import models.Message;
 import play.Logger;
 import play.libs.F;
 import play.mvc.Controller;
@@ -26,8 +27,11 @@ import securesocial.core.java.SecureSocial;
 import securesocial.core.java.SecuredAction;
 import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
-import views.html.index;
+import views.html.homepage;
 import views.html.linkResult;
+import views.html.lobbyPage;
+
+import java.util.HashMap;
 
 
 /**
@@ -36,6 +40,8 @@ import views.html.linkResult;
 public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     private RuntimeEnvironment env;
+    private Lobby lobby;
+
 
     /**
      * A constructor needed to get a hold of the environment instance.
@@ -46,6 +52,7 @@ public class Application extends Controller {
     @Inject()
     public Application(RuntimeEnvironment env) {
         this.env = env;
+        lobby = new Lobby();
     }
 
     /**
@@ -60,8 +67,25 @@ public class Application extends Controller {
             logger.debug("access granted to index");
         }
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        return ok(index.render(user, SecureSocial.env()));
+        lobby.addUser(user);
+        //return ok(index.render(user, SecureSocial.env()));
+        return ok(homepage.render());
     }
+
+    @SecuredAction
+    public Result getUsers() {
+        System.out.println("Get Users called!");
+        HashMap<String, Object> m = new HashMap<>();
+        m.put("allUsers",lobby.getUserList());
+        Message message = new Message(m);
+        return ok(message.toJson());
+    }
+
+    @SecuredAction
+    public Result getLobby() {
+        return ok(lobbyPage.render());
+    }
+
 
     @UserAwareAction
     public Result userAware() {
@@ -112,4 +136,6 @@ public class Application extends Controller {
             }
         });
     }
+
+
 }

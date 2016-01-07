@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="lobby">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
+  <title>Lobby</title>
+</head>
+<body>
+    <div id="lobbyContainer" ng-controller="LobbyCtrl">
+        <span>Welcome in the lobby!</span>
+        <div id="refresher" ng-click="update()">
+            <button>refresh</button>
+        </div>
+    </div>
+</body>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
+    <script src="assets/javascripts/lobby.js"></script>
+</html>
