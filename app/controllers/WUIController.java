@@ -4,6 +4,7 @@ package controllers;
 import controller.UIController;
 import model.card.ICard;
 import model.card.impl.Card;
+import model.card.impl.CardValueComparator;
 import model.deckOfCards.IDeckOfCards;
 import model.deckOfCards.impl.DeckOfCards;
 import model.stack.ICardStack;
@@ -18,6 +19,7 @@ import view.tui.TUI;
 import views.html.gamefield;
 import views.html.ngGamefield;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -122,8 +124,9 @@ public class WUIController extends Controller {
 
     private static Message getCurrentMessage() {
         HashMap<String, Object> m = new HashMap<>();
-
-        m.put("playerHand", controller.getCurrentPlayersHand());
+        IDeckOfCards playerHand = controller.getCurrentPlayersHand();
+        Collections.sort(playerHand, new CardValueComparator());
+        m.put("playerHand", playerHand);
 
         m.put("opponent", controller.getOpponentPlayer().getDeckOfCards());
 

@@ -7,7 +7,7 @@ var opponentsCards = 10;
 
 var discardCard = null;
 
-var stack1 = [['1', 'Yellow'], ['1', 'Yellow']]
+var stack1 = [['1', 'Yellow'], ['1', 'Yellow']];
 
 var stack2 = null;
 
@@ -20,7 +20,7 @@ var appURL = "phasex.herokuapp.com";
 
 $(function () {
     updateGameField();
-})
+});
 
 
 function createCard(cardNumber, cardColor, className) {
@@ -69,7 +69,7 @@ function fillStack(stack) {
     if (stackarray === null) {
         var emptyCard = new Image;
         emptyCard.src = "/assets/images/Card/CardNO.png";
-        emptyCard.className = "StackCard"
+        emptyCard.className = "StackCard";
         $(stackID).append(emptyCard);
     } else {
         var cards = $(stackID);
@@ -143,7 +143,7 @@ function updateGameField() {
     createHand("opponent");
 
 
-    $("#playerCardsContainer img").each(function () {
+    $("#playerCardsContainer").find("img").each(function () {
         $(this).click(function () {
 
             if ($(this).hasClass("CardUp")) {
