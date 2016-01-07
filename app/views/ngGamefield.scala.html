@@ -5,14 +5,21 @@
     <head>
         <meta charset="UTF-8">
         <title>PhaseX</title>
-        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+        @*<link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">*@
+        <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("less/main.css")'>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
     </head>
     <body style="background:url( @routes.Assets.versioned("images/Background.png") ) ; background-size:100%">
 
         <div id="gameContainer" class="row" ng-controller="GameCtrl">
-            <div id="opponentCardsContainer" class="row">
+            <div id="opponentCardsContainer" class="col-xs-10">
                 <card ng-repeat="card in opponentsCards" number="BACK" color="BACK" ></card>
+            </div>
+            <div id="textContainer" class="col-xs-2" align="left">
+                <b>{{currentPlayerName}}</b>'s turn<br/>
+                current Phase:<br/>
+                <b>{{currentPlayerPhase}}</b><br/>
+                {{roundState}}
             </div>
             <div id="fieldContainer" class="row">
                 <div id="stackContainer" class="col-xs-8">
@@ -41,19 +48,13 @@
 
                 </div>
                 <div id="pileContainer" class="col-xs-4">
-                    <div id="drawPile" class="col-xs-6" >
+                    <div id="drawPile" class="row" >
                         <img class="PileCard" src="assets/images/Card/CardBACK.png" ng-click="drawhidden()">
                     </div>
-                    <div id="discardPile" class="col-xs-6">
+                    <div id="discardPile" class="row">
                         <pilecard ng-if="discardEmpty == true" number="NO" color="NO" ng-click="discardclick()" ></pilecard>
                         <pilecard ng-if="discardEmpty == false" number="{{discardPile.number}}" color="{{discardPile.color}}" ng-click="discardclick()"></pilecard>
                     </div>
-                    <div id="textContainer" class="col-xs-9">
-                    {{currentPlayerName}}'s turn<br/>
-                        current Phase:<br/>
-                        {{currentPlayerPhase}}<br/>
-                        {{roundState}}
-                </div>
                 </div>
 
             </div>

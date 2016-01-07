@@ -2,7 +2,7 @@
 @StackCardScaling: 22%;
 @handCardsPadding: 3%;
 @handCardsScaling: 8%;
-@PileCardScaling: 40%;
+@PileCardScaling: 22%;
 // #####################################
 // Overall Design
 // #####################################
@@ -21,7 +21,7 @@ body {
 #opponentCardsContainer {
   padding-left: @handCardsPadding;
   padding-right: @handCardsPadding;
-  padding-bottom: @handCardsPadding;
+  padding-bottom: @handCardsPadding / 3;
   padding-top: @handCardsPadding / 4;
 }
 
@@ -32,10 +32,13 @@ body {
 .PileCard {
   width: @PileCardScaling;
   background-size: contain !important;
+  margin-bottom: 1%;
+  margin-top: 1%;
 }
 
 #textContainer {
-  font-size: 2vw;
+  font-size: 1vw;
+  padding-left: 2%;
 }
 // #####################################
 // Stack Design
@@ -48,6 +51,8 @@ body {
 .StackCard {
   width: @StackCardScaling;
   background-size: contain !important;
+  margin-bottom: 1%;
+  margin-top: 1%;
 }
 
 
