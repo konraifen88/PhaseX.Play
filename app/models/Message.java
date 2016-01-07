@@ -15,17 +15,6 @@ public class Message {
     }
 
     public String toJson() {
-        /*StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        for (String key : map.keySet()) {
-            sb.append("\"").append(key);
-            sb.append("\":\"").append(map.get(key).toString());
-            sb.append("\",");
-        }
-        String result = sb.toString().substring(0, sb.toString().length() - 2);
-        result = result + "}";
-        System.out.println(result);
-        */
         return (new Gson()).toJson(this);
     }
 }

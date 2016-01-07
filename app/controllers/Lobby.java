@@ -1,5 +1,7 @@
 package controllers;
 
+import controller.UIController;
+import play.api.mvc.Controller;
 import securesocial.core.java.SecuredAction;
 import service.DemoUser;
 
@@ -11,19 +13,30 @@ import java.util.List;
  */
 public class Lobby {
     private static List<DemoUser> userList = new LinkedList<>();
+    private static List<Game> gameList = new LinkedList<>();
+    private static int numberOfGames = 0;
 
 
     @SecuredAction
     public void addUser(DemoUser user) {
-
         userList.add(user);
-        System.out.println(userList);
+    }
+
+    @SecuredAction
+    public void addGame() {
+        UIController controller = new controller.impl.Controller(2);
+        Game newGame = new Game(controller,numberOfGames);
+        numberOfGames++;
+        gameList.add(newGame);
     }
 
     @SecuredAction
     public List<DemoUser> getUserList() {
-        System.out.println("returning List:");
-        System.out.println(userList);
         return userList;
+    }
+
+    @SecuredAction
+    public List<Game> getGames() {
+        return gameList;
     }
 }

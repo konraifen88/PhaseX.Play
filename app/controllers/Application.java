@@ -73,12 +73,30 @@ public class Application extends Controller {
     }
 
     @SecuredAction
-    public Result getUsers() {
-        System.out.println("Get Users called!");
-        System.out.println(lobby.getUserList());
+    public Result getLobbyUpdate() {
+        Message message = lobbyUpdateMessage();
+        return ok(message.toJson());
+    }
+
+    @SecuredAction
+    public Message lobbyUpdateMessage() {
         HashMap<String, Object> m = new HashMap<>();
         m.put("allUsers",lobby.getUserList());
+        m.put("games",lobby.getGames());
         Message message = new Message(m);
+        return message;
+    }
+
+    @SecuredAction
+    public Result addGame() {
+        lobby.addGame();
+        Message message = lobbyUpdateMessage();
+        return ok(message.toJson());
+    }
+
+    @SecuredAction
+    public Result joinGame(int gameNumber) {
+        Message message = lobbyUpdateMessage();
         return ok(message.toJson());
     }
 

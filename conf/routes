@@ -24,7 +24,9 @@ GET        /json/discard/:index                           controllers.WUIControl
 GET        /json/playPhase/*cards                         controllers.WUIController.playPhase(cards: String)
 GET        /json/addToPhase/*cardIndex/*stackIndex        controllers.WUIController.addToPhase(cardIndex: Int,stackIndex: Int)
 
-GET        /lobby/update                                  @controllers.Application.getUsers
+GET        /lobby/update                                  @controllers.Application.getLobbyUpdate
+GET        /lobby/addGame                                 @controllers.Application.addGame
+GET        /lobby/joinGame/*gameNumber                    @controllers.Application.joinGame(gameNumber: Int)
 
 GET        /socket                                        controllers.WUIController.getSocket()
 

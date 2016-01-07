@@ -12,6 +12,21 @@
         <div id="refresher" ng-click="update()">
             <button>refresh</button>
         </div>
+        <div id="adder" ng-click="addGame()">
+            <button>add game</button>
+        </div>
+        <div id="gameTableContainer">
+            <table id="gameTable">
+                <thead>
+                    <td>Lobbyname</td>
+                    <td>Lobbynumber</td>
+                </thead>
+                <tr ng-repeat="game in games">
+                    <td ng-click="clickedOnGame(0)">Join Here! ({{game.numberOfPlayers}} / 2)</td>
+                    <td ng-click="clickedOnGame(0)">{{game.lobbyNumber}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </body>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
