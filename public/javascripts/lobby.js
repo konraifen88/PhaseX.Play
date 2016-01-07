@@ -3,15 +3,20 @@
  */
 
 var lobbyApp = angular.module('lobby', []);
-console.log("hallo");
-lobbyApp.controller('LobbyCtrl',["$http", "$scope", function ($scope, $http) {
+lobbyApp.controller('LobbyCtrl', function ($scope, $http) {
 
     $scope.update = function () {
-        console.log("test");
         $http.get('/lobby/update').success(function (data) {
             console.log(data);
+            $scope.users = data.map.allUsers;
+            $scope.numberOfUsers = data.map.allUsers.length;
         });
     };
 
+    $http.get('/lobby/update').success(function (data) {
+        console.log(data);
+        $scope.users = data.map.allUsers;
+        $scope.numberOfUsers = data.map.allUsers.length;
+    });
 
-} ]);
+} );

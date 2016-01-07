@@ -75,6 +75,7 @@ public class Application extends Controller {
     @SecuredAction
     public Result getUsers() {
         System.out.println("Get Users called!");
+        System.out.println(lobby.getUserList());
         HashMap<String, Object> m = new HashMap<>();
         m.put("allUsers",lobby.getUserList());
         Message message = new Message(m);
