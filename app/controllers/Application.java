@@ -21,6 +21,7 @@ import play.Logger;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.WebSocket;
 import securesocial.core.BasicProfile;
 import securesocial.core.RuntimeEnvironment;
 import securesocial.core.java.SecureSocial;
@@ -96,8 +97,16 @@ public class Application extends Controller {
 
     @SecuredAction
     public Result joinGame(int gameNumber) {
+
+        DemoUser demoUser = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        lobby.addPlayerToGame(demoUser,gameNumber);
         Message message = lobbyUpdateMessage();
         return ok(message.toJson());
+    }
+
+    @SecuredAction
+    public Result startGame(int gameNumber) {
+        return ok();
     }
 
     @SecuredAction
@@ -123,6 +132,34 @@ public class Application extends Controller {
             userName = "guest";
         }
         return ok("Hello " + userName + ", you are seeing a public page");
+    }
+
+    @SecuredAction
+    public WebSocket<String> getLobbySocket() {
+        return new WebSocket<String>() {
+
+            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
+                System.out.println("Socket initialized");
+
+                in.onMessage((event) -> {
+                    System.out.println(event);
+                    if(event.toString().equals("addGame")) {
+                        lobby.addGame();
+                        out.write(lobbyUpdateMessage().toJson());
+                    }
+                    if(event.toString().startsWith("joinGame")) {
+                        System.out.println("ist join da?");
+
+                    }
+
+                });
+
+                in.onClose(() -> {
+                    System.out.println("Socket closed");
+                });
+
+            }
+        };
     }
 
     @SecuredAction(authorization = WithProvider.class, params = {"twitter"})

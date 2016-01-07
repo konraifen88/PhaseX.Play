@@ -1,7 +1,10 @@
 package controllers;
 
 import controller.UIController;
+import models.WUIObserver;
 import play.api.mvc.Controller;
+import play.mvc.WebSocket;
+import securesocial.core.java.SecureSocial;
 import securesocial.core.java.SecuredAction;
 import service.DemoUser;
 
@@ -17,6 +20,7 @@ public class Lobby {
     private static int numberOfGames = 0;
 
 
+
     @SecuredAction
     public void addUser(DemoUser user) {
         userList.add(user);
@@ -28,6 +32,12 @@ public class Lobby {
         Game newGame = new Game(controller,numberOfGames);
         numberOfGames++;
         gameList.add(newGame);
+
+    }
+
+    @SecuredAction
+    public void addPlayerToGame(DemoUser user,int gameNumber) {
+        gameList.get(gameNumber).addPlayer(user);
     }
 
     @SecuredAction
@@ -39,4 +49,6 @@ public class Lobby {
     public List<Game> getGames() {
         return gameList;
     }
+
+
 }
