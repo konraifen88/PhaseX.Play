@@ -16,6 +16,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import controller.UIController;
 import models.Message;
 import play.Logger;
 import play.libs.F;
@@ -33,6 +34,7 @@ import views.html.linkResult;
 import views.html.lobbyPage;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -42,7 +44,8 @@ public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     private RuntimeEnvironment env;
     private Lobby lobby;
-
+    private int gameLobbyNumber = 0;
+    private Map<Integer,WUIController> gameControllerMap = new HashMap<>();
 
     /**
      * A constructor needed to get a hold of the environment instance.
@@ -105,7 +108,17 @@ public class Application extends Controller {
     }
 
     @SecuredAction
+    public Result startGameInstance(UIController ctrl, DemoUser player1, DemoUser player2, int lobbynumber) {
+        WUIController wuictrl = new WUIController(ctrl);
+        ctrl.startGame();
+        gameControllerMap.put(lobbynumber,wuictrl);
+        return ok();
+    }
+
+    @SecuredAction
     public Result startGame(int gameNumber) {
+        Game game = lobby.getGames().get(gameNumber);
+        startGameInstance(game.getController(),game.getPlayer1(),game.getPlayer2(),game.lobbyNumber);
         return ok();
     }
 
@@ -113,6 +126,44 @@ public class Application extends Controller {
     public Result getLobby() {
         return ok(lobbyPage.render());
     }
+
+    @SecuredAction
+    public Result getJsonUpdate() {
+        //return gameControllerMap.get(lobbyNumber).getJsonUpdate();
+        return ok();
+    }
+
+    @SecuredAction
+    public Result ngGame() {
+        //return ok(ngGamefield.render(gameControllerMap.get(lobbyNumber).getUI()));
+        return ok();
+    }
+
+    @SecuredAction
+    public Result getDrawHidden() {
+        return ok();
+    }
+
+    @SecuredAction
+    public Result getDrawOpen() {
+        return ok();
+    }
+
+    @SecuredAction
+    public Result discard(int index) {
+        return ok();
+    }
+
+    @SecuredAction
+    public Result playPhase(String cards) {
+        return ok();
+    }
+
+    @SecuredAction
+    public Result addToPhase(int cardindex, int stackIndex) {
+        return ok();
+    }
+
 
 
     @UserAwareAction

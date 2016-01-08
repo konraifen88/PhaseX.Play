@@ -19,6 +19,18 @@ public class Game {
         numberOfPlayers = 0;
     }
 
+    public DemoUser getPlayer1() {
+        return player1;
+    }
+
+    public DemoUser getPlayer2() {
+        return player2;
+    }
+
+    public UIController getController() {
+        return controller;
+    }
+
     public boolean addPlayer(DemoUser user) {
         if(player1 == null) {
             player1 = user;

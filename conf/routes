@@ -12,17 +12,14 @@ GET        /current-user                                  @controllers.Applicati
 # Applicaton
 GET        /home                                          controllers.Assets.at(path="/public/html",file="homepage.scala.html")
 GET        /lobby                                         @controllers.Application.getLobby
-GET        /start                                         controllers.WUIController.start()
-GET        /restart                                       controllers.WUIController.restart()
-GET        /ngApp                                         controllers.WUIController.ngApp()
-GET        /play/*command                                 controllers.WUIController.play(command: String)
+GET        /ngApp                                         @controllers.Application.ngGame()
 
-GET        /json/update                                   controllers.WUIController.getJsonUpdate()
-GET        /json/drawHidden                               controllers.WUIController.getDrawHidden()
-GET        /json/drawDiscard                              controllers.WUIController.getDrawOpen()
-GET        /json/discard/:index                           controllers.WUIController.discard(index: Int)
-GET        /json/playPhase/*cards                         controllers.WUIController.playPhase(cards: String)
-GET        /json/addToPhase/*cardIndex/*stackIndex        controllers.WUIController.addToPhase(cardIndex: Int,stackIndex: Int)
+GET        /json/update                                   @controllers.Application.getJsonUpdate()
+GET        /json/drawHidden                               @controllers.Application.getDrawHidden()
+GET        /json/drawDiscard                              @controllers.Application.getDrawOpen()
+GET        /json/discard/:index                           @controllers.Application.discard(index: Int)
+GET        /json/playPhase/*cards                         @controllers.Application.playPhase(cards: String)
+GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Application.addToPhase(cardIndex: Int,stackIndex: Int)
 
 GET        /lobby/update                                  @controllers.Application.getLobbyUpdate
 GET        /lobby/addGame                                 @controllers.Application.addGame
@@ -30,7 +27,7 @@ GET        /lobby/joinGame/*gameNumber                    @controllers.Applicati
 GET        /lobby/startGame/*gameNumber                    @controllers.Application.startGame(gameNumber: Int)
 GET        /lobby/socket                                  @controllers.Application.getLobbySocket
 
-GET        /socket                                        controllers.WUIController.getSocket()
+#GET        /socket                                        controllers.WUIController.getSocket()
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                                  controllers.Assets.versioned(path="/public", file: Asset)

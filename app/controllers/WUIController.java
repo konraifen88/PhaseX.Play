@@ -27,67 +27,64 @@ import java.util.LinkedList;
 public class WUIController extends Controller {
 
 
-    static UIController controller = Init.getInstance().getIn().getInstance(UIController.class);
-    static TUI tui = Init.getInstance().getTui();
+    private UIController controller = Init.getInstance().getIn().getInstance(UIController.class);
+    private TUI tui = Init.getInstance().getTui();
+
+    public WUIController(UIController controller) {
+        this.controller = controller;
+    }
 
 
-    /*public Result index() {
-        return ok(gamefield.render(getUI()));
-    }*/
-
-
-    public static String getUI() {
+    public String getUI() {
         String ui = tui.getSb().toString();
         ui = ui.replaceAll("\n", "<br>");
         ui = ui.replaceAll(" ", "&nbsp;");
         return ui;
     }
 
-    public static Result play(String command) {
+    public Result play(String command) {
         System.out.println(command);
         tui.processInputLine(command);
         return ok(gamefield.render(getUI()));
     }
 
-    public static Result start() {
+    public Result start() {
         controller.startGame();
         return ok(gamefield.render(getUI()));
     }
 
-    public static Result ngApp() {
+    public Result ngApp() {
         controller.startGame();
         return ok(ngGamefield.render(getUI()));
     }
 
-    public static Result restart() {
+    public Result restart() {
         controller = new controller.impl.Controller(2);
         controller.startGame();
         return ok(ngGamefield.render(getUI()));
     }
 
-    public static Result getDrawOpen() {
+    public Result getDrawOpen() {
         controller.drawOpen();
         Message message = getCurrentMessage();
         return ok(message.toJson());
     }
 
-    public static Result getDrawHidden() {
+    public Result getDrawHidden() {
         controller.drawHidden();
         Message message = getCurrentMessage();
         return ok(message.toJson());
     }
 
-    public static Result discard(int index) {
+    public Result discard(int index) {
         ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(),
                 controller.getCurrentPlayersHand().get(index).getColor());
-        //System.out.println("Discarding card: " + card.getColor() + " " + card.getNumber());
         controller.discard(card);
         Message message = getCurrentMessage();
-        //System.out.println("the message is: " + message.toString());
         return ok(message.toJson());
     }
 
-    public static Result playPhase(String cards) {
+    public Result playPhase(String cards) {
         cards = cards.substring(0, cards.length() - 1);
         IDeckOfCards phases = new DeckOfCards();
         for (String card : cards.split(";")) {
@@ -95,20 +92,19 @@ public class WUIController extends Controller {
             ICard cardObject = controller.getCurrentPlayersHand().get(index);
             phases.add(cardObject);
         }
-        //System.out.println(phases);
         controller.playPhase(phases);
         Message message = getCurrentMessage();
         return ok(message.toJson());
     }
 
-    public static Result addToPhase(int cardIndex, int stackIndex) {
+    public Result addToPhase(int cardIndex, int stackIndex) {
         controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
                 controller.getAllStacks().get(stackIndex));
         Message message = getCurrentMessage();
         return ok(message.toJson());
     }
 
-    private static IDeckOfCards getFirstAndLast(ICardStack stack) {
+    private IDeckOfCards getFirstAndLast(ICardStack stack) {
         IDeckOfCards list = stack.getList();
         if (list.size() > 4) {
             IDeckOfCards retList = new DeckOfCards();
@@ -122,7 +118,7 @@ public class WUIController extends Controller {
         }
     }
 
-    private static Message getCurrentMessage() {
+    private Message getCurrentMessage() {
         HashMap<String, Object> m = new HashMap<>();
         IDeckOfCards playerHand = controller.getCurrentPlayersHand();
         Collections.sort(playerHand, new CardValueComparator());
@@ -161,14 +157,14 @@ public class WUIController extends Controller {
         return message;
     }
 
-    public static Result getJsonUpdate() {
+    public Result getJsonUpdate() {
 
         Message message = getCurrentMessage();
 
         return ok(message.toJson());
     }
 
-    public static WebSocket<String> getSocket() {
+    public WebSocket<String> getSocket() {
         return new WebSocket<String>() {
             public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
                 System.out.println("we start a socket");
