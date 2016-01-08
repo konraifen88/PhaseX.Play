@@ -33,6 +33,7 @@ GET        /lobby/socket                                  @controllers.Applicati
 # GET        /socket                                        controllers.WUIController.getSocket()
 
 # Map static resources from the /public folder to the /assets URL path
+GET        /assets/javascripts/chatroom.js                @controllers.Chat.chatRoomJs(username, roomName)
 GET        /assets/*file                                  controllers.Assets.versioned(path="/public", file: Asset)
 ->         /auth                                          securesocial.Routes
 
@@ -40,5 +41,4 @@ GET        /assets/*file                                  controllers.Assets.ver
 GET        /chat                                          @controllers.Chat.chatIndex()
 GET        /room                                          @controllers.Chat.chatRoom(username: String ?= null, roomName: String ?=null)
 GET        /room/:roomName/chat                           @controllers.Chat.chat(username, roomName: String)
-GET        /assets/javascripts/chatroom.js                @controllers.Chat.chatRoomJs(username, roomName)
 
