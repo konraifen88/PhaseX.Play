@@ -164,36 +164,36 @@ public class WUIController extends Controller {
         return ok(message.toJson());
     }
 
-    public WebSocket<String> getSocket() {
-        return new WebSocket<String>() {
-            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
-                System.out.println("we start a socket");
-                in.onMessage((event) -> {
-                    System.out.println(event);
-                    WUIObserver wuiObserver = new WUIObserver(controller, out);
-                    wuiObserver.analyzeMessage(event);
-                         /*)
-                         System.out.println(event + " came in");
-                         switch (event.toString()) {
-                             case "GET":
-                                 System.out.println("GET");
-                                 out.write(Application.getCurrentStateAsJSon());
-                                 break;
-                             default:
-                                 System.out.println("CRAP");
-                                 out.write("YOU FUCKED UP");
-                                 break;
-                         }
-                         System.out.println(event + " gone");
-                        */
-                });
-                in.onClose(() -> {
-                    System.out.println("Socket geschlossen");
-                });
-
-            }
-        };
-    }
+//    public static WebSocket<String> getSocket() {
+//        return new WebSocket<String>() {
+//            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
+//                System.out.println("we start a socket");
+//                in.onMessage((event) -> {
+//                    System.out.println(event);
+//                    WUIObserver wuiObserver = new WUIObserver(controller, out);
+//                    wuiObserver.analyzeMessage(event);
+//                         /*)
+//                         System.out.println(event + " came in");
+//                         switch (event.toString()) {
+//                             case "GET":
+//                                 System.out.println("GET");
+//                                 out.write(Application.getCurrentStateAsJSon());
+//                                 break;
+//                             default:
+//                                 System.out.println("CRAP");
+//                                 out.write("YOU FUCKED UP");
+//                                 break;
+//                         }
+//                         System.out.println(event + " gone");
+//                        */
+//                });
+//                in.onClose(() -> {
+//                    System.out.println("Socket geschlossen");
+//                });
+//
+//            }
+//        };
+//    }
 
     public Result discard() {
         Message message = getCurrentMessage();
