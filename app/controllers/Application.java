@@ -44,6 +44,7 @@ public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     private RuntimeEnvironment env;
     private Lobby lobby;
+    private Chat chat;
     private int gameLobbyNumber = 0;
     private Map<Integer,WUIController> gameControllerMap = new HashMap<>();
 
@@ -57,6 +58,7 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         lobby = new Lobby();
+        chat = new Chat();
     }
 
     /**
@@ -72,8 +74,9 @@ public class Application extends Controller {
         }
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         lobby.addUser(user);
+        return chat.chatRoom(user.main.userId(), "teest");
         //return ok(index.render(user, SecureSocial.env()));
-        return ok(homepage.render());
+//        return ok(homepage.render());
     }
 
     @SecuredAction
