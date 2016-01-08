@@ -27,6 +27,8 @@ GET        /lobby/joinGame/*gameNumber                    @controllers.Applicati
 GET        /lobby/startGame/*gameNumber                   @controllers.Application.startGame(gameNumber: Int)
 GET        /lobby/socket                                  @controllers.Application.getLobbySocket
 
+GET        /chat/:roomName                                @controllers.Application.goToChatRoom(roomName: String)
+
 # GET        /socket                                        controllers.WUIController.getSocket()
 
 # Map static resources from the /public folder to the /assets URL path

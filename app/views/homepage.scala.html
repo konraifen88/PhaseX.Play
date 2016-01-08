@@ -89,9 +89,20 @@
                 </ol>
 			</span>
     <!--<a href="ngApp">Link to the Angular App</a> -->
-
-    <a href="lobby">Link to the Lobby</a>
+    <span>Name of your Lobby:</span>
+    <input id="chatName"></input>
+    <button id="linkButton">To the Lobby</button>
+    <!-- <a href="lobby">Link to the Lobby</a> -->
 
 </div>
 </body>
+    <script type="text/javascript">
+        $(function () {
+            $("#linkButton").click(function () {
+                if($("#chatName")[0].value.length > 0) {
+                    window.location.replace("/chat/" + $("#chatName")[0].value);
+                }
+            })
+        });
+    </script>
 </html>

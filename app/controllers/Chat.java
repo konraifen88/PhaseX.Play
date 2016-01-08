@@ -36,6 +36,7 @@ public class Chat extends Controller {
     }
 
     public Result chatRoomJs(String username, final String roomName) {
+
         return ok(views.js.chatRoom.render(username, roomName));
     }
 

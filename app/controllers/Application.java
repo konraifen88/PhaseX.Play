@@ -74,9 +74,15 @@ public class Application extends Controller {
         }
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         lobby.addUser(user);
-        return chat.chatRoom(user.main.userId(), "teest");
+//        return chat.chatRoom(user.main.fullName().get(), "teest");
         //return ok(index.render(user, SecureSocial.env()));
-//        return ok(homepage.render());
+        return ok(homepage.render());
+    }
+
+    @SecuredAction
+    public Result goToChatRoom(String roomName){
+        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        return chat.chatRoom(user.main.fullName().get(), roomName);
     }
 
     @SecuredAction
