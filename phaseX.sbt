@@ -21,3 +21,7 @@ libraryDependencies ++= Seq("ws.securesocial" %% "securesocial" % "master-SNAPSH
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options")
+
+// Play provides two styles of routers, one expects its actions to be injected, the
+// other, legacy style, accesses its actions statically.
+routesGenerator := InjectedRoutesGenerator
