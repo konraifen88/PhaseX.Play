@@ -79,7 +79,7 @@ public class ChatRoom extends UntypedActor {
     Map<String, WebSocket.Out<JsonNode>> members = new HashMap<>();
 
     public void onReceive(Object message) throws Exception {
-
+        System.out.println(message);
         if(message instanceof Join) {
 
             // Received a Join message
@@ -104,16 +104,28 @@ public class ChatRoom extends UntypedActor {
 
             notifyAll("talk", talk.username, talk.text);
 
-        } else if(message instanceof Quit)  {
+        } else if(message instanceof Quit) {
 
             // Received a Quit message
-            Quit quit = (Quit)message;
+            Quit quit = (Quit) message;
 
             members.remove(quit.username);
 
             notifyAll("quit", quit.username, "has leaved the room");
 
+        } else if (message instanceof GameInteraction){
+            System.out.println("Game Started");
+            GameInteraction game = (GameInteraction) message;
+            switch (game.message){
+                case START:
+                    System.out.println("start!");
+                    break;
+                default:
+                    System.out.println("unknown message" + message);
+
+            }
         } else {
+            System.out.println("ERROR!");
             unhandled(message);
         }
 
@@ -149,14 +161,14 @@ public class ChatRoom extends UntypedActor {
 
     }
 
-    public static class StartGame {
+    public static class GameInteraction {
 
         final String username;
-        final WebSocket.Out<JsonNode> channel;
+        final GameMessage message;
 
-        public StartGame(String username, WebSocket.Out<JsonNode> channel) {
+        public GameInteraction(String username, GameMessage message) {
             this.username = username;
-            this.channel = channel;
+            this.message = message;
         }
 
     }
