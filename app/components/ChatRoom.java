@@ -88,7 +88,7 @@ public class ChatRoom extends UntypedActor {
             // Check if this username is free.
             if(members.containsKey(join.username)) {
                 getSender().tell("This username is already used", self());
-            } else {
+            } else if(members.size() == 1) {
                 members.put(join.username, join.channel);
                 notifyAll("join", join.username, "has entered the room");
                 getSender().tell("OK", self());
