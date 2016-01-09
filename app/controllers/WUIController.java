@@ -14,6 +14,7 @@ import phasex.Init;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import play.twirl.api.Html;
 import securesocial.core.java.SecuredAction;
 import view.tui.TUI;
 import views.html.gamefield;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 @SecuredAction
-public class WUIController extends Controller {
+public class WUIController {
 
 
     private UIController controller = Init.getInstance().getIn().getInstance(UIController.class);
@@ -42,49 +43,49 @@ public class WUIController extends Controller {
         return ui;
     }
 
-    public Result play(String command) {
+    public Html play(String command) {
         System.out.println(command);
         tui.processInputLine(command);
-        return ok(gamefield.render(getUI()));
+        return gamefield.render(getUI());
     }
 
-    public Result start() {
+    public Html start() {
         controller.startGame();
-        return ok(gamefield.render(getUI()));
+        return gamefield.render(getUI());
     }
 
-    public Result ngApp() {
+    public Html ngApp() {
         controller.startGame();
-        return ok(ngGamefield.render(getUI()));
+        return ngGamefield.render(getUI());
     }
 
-    public Result restart() {
+    public Html restart() {
         controller = new controller.impl.Controller(2);
         controller.startGame();
-        return ok(ngGamefield.render(getUI()));
+        return ngGamefield.render(getUI());
     }
 
-    public Result getDrawOpen() {
+    public String getDrawOpen() {
         controller.drawOpen();
         Message message = getCurrentMessage();
-        return ok(message.toJson());
+        return message.toJson();
     }
 
-    public Result getDrawHidden() {
+    public String getDrawHidden() {
         controller.drawHidden();
         Message message = getCurrentMessage();
-        return ok(message.toJson());
+        return message.toJson();
     }
 
-    public Result discard(int index) {
+    public String discard(int index) {
         ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(),
                 controller.getCurrentPlayersHand().get(index).getColor());
         controller.discard(card);
         Message message = getCurrentMessage();
-        return ok(message.toJson());
+        return message.toJson();
     }
 
-    public Result playPhase(String cards) {
+    public String playPhase(String cards) {
         cards = cards.substring(0, cards.length() - 1);
         IDeckOfCards phases = new DeckOfCards();
         for (String card : cards.split(";")) {
@@ -94,14 +95,14 @@ public class WUIController extends Controller {
         }
         controller.playPhase(phases);
         Message message = getCurrentMessage();
-        return ok(message.toJson());
+        return message.toJson();
     }
 
-    public Result addToPhase(int cardIndex, int stackIndex) {
+    public String addToPhase(int cardIndex, int stackIndex) {
         controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
                 controller.getAllStacks().get(stackIndex));
         Message message = getCurrentMessage();
-        return ok(message.toJson());
+        return message.toJson();
     }
 
     private IDeckOfCards getFirstAndLast(ICardStack stack) {
@@ -157,11 +158,11 @@ public class WUIController extends Controller {
         return message;
     }
 
-    public Result getJsonUpdate() {
+    public String getJsonUpdate() {
 
         Message message = getCurrentMessage();
 
-        return ok(message.toJson());
+        return message.toJson();
     }
 
 //    public static WebSocket<String> getSocket() {
@@ -195,8 +196,8 @@ public class WUIController extends Controller {
 //        };
 //    }
 
-    public Result discard() {
+    public String discard() {
         Message message = getCurrentMessage();
-        return ok(message.toJson());
+        return message.toJson();
     }
 }

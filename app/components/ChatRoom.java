@@ -26,7 +26,10 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class ChatRoom extends UntypedActor {
 
-    public static void join(final String roomName, final String username, WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) throws Exception{
+    Map<String, WebSocket.Out<JsonNode>> members = new HashMap<>();
+
+    public static void join(final String roomName, final String username, WebSocket.In<JsonNode> in,
+                            WebSocket.Out<JsonNode> out) throws Exception {
 
         String chatRoomName = roomName == null || roomName.isEmpty() ? "open" : roomName;
 
@@ -42,9 +45,10 @@ public class ChatRoom extends UntypedActor {
         final ActorRef defaultRoom = actorRef;
 
         // Send the Join message to the room
-        String result = (String) Await.result(ask(defaultRoom, new Join(username, out), 1000), Duration.create(1, SECONDS));
+        String result = (String) Await
+                .result(ask(defaultRoom, new Join(username, out), 1000), Duration.create(1, SECONDS));
 
-        if("OK".equals(result)) {
+        if ("OK".equals(result)) {
 
             // For each event received on the socket,
             in.onMessage(event -> {
@@ -76,19 +80,18 @@ public class ChatRoom extends UntypedActor {
     }
 
     // Members of this room.
-    Map<String, WebSocket.Out<JsonNode>> members = new HashMap<>();
 
     public void onReceive(Object message) throws Exception {
         System.out.println(message);
-        if(message instanceof Join) {
+        if (message instanceof Join) {
 
             // Received a Join message
-            Join join = (Join)message;
+            Join join = (Join) message;
 
             // Check if this username is free.
-            if(members.containsKey(join.username)) {
+            if (members.containsKey(join.username)) {
                 getSender().tell("This username is already used", self());
-            } else if(members.size() < 2) {
+            } else if (members.size() < 2) {
                 //Join Room and start game
                 members.put(join.username, join.channel);
                 notifyAll("join", join.username, "has entered the room");
@@ -97,14 +100,14 @@ public class ChatRoom extends UntypedActor {
                 getSender().tell("Game already full! Please try another Lobby.", self());
             }
 
-        } else if(message instanceof Talk)  {
+        } else if (message instanceof Talk) {
 
             // Received a Talk message
-            Talk talk = (Talk)message;
+            Talk talk = (Talk) message;
 
             notifyAll("talk", talk.username, talk.text);
 
-        } else if(message instanceof Quit) {
+        } else if (message instanceof Quit) {
 
             // Received a Quit message
             Quit quit = (Quit) message;
@@ -113,17 +116,6 @@ public class ChatRoom extends UntypedActor {
 
             notifyAll("quit", quit.username, "has leaved the room");
 
-        } else if (message instanceof GameInteraction){
-            System.out.println("Game Started");
-            GameInteraction game = (GameInteraction) message;
-            switch (game.message){
-                case START:
-                    System.out.println("start!");
-                    break;
-                default:
-                    System.out.println("unknown message" + message);
-
-            }
         } else {
             System.out.println("ERROR!");
             unhandled(message);
@@ -133,7 +125,7 @@ public class ChatRoom extends UntypedActor {
 
     // Send a Json event to all members
     public void notifyAll(String kind, String user, String text) {
-        for(WebSocket.Out<JsonNode> channel: members.values()) {
+        for (WebSocket.Out<JsonNode> channel : members.values()) {
 
             ObjectNode event = Json.newObject();
             event.put("kind", kind);
@@ -158,19 +150,6 @@ public class ChatRoom extends UntypedActor {
             this.username = username;
             this.channel = channel;
         }
-
-    }
-
-    public static class GameInteraction {
-
-        final String username;
-        final GameMessage message;
-
-        public GameInteraction(String username, GameMessage message) {
-            this.username = username;
-            this.message = message;
-        }
-
     }
 
     public static class Talk {

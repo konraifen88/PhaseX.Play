@@ -29,8 +29,8 @@ $(function () {
         } else {
             $("#onChat").show()
         }
-        if(data.message === "GAME" && data.user !== '@username'){
-            window.location.replace("../ngApp/" + '@roomName')
+        if(data.message === "GAME"){
+            window.location.replace("../ngApp/" + '@roomName');
         } else {
             // Create the message element
             var el = $('<div class="message"><span></span><p></p></div>');

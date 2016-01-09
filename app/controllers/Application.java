@@ -18,12 +18,10 @@ package controllers;
 import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
-import models.Message;
 import play.Logger;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.WebSocket;
 import securesocial.core.BasicProfile;
 import securesocial.core.RuntimeEnvironment;
 import securesocial.core.java.SecureSocial;
@@ -36,6 +34,7 @@ import views.html.ngGamefield;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -47,6 +46,7 @@ public class Application extends Controller {
     private Chat chat;
     private Map<String,WUIController> gameControllerMap = new HashMap<>();
     private Map<String,Players> roomPlayerMap = new HashMap<>();
+    private Semaphore createGameSem;
 
 
     /**
@@ -59,6 +59,7 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
+        createGameSem = new Semaphore(1);
     }
 
     /**
@@ -102,25 +103,36 @@ public class Application extends Controller {
 
     @SecuredAction
     public Result createGame(String roomName) {
-        System.out.println("Creating a new Game");
-        if(gameControllerMap.containsKey(roomName)) {
-            System.out.println("Adding Player 2 to Game");
-            Players players = roomPlayerMap.get(roomName);
-            DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-            players.addPlayer2(player2);
-            return ok(ngGamefield.render(gameControllerMap.get(roomName).getUI()));
+        try {
+            try {
+                createGameSem.acquire();
+                System.out.println("Creating a new Game");
+                if(gameControllerMap.containsKey(roomName)) {
+                    System.out.println("Adding Player 2 to Game");
+                    Players players = roomPlayerMap.get(roomName);
+                    DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+                    players.addPlayer2(player2);
+                    return ok(ngGamefield.render(gameControllerMap.get(roomName).getUI()));
+                }
+                System.out.println("Creating a new Game Controller");
+                UIController controller = new controller.impl.Controller(2);
+                WUIController wuiController = new WUIController(controller);
+                wuiController.start();
+                System.out.println("Mapping Room and Players");
+                gameControllerMap.put(roomName,wuiController);
+                DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+                Players players = new Players(player1);
+                roomPlayerMap.put(roomName,players);
+                System.out.println("init game ready");
+                return ok(ngGamefield.render(wuiController.getUI()));
+            } finally {
+                createGameSem.release();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        System.out.println("Creating a new Game Controller");
-        UIController controller = new controller.impl.Controller(2);
-        WUIController wuiController = new WUIController(controller);
-        wuiController.start();
-        System.out.println("Mapping Room and Players");
-        gameControllerMap.put(roomName,wuiController);
-        DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        Players players = new Players(player1);
-        roomPlayerMap.put(roomName,players);
-        System.out.println("init game ready");
-        return ok(ngGamefield.render(wuiController.getUI()));
+
+        return ok();
     }
 
     @SecuredAction
