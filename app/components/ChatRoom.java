@@ -88,10 +88,13 @@ public class ChatRoom extends UntypedActor {
             // Check if this username is free.
             if(members.containsKey(join.username)) {
                 getSender().tell("This username is already used", self());
-            } else if(members.size() == 1) {
+            } else if(members.size() < 2) {
+                //Join Room and start game
                 members.put(join.username, join.channel);
                 notifyAll("join", join.username, "has entered the room");
                 getSender().tell("OK", self());
+            } else {
+                getSender().tell("Game already full! Please try another Lobby.", self());
             }
 
         } else if(message instanceof Talk)  {
@@ -140,6 +143,18 @@ public class ChatRoom extends UntypedActor {
         final WebSocket.Out<JsonNode> channel;
 
         public Join(String username, WebSocket.Out<JsonNode> channel) {
+            this.username = username;
+            this.channel = channel;
+        }
+
+    }
+
+    public static class StartGame {
+
+        final String username;
+        final WebSocket.Out<JsonNode> channel;
+
+        public StartGame(String username, WebSocket.Out<JsonNode> channel) {
             this.username = username;
             this.channel = channel;
         }
