@@ -16,6 +16,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import components.Players;
 import controller.UIController;
 import models.Message;
 import play.Logger;
@@ -31,7 +32,7 @@ import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
 import views.html.homepage;
 import views.html.linkResult;
-import views.html.lobbyPage;
+import views.html.ngGamefield;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,10 +44,10 @@ import java.util.Map;
 public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     private RuntimeEnvironment env;
-    private Lobby lobby;
     private Chat chat;
-    private int gameLobbyNumber = 0;
-    private Map<Integer,WUIController> gameControllerMap = new HashMap<>();
+    private Map<String,WUIController> gameControllerMap = new HashMap<>();
+    private Map<String,Players> roomPlayerMap = new HashMap<>();
+
 
     /**
      * A constructor needed to get a hold of the environment instance.
@@ -57,7 +58,6 @@ public class Application extends Controller {
     @Inject()
     public Application(RuntimeEnvironment env) {
         this.env = env;
-        lobby = new Lobby();
         chat = new Chat();
     }
 
@@ -73,7 +73,6 @@ public class Application extends Controller {
             logger.debug("access granted to index");
         }
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        lobby.addUser(user);
 //        return chat.chatRoom(user.main.fullName().get(), "teest");
         //return ok(index.render(user, SecureSocial.env()));
         return ok(homepage.render());
@@ -85,56 +84,9 @@ public class Application extends Controller {
         return chat.chatRoom(user.main.fullName().get(), roomName);
     }
 
-    @SecuredAction
-    public Result getLobbyUpdate() {
-        Message message = lobbyUpdateMessage();
-        return ok(message.toJson());
-    }
 
-    @SecuredAction
-    public Message lobbyUpdateMessage() {
-        HashMap<String, Object> m = new HashMap<>();
-        m.put("allUsers",lobby.getUserList());
-        m.put("games",lobby.getGames());
-        Message message = new Message(m);
-        return message;
-    }
 
-    @SecuredAction
-    public Result addGame() {
-        lobby.addGame();
-        Message message = lobbyUpdateMessage();
-        return ok(message.toJson());
-    }
 
-    @SecuredAction
-    public Result joinGame(int gameNumber) {
-
-        DemoUser demoUser = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        lobby.addPlayerToGame(demoUser,gameNumber);
-        Message message = lobbyUpdateMessage();
-        return ok(message.toJson());
-    }
-
-    @SecuredAction
-    public Result startGameInstance(UIController ctrl, DemoUser player1, DemoUser player2, int lobbynumber) {
-        WUIController wuictrl = new WUIController(ctrl);
-        ctrl.startGame();
-        gameControllerMap.put(lobbynumber,wuictrl);
-        return ok();
-    }
-
-    @SecuredAction
-    public Result startGame(int gameNumber) {
-        Game game = lobby.getGames().get(gameNumber);
-        startGameInstance(game.getController(),game.getPlayer1(),game.getPlayer2(),game.lobbyNumber);
-        return ok();
-    }
-
-    @SecuredAction
-    public Result getLobby() {
-        return ok(lobbyPage.render());
-    }
 
     @SecuredAction
     public Result getJsonUpdate() {
@@ -146,6 +98,29 @@ public class Application extends Controller {
     public Result ngGame() {
         //return ok(ngGamefield.render(gameControllerMap.get(lobbyNumber).getUI()));
         return ok();
+    }
+
+    @SecuredAction
+    public Result createGame(String roomName) {
+        System.out.println("Creating a new Game");
+        if(gameControllerMap.containsKey(roomName)) {
+            System.out.println("Adding Player 2 to Game");
+            Players players = roomPlayerMap.get(roomName);
+            DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+            players.addPlayer2(player2);
+            return ok(ngGamefield.render(gameControllerMap.get(roomName).getUI()));
+        }
+        System.out.println("Creating a new Game Controller");
+        UIController controller = new controller.impl.Controller(2);
+        WUIController wuiController = new WUIController(controller);
+        wuiController.start();
+        System.out.println("Mapping Room and Players");
+        gameControllerMap.put(roomName,wuiController);
+        DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        Players players = new Players(player1);
+        roomPlayerMap.put(roomName,players);
+        System.out.println("init game ready");
+        return ok(ngGamefield.render(wuiController.getUI()));
     }
 
     @SecuredAction
@@ -194,33 +169,6 @@ public class Application extends Controller {
         return ok("Hello " + userName + ", you are seeing a public page");
     }
 
-    @SecuredAction
-    public WebSocket<String> getLobbySocket() {
-        return new WebSocket<String>() {
-
-            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
-                System.out.println("Socket initialized");
-
-                in.onMessage((event) -> {
-                    System.out.println(event);
-                    if(event.toString().equals("addGame")) {
-                        lobby.addGame();
-                        out.write(lobbyUpdateMessage().toJson());
-                    }
-                    if(event.toString().startsWith("joinGame")) {
-                        System.out.println("ist join da?");
-
-                    }
-
-                });
-
-                in.onClose(() -> {
-                    System.out.println("Socket closed");
-                });
-
-            }
-        };
-    }
 
     @SecuredAction(authorization = WithProvider.class, params = {"twitter"})
     public Result onlyTwitter() {
