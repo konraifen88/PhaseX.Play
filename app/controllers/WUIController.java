@@ -31,11 +31,20 @@ public class WUIController {
 
     private UIController controller = Init.getInstance().getIn().getInstance(UIController.class);
     private TUI tui = Init.getInstance().getTui();
+    private DemoUser player1;
+    private DemoUser player2;
+    private DemoUser currentPlayer;
 
-    public WUIController(UIController controller) {
+    public WUIController(UIController controller, DemoUser player1) {
         this.controller = controller;
+        this.player1 = player1;
+        this.currentPlayer = player1;
     }
 
+
+    public void setPlayer2(DemoUser user) {
+        this.player1 = user;
+    }
 
     public String getUI() {
         String ui = tui.getSb().toString();
@@ -55,6 +64,7 @@ public class WUIController {
         return gamefield.render(getUI());
     }
 
+    /*
     public Html ngApp() {
         controller.startGame();
         return newGamefield.render();
@@ -64,44 +74,55 @@ public class WUIController {
         controller = new controller.impl.Controller(2);
         controller.startGame();
         return newGamefield.render();
-    }
+    }*/
 
-    public String getDrawOpen() {
-        controller.drawOpen();
-        Message message = getCurrentMessage();
-        return message.toJson();
-    }
-
-    public String getDrawHidden() {
-        controller.drawHidden();
-        Message message = getCurrentMessage();
-        return message.toJson();
-    }
-
-    public String discard(int index) {
-        ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(),
-                controller.getCurrentPlayersHand().get(index).getColor());
-        controller.discard(card);
-        Message message = getCurrentMessage();
-        return message.toJson();
-    }
-
-    public String playPhase(String cards) {
-        cards = cards.substring(0, cards.length() - 1);
-        IDeckOfCards phases = new DeckOfCards();
-        for (String card : cards.split(";")) {
-            int index = Integer.parseInt(card);
-            ICard cardObject = controller.getCurrentPlayersHand().get(index);
-            phases.add(cardObject);
+    public String getDrawOpen(DemoUser user) {
+        if(isCurrentPlayer(user)) {
+            controller.drawOpen();
         }
-        controller.playPhase(phases);
         Message message = getCurrentMessage();
         return message.toJson();
     }
 
-    public String addToPhase(int cardIndex, int stackIndex) {
-        controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
-                controller.getAllStacks().get(stackIndex));
+    public String getDrawHidden(DemoUser user) {
+        if(isCurrentPlayer(user)) {
+            controller.drawHidden();
+        }
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    public String discard(int index, DemoUser user) {
+        if(isCurrentPlayer(user)) {
+            ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(),
+                    controller.getCurrentPlayersHand().get(index).getColor());
+            controller.discard(card);
+        }
+
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    public String playPhase(String cards, DemoUser user) {
+        if(isCurrentPlayer(user)) {
+            cards = cards.substring(0, cards.length() - 1);
+            IDeckOfCards phases = new DeckOfCards();
+            for (String card : cards.split(";")) {
+                int index = Integer.parseInt(card);
+                ICard cardObject = controller.getCurrentPlayersHand().get(index);
+                phases.add(cardObject);
+            }
+            controller.playPhase(phases);
+        }
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    public String addToPhase(int cardIndex, int stackIndex, DemoUser user) {
+        if(isCurrentPlayer(user)) {
+            controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
+                    controller.getAllStacks().get(stackIndex));
+        }
         Message message = getCurrentMessage();
         return message.toJson();
     }
@@ -120,6 +141,16 @@ public class WUIController {
         }
     }
 
+    private boolean isCurrentPlayer(DemoUser user) {
+        if(controller.getCurrentPlayer().getPlayerNumber() == 0 && user.equals(player1)) {
+            return true;
+        }
+        if(controller.getCurrentPlayer().getPlayerNumber() == 1 && user.equals(player2)) {
+            return true;
+        }
+        return false;
+    }
+
     private Message getCurrentMessage() {
         HashMap<String, Object> m = new HashMap<>();
         IDeckOfCards playerHand = controller.getCurrentPlayersHand();
@@ -127,6 +158,14 @@ public class WUIController {
         m.put("playerHand", playerHand);
 
         m.put("opponent", controller.getOpponentPlayer().getDeckOfCards());
+        if(controller.getCurrentPlayer().getPlayerNumber() == 0) {
+            m.put("player1Cards", controller.getCurrentPlayersHand());
+            m.put("player2Cards", controller.getOpponentPlayer().getDeckOfCards());
+        } else {
+            m.put("player2Cards", controller.getCurrentPlayersHand());
+            m.put("player1Cards", controller.getOpponentPlayer().getDeckOfCards());
+        }
+
 
         m.put("stack", controller.getAllStacks());
         int numberOfStacks = controller.getAllStacks().size();
@@ -155,6 +194,13 @@ public class WUIController {
         m.put("currentPlayerStats", controller.getCurrentPlayer());
         m.put("currentPlayerPhase", controller.getCurrentPlayer().getPhase().getDescription());
         m.put("roundState", controller.getRoundState().toString());
+        if(controller.getCurrentPlayer().getPlayerNumber() == 0) {
+            m.put("currentPlayerName",player1.main.fullName().get());
+        } else if(player2 != null) {
+            m.put("currentPlayerName",player2.main.fullName().get());
+        } else {
+            m.put("currentPlayerName","player2");
+        }
         Message message = new Message(m);
         return message;
     }

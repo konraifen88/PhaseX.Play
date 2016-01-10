@@ -1,3 +1,5 @@
+@(playerNumber: Int)
+
 <html ng-app="ngApp">
 <head>
     <meta charset="UTF-8" />
@@ -9,7 +11,8 @@
 
 <div id="gameContainer" class="row" ng-controller="GameCtrl">
     <div id="opponentCardsContainer" class="col-xs-10">
-        <card ng-repeat="card in opponentsCards" number="BACK" color="BACK" ></card>
+        <card ng-if="@playerNumber == 0" ng-repeat="card in player2Cards" number="BACK" color="BACK" ></card>
+        <card ng-if="@playerNumber == 1" ng-repeat="card in player1Cards" number="BACK" color="BACK" ></card>
     </div>
     <div id="textContainer" class="col-xs-2" align="left">
         <b>{{currentPlayerName}}</b>'s turn<br/>
@@ -55,7 +58,8 @@
 
     </div>
     <div id="playerCardsContainer" class="row" ng-re>
-        <card ng-repeat="card in playerCards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
+        <card ng-if="@playerNumber == 0" ng-repeat="card in player1Cards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
+        <card ng-if="@playerNumber == 1" ng-repeat="card in player2Cards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
     </div>
 </div>
 

@@ -63,8 +63,10 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
         $scope.stack4 = data.map.stack4;
         $scope.roundState = data.map.roundState;
         $scope.currentPlayerPhase = data.map.currentPlayerPhase;
-        $scope.currentPlayerName = data.map.currentPlayerStats.name;
+        $scope.currentPlayerName = data.map.currentPlayerName;
         $scope.opponentsCards = data.map.opponent;
+        $scope.player1Cards = data.map.player1Cards;
+        $scope.player2Cards = data.map.player2Cards;
         $scope.discardEmpty = data.map.discardIsEmpty;
         $scope.discardPile = data.map.discard[data.map.discard.length - 1];
         $scope.state = data.map.state;
@@ -103,8 +105,14 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
     $scope.getSelectedCards = function () {
         var i = 0;
         var indexArray = [];
-        while (i < $scope.playerCards.length) {
-            if ($scope.playerCards[i].selected == true) {
+        while (i < $scope.player1Cards.length) {
+            if ($scope.player1Cards[i].selected == true) {
+                indexArray.push(i);
+            }
+            i += 1;
+        }
+        while (i < $scope.player2Cards.length) {
+            if ($scope.player2Cards[i].selected == true) {
                 indexArray.push(i);
             }
             i += 1;

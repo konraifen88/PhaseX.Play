@@ -124,23 +124,25 @@ public class Application extends Controller {
                     Players players = roomPlayerMap.get(roomName);
                     DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                     players.addPlayer2(player2);
-                    return ok(newGamefield.render());
+                    gameControllerMap.get(roomName).setPlayer2(player2);
+                    return ok(newGamefield.render(1));
                 }
 
                 System.out.println("Creating a new Game Controller");
+                DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 UIController controller = new controller.impl.Controller(2);
-                WUIController wuiController = new WUIController(controller);
+                WUIController wuiController = new WUIController(controller,player1);
                 wuiController.start();
                 System.out.println("Mapping Room and Players");
                 gameControllerMap.put(roomName,wuiController);
-                DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
                 Players players = new Players(player1);
                 roomPlayerMap.put(roomName,players);
                 System.out.println(roomPlayerMap.toString());
                 System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
 
-                return ok(newGamefield.render());
+                return ok(newGamefield.render(0));
             } finally {
                 createGameSem.release();
             }
@@ -155,35 +157,35 @@ public class Application extends Controller {
     public Result getDrawHidden() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
 
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawHidden());
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawHidden(player));
     }
 
     @SecuredAction
     public Result getDrawOpen() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
 
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawOpen());
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawOpen(player));
     }
 
     @SecuredAction
     public Result discard(int index) {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
 
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).discard(index));
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).discard(index,player));
     }
 
     @SecuredAction
     public Result playPhase(String cards) {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
 
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).playPhase(cards));
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).playPhase(cards,player));
     }
 
     @SecuredAction
     public Result addToPhase(int cardindex, int stackIndex) {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
 
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).addToPhase(cardindex,stackIndex));
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).addToPhase(cardindex,stackIndex,player));
     }
 
 
