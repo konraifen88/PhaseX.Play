@@ -52,7 +52,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
 
     $scope.update = function (data) {
         $scope.debug = debug(data);
-        $scope.playerCards = $scope.setPlayerCardsUnselected(data.map.playerHand);
+        //$scope.playerCards = $scope.setPlayerCardsUnselected(data.map.playerHand);
         $scope.stack1empty = data.map.stack1.length === 0;
         $scope.stack1 = data.map.stack1;
         $scope.stack2empty = data.map.stack2.length === 0;
@@ -64,7 +64,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
         $scope.roundState = data.map.roundState;
         $scope.currentPlayerPhase = data.map.currentPlayerPhase;
         $scope.currentPlayerName = data.map.currentPlayerName;
-        $scope.opponentsCards = data.map.opponent;
+        //$scope.opponentsCards = data.map.opponent;
         $scope.player1Cards = data.map.player1Cards;
         $scope.player2Cards = data.map.player2Cards;
         $scope.discardEmpty = data.map.discardIsEmpty;

@@ -35,6 +35,7 @@ import views.html.newGamefield;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -46,7 +47,7 @@ public class Application extends Controller {
     private Chat chat;
     public static Map<String,WUIController> gameControllerMap = new HashMap<>();
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
-    private Semaphore createGameSem;
+    private ReentrantLock createGameSem;
 
 
     /**
@@ -59,7 +60,7 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        createGameSem = new Semaphore(1);
+        createGameSem = new ReentrantLock();
     }
 
     /**
@@ -113,44 +114,42 @@ public class Application extends Controller {
 
 
     @SecuredAction
-    public Result createGame(String roomName) {
-       try {
-            try {
-                createGameSem.acquire();
-                System.out.println("Creating a new Game");
+    public synchronized Result createGame(String roomName) {
+        try {
+            System.out.println("Creating a new Game");
+            createGameSem.lock();
+            System.out.println("Got Mutex");
 
-                if(gameControllerMap.containsKey(roomName)) {
-                    System.out.println("Adding Player 2 to Game");
-                    Players players = roomPlayerMap.get(roomName);
-                    DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-                    players.addPlayer2(player2);
-                    gameControllerMap.get(roomName).setPlayer2(player2);
-                    return ok(newGamefield.render(1));
-                }
+            if(gameControllerMap.containsKey(roomName)) {
+                System.out.println("Adding Player 2 to Game");
+                Players players = roomPlayerMap.get(roomName);
+                DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+                players.addPlayer2(player2);
+                System.out.println("Player 2 is: " + player2.main.fullName().get());
+                gameControllerMap.get(roomName).setPlayer2(player2);
+                return ok(newGamefield.render(1));
+            } else {
 
                 System.out.println("Creating a new Game Controller");
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+                System.out.println("Player 1 is: " + player1.main.fullName().get());
                 UIController controller = new controller.impl.Controller(2);
-                WUIController wuiController = new WUIController(controller,player1);
+                WUIController wuiController = new WUIController(controller, player1);
                 wuiController.start();
                 System.out.println("Mapping Room and Players");
-                gameControllerMap.put(roomName,wuiController);
+                gameControllerMap.put(roomName, wuiController);
 
                 Players players = new Players(player1);
-                roomPlayerMap.put(roomName,players);
+                roomPlayerMap.put(roomName, players);
                 System.out.println(roomPlayerMap.toString());
                 System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
 
                 return ok(newGamefield.render(0));
-            } finally {
-                createGameSem.release();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } finally {
+            createGameSem.unlock();
         }
-
-        return ok();
     }
 
     @SecuredAction

@@ -30,4 +30,21 @@ public class DemoUser implements Serializable {
         identities = new ArrayList<BasicProfile>();
         identities.add(user);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        if(!(o instanceof DemoUser)) {
+            return false;
+        }
+        DemoUser user2 = (DemoUser) o;
+        return user2.main.userId().equals(this.main.userId());
+    }
+
+    @Override
+    public int hashCode() {
+        return main.userId().hashCode();
+    }
 }

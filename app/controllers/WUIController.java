@@ -43,7 +43,7 @@ public class WUIController {
 
 
     public void setPlayer2(DemoUser user) {
-        this.player1 = user;
+        this.player2 = user;
     }
 
     public String getUI() {
@@ -78,6 +78,7 @@ public class WUIController {
 
     public String getDrawOpen(DemoUser user) {
         if(isCurrentPlayer(user)) {
+            System.out.println("Got Drawing Permission");
             controller.drawOpen();
         }
         Message message = getCurrentMessage();
@@ -86,6 +87,7 @@ public class WUIController {
 
     public String getDrawHidden(DemoUser user) {
         if(isCurrentPlayer(user)) {
+            System.out.println("Got Drawing Permission");
             controller.drawHidden();
         }
         Message message = getCurrentMessage();
@@ -142,6 +144,11 @@ public class WUIController {
     }
 
     private boolean isCurrentPlayer(DemoUser user) {
+        System.out.println("Current Player Number: " + controller.getCurrentPlayer().getPlayerNumber());
+        System.out.printf("Player 1: " + player1.main.fullName().get());
+        System.out.printf("Player 2: " + player2.main.fullName().get());
+        System.out.println("Ist it Player1?: " + user.equals(player1));
+        System.out.println("Ist it Player2?: " + user.equals(player2));
         if(controller.getCurrentPlayer().getPlayerNumber() == 0 && user.equals(player1)) {
             return true;
         }
@@ -154,7 +161,7 @@ public class WUIController {
     private Message getCurrentMessage() {
         HashMap<String, Object> m = new HashMap<>();
         IDeckOfCards playerHand = controller.getCurrentPlayersHand();
-        Collections.sort(playerHand, new CardValueComparator());
+        //Collections.sort(playerHand, new CardValueComparator());
         m.put("playerHand", playerHand);
 
         m.put("opponent", controller.getOpponentPlayer().getDeckOfCards());
