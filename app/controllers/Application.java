@@ -30,7 +30,7 @@ import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
 import views.html.homepage;
 import views.html.linkResult;
-import views.html.ngGamefield;
+import views.html.newGamefield;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,8 +44,8 @@ public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     private RuntimeEnvironment env;
     private Chat chat;
-    private Map<String,WUIController> gameControllerMap = new HashMap<>();
-    private Map<String,Players> roomPlayerMap = new HashMap<>();
+    public static Map<String,WUIController> gameControllerMap = new HashMap<>();
+    public static Map<String,Players> roomPlayerMap = new HashMap<>();
     private Semaphore createGameSem;
 
 
@@ -91,29 +91,42 @@ public class Application extends Controller {
 
     @SecuredAction
     public Result getJsonUpdate() {
-        //return gameControllerMap.get(lobbyNumber).getJsonUpdate();
-        return ok();
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
     }
 
     @SecuredAction
-    public Result ngGame() {
-        //return ok(ngGamefield.render(gameControllerMap.get(lobbyNumber).getUI()));
-        return ok();
+    public String getRoomNameOfPlayer(DemoUser player) {
+        String roomName = "";
+        System.out.println(roomPlayerMap.toString());
+        for(String room : roomPlayerMap.keySet()) {
+            if(roomPlayerMap.get(room).getPlayer1().equals(player) || roomPlayerMap.get(room).getPlayer2().equals(player)) {
+                roomName = room;
+                break;
+            }
+        }
+        System.out.println("got the room: " + roomName);
+        return roomName;
     }
+
+
 
     @SecuredAction
     public Result createGame(String roomName) {
-        try {
+       try {
             try {
                 createGameSem.acquire();
                 System.out.println("Creating a new Game");
+
                 if(gameControllerMap.containsKey(roomName)) {
                     System.out.println("Adding Player 2 to Game");
                     Players players = roomPlayerMap.get(roomName);
                     DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                     players.addPlayer2(player2);
-                    return ok(ngGamefield.render(gameControllerMap.get(roomName).getUI()));
+                    return ok(newGamefield.render());
                 }
+
                 System.out.println("Creating a new Game Controller");
                 UIController controller = new controller.impl.Controller(2);
                 WUIController wuiController = new WUIController(controller);
@@ -123,8 +136,11 @@ public class Application extends Controller {
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 Players players = new Players(player1);
                 roomPlayerMap.put(roomName,players);
+                System.out.println(roomPlayerMap.toString());
+                System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
-                return ok(ngGamefield.render(wuiController.getUI()));
+
+                return ok(newGamefield.render());
             } finally {
                 createGameSem.release();
             }
@@ -137,27 +153,37 @@ public class Application extends Controller {
 
     @SecuredAction
     public Result getDrawHidden() {
-        return ok();
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawHidden());
     }
 
     @SecuredAction
     public Result getDrawOpen() {
-        return ok();
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawOpen());
     }
 
     @SecuredAction
     public Result discard(int index) {
-        return ok();
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).discard(index));
     }
 
     @SecuredAction
     public Result playPhase(String cards) {
-        return ok();
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).playPhase(cards));
     }
 
     @SecuredAction
     public Result addToPhase(int cardindex, int stackIndex) {
-        return ok();
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+
+        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).addToPhase(cardindex,stackIndex));
     }
 
 

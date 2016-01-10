@@ -10,7 +10,7 @@ phaseXApp.directive('card', function () {
             number: '@',
             color: '@'
         },
-        templateUrl: 'assets/html/card.html'
+        templateUrl: '../assets/html/card.html'
     }
 });
 
@@ -20,7 +20,7 @@ phaseXApp.directive('stackcard', function () {
             number: '@',
             color: '@'
         },
-        templateUrl: 'assets/html/stackcard.html'
+        templateUrl: '../assets/html/stackcard.html'
     }
 });
 
@@ -30,7 +30,7 @@ phaseXApp.directive('pilecard', function () {
             number: '@',
             color: '@'
         },
-        templateUrl: 'assets/html/pilecard.html'
+        templateUrl: '../assets/html/pilecard.html'
     }
 });
 

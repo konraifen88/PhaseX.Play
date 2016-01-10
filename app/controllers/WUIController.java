@@ -16,9 +16,10 @@ import play.mvc.Result;
 import play.mvc.WebSocket;
 import play.twirl.api.Html;
 import securesocial.core.java.SecuredAction;
+import service.DemoUser;
 import view.tui.TUI;
 import views.html.gamefield;
-import views.html.ngGamefield;
+import views.html.newGamefield;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,13 +57,13 @@ public class WUIController {
 
     public Html ngApp() {
         controller.startGame();
-        return ngGamefield.render(getUI());
+        return newGamefield.render();
     }
 
     public Html restart() {
         controller = new controller.impl.Controller(2);
         controller.startGame();
-        return ngGamefield.render(getUI());
+        return newGamefield.render();
     }
 
     public String getDrawOpen() {
