@@ -11,12 +11,16 @@ import model.stack.ICardStack;
 import models.Message;
 import models.WUIObserver;
 import phasex.Init;
+import play.api.i18n.DefaultMessagesApi;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import play.mvc.WebSocket.Out;
 import play.twirl.api.Html;
 import securesocial.core.java.SecuredAction;
 import service.DemoUser;
+import util.Event;
+import util.IObserver;
 import view.tui.TUI;
 import views.html.gamefield;
 import views.html.newGamefield;
@@ -26,24 +30,58 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 @SecuredAction
-public class WUIController {
+public class WUIController implements IObserver {
 
 
     private UIController controller = Init.getInstance().getIn().getInstance(UIController.class);
     private TUI tui = Init.getInstance().getTui();
     private DemoUser player1;
     private DemoUser player2;
-    private DemoUser currentPlayer;
+
+    private WebSocket<String> socketPlayer1;
+    private Out<String> outPlayer1;
+    private WebSocket<String> socketPlayer2;
+    private Out<String> outPlayer2;
+
 
     public WUIController(UIController controller, DemoUser player1) {
         this.controller = controller;
         this.player1 = player1;
-        this.currentPlayer = player1;
+        socketPlayer1 = new WebSocket<String>() {
+            @Override
+            public void onReady(In<String> in, Out<String> out) {
+                System.out.println("Init Socket for Player1");
+                outPlayer1=out;
+            }
+        };
+        socketPlayer2 = new WebSocket<String>() {
+            @Override
+            public void onReady(In<String> in, Out<String> out) {
+                System.out.println("Init Socket for Player2");
+                outPlayer2 = out;
+            }
+        };
+        System.out.println("Adding Observer");
+        controller.addObserver(this);
     }
-
 
     public void setPlayer2(DemoUser user) {
         this.player2 = user;
+    }
+
+    public DemoUser getPlayer1() {
+        return player1;
+    }
+
+    public DemoUser getPlayer2() {
+        return player2;
+    }
+
+    public WebSocket<String> getSocket(DemoUser du) {
+        if (du.equals(player1)) {
+            return socketPlayer1;
+        }
+        return socketPlayer2;
     }
 
     public String getUI() {
@@ -77,6 +115,7 @@ public class WUIController {
     }*/
 
     public String getDrawOpen(DemoUser user) {
+        System.out.println("Attempt to drawOpen");
         if(isCurrentPlayer(user)) {
             System.out.println("Got Drawing Permission");
             controller.drawOpen();
@@ -86,6 +125,7 @@ public class WUIController {
     }
 
     public String getDrawHidden(DemoUser user) {
+        System.out.println("Attempt to DrawHidden");
         if(isCurrentPlayer(user)) {
             System.out.println("Got Drawing Permission");
             controller.drawHidden();
@@ -95,7 +135,9 @@ public class WUIController {
     }
 
     public String discard(int index, DemoUser user) {
+        System.out.println("Attempt to discard");
         if(isCurrentPlayer(user)) {
+            System.out.println("discarding at index" + index);
             ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(),
                     controller.getCurrentPlayersHand().get(index).getColor());
             controller.discard(card);
@@ -106,7 +148,9 @@ public class WUIController {
     }
 
     public String playPhase(String cards, DemoUser user) {
+        System.out.println("Attempt to play Phase");
         if(isCurrentPlayer(user)) {
+            System.out.println("playing Phase");
             cards = cards.substring(0, cards.length() - 1);
             IDeckOfCards phases = new DeckOfCards();
             for (String card : cards.split(";")) {
@@ -121,7 +165,9 @@ public class WUIController {
     }
 
     public String addToPhase(int cardIndex, int stackIndex, DemoUser user) {
+        System.out.println("Attempt to add to Phase");
         if(isCurrentPlayer(user)) {
+            System.out.println("adding to Phase");
             controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
                     controller.getAllStacks().get(stackIndex));
         }
@@ -144,11 +190,7 @@ public class WUIController {
     }
 
     private boolean isCurrentPlayer(DemoUser user) {
-        System.out.println("Current Player Number: " + controller.getCurrentPlayer().getPlayerNumber());
-        System.out.printf("Player 1: " + player1.main.fullName().get());
-        System.out.printf("Player 2: " + player2.main.fullName().get());
-        System.out.println("Ist it Player1?: " + user.equals(player1));
-        System.out.println("Ist it Player2?: " + user.equals(player2));
+
         if(controller.getCurrentPlayer().getPlayerNumber() == 0 && user.equals(player1)) {
             return true;
         }
@@ -212,6 +254,11 @@ public class WUIController {
         return message;
     }
 
+//    public void updateAll() {
+//        socketPlayer1.Out.write("update");
+//        socketPlayer2.write("update");
+//    }
+
     public String getJsonUpdate() {
 
         Message message = getCurrentMessage();
@@ -219,39 +266,24 @@ public class WUIController {
         return message.toJson();
     }
 
-//    public static WebSocket<String> getSocket() {
-//        return new WebSocket<String>() {
-//            public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {
-//                System.out.println("we start a socket");
-//                in.onMessage((event) -> {
-//                    System.out.println(event);
-//                    WUIObserver wuiObserver = new WUIObserver(controller, out);
-//                    wuiObserver.analyzeMessage(event);
-//                         /*)
-//                         System.out.println(event + " came in");
-//                         switch (event.toString()) {
-//                             case "GET":
-//                                 System.out.println("GET");
-//                                 out.write(Application.getCurrentStateAsJSon());
-//                                 break;
-//                             default:
-//                                 System.out.println("CRAP");
-//                                 out.write("YOU FUCKED UP");
-//                                 break;
-//                         }
-//                         System.out.println(event + " gone");
-//                        */
-//                });
-//                in.onClose(() -> {
-//                    System.out.println("Socket geschlossen");
-//                });
-//
-//            }
-//        };
-//    }
+
 
     public String discard() {
         Message message = getCurrentMessage();
         return message.toJson();
+    }
+
+    public void updateAll() {
+        if(outPlayer1 != null) {
+            outPlayer1.write("update");
+        }
+        if(outPlayer2 != null) {
+            outPlayer2.write("update");
+        }
+    }
+
+    @Override
+    public void update(Event event) {
+        updateAll();
     }
 }

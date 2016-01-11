@@ -18,10 +18,12 @@ package controllers;
 import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
+import models.WUIObserver;
 import play.Logger;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.WebSocket;
 import securesocial.core.BasicProfile;
 import securesocial.core.RuntimeEnvironment;
 import securesocial.core.java.SecureSocial;
@@ -48,6 +50,7 @@ public class Application extends Controller {
     public static Map<String,WUIController> gameControllerMap = new HashMap<>();
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
     public static Semaphore createGameSem;
+    public static Semaphore socketSem;
 
 
     /**
@@ -60,7 +63,8 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        createGameSem = new Semaphore(1);
+        Application.createGameSem = new Semaphore(1);
+        Application.socketSem = new Semaphore(1);
     }
 
     /**
@@ -93,7 +97,7 @@ public class Application extends Controller {
     @SecuredAction
     public Result getJsonUpdate() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
+        System.out.println("JSON Update from Player: " + player.main.fullName().get());
         return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
     }
 
@@ -107,7 +111,6 @@ public class Application extends Controller {
                 break;
             }
         }
-        System.out.println("got the room: " + roomName);
         return roomName;
     }
 
@@ -127,7 +130,7 @@ public class Application extends Controller {
                 players.addPlayer2(player2);
                 System.out.println("Player 2 is: " + player2.main.fullName().get());
                 gameControllerMap.get(roomName).setPlayer2(player2);
-                return ok(newGamefield.render(1));
+                return ok(newGamefield.render(1,roomName));
             } else {
 
                 System.out.println("Creating a new Game Controller");
@@ -145,10 +148,51 @@ public class Application extends Controller {
                 System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
 
-                return ok(newGamefield.render(0));
+                return ok(newGamefield.render(0,roomName));
             }
         } finally {
+            System.out.println("Semaphore timeout");
             createGameSem.release();
+        }
+    }
+
+    @SecuredAction
+    public Result getUserID() {
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        return ok(player.main.userId());
+    }
+
+    @SecuredAction
+    public synchronized   WebSocket<String> getSocket(String userID) throws InterruptedException {
+        try {
+            System.out.println("Get Socket Called");
+            socketSem.acquire();
+            //DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+            WUIController wuictrl = null;
+            DemoUser player = null;
+            for (WUIController wui : gameControllerMap.values()) {
+                System.out.println("is Player1:" + wui.getPlayer1().main.userId().equals(userID));
+                if (wui.getPlayer1().main.userId().equals(userID)) {
+                    wuictrl = wui;
+                    player = wuictrl.getPlayer1();
+                    break;
+                }
+                try {
+                    System.out.println("is Player2: " + wui.getPlayer2().main.userId().equals(userID));
+                    if (wui.getPlayer2().main.userId().equals(userID)) {
+                        wuictrl = wui;
+                        player = wuictrl.getPlayer2();
+                        break;
+                    }
+                } catch (NullPointerException npe) {
+                    //player 2 is not in the game yet
+                }
+            }
+            System.out.println(wuictrl.toString());
+            socketSem.release();
+            return wuictrl.getSocket(player);
+        } finally {
+            socketSem.release();
         }
     }
 

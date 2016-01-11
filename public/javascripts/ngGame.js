@@ -2,7 +2,10 @@
  * Created by tabuechn on 12.12.2015.
  */
 
-var phaseXApp = angular.module('ngApp', []);
+var phaseXApp = angular.module('ngApp', ['ngWebSocket']);
+
+var origin = "phasex.herokuapp.com";
+//var origin = "localhost:9000";
 
 phaseXApp.directive('card', function () {
     return {
@@ -13,6 +16,7 @@ phaseXApp.directive('card', function () {
         templateUrl: '../assets/html/card.html'
     }
 });
+
 
 phaseXApp.directive('stackcard', function () {
     return {
@@ -34,7 +38,38 @@ phaseXApp.directive('pilecard', function () {
     }
 });
 
-phaseXApp.controller('GameCtrl', function ($scope, $http) {
+
+phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
+    var socket;
+    var getSocket = function(user) {
+        var sock = $websocket("ws://"+ origin +"/getSocket/" + user);
+        sock.onOpen(function() {
+            console.log("got Socket");
+        });
+
+        sock.onClose(function() {
+            console.log("Socket closed");
+        });
+
+        sock.onError(function() {
+            console.log("got Socket Error");
+        });
+
+        sock.onMessage(function(message) {
+            console.log("got Socket Message %o", message);
+            $http.get('/json/update').success(function (data) {
+                $scope.update(data);
+            });
+        });
+        return sock;
+    };
+
+    $http.get('/getUserID').success(function(data) {
+        console.log("Got UserID:");
+        console.log(data);
+        $scope.userID = data;
+        socket = getSocket($scope.userID);
+    });
 
     $scope.getFirstAndLast = function (stack) {
         if (stack.length > 4) {
@@ -49,6 +84,8 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
             return stack;
         }
     };
+
+
 
     $scope.update = function (data) {
         $scope.debug = debug(data);
@@ -78,8 +115,8 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
         if ($scope.state === "DrawPhase") {
             $http.get('/json/drawHidden').success(function (data) {
                 /*$scope.playerCards = data.map.playerHand;
-                 $scope.state = data.map.state;*/
-                $scope.update(data);
+                 $scope.state = data.map.state;
+                $scope.update(data);*/
             });
         }
 
@@ -121,10 +158,15 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
     };
 
     $scope.discard = function () {
+
         var selectedCards = $scope.getSelectedCards();
+
+        console.log("card length to discard %o", selectedCards);
         if (selectedCards.length == 1) {
+            console.log("trying to discard");
             $http.get('/json/discard/' + selectedCards[0]).success(function (data) {
-                $scope.update(data);
+                //$scope.update(data);
+                console.log("discarding");
             });
         }
     };
@@ -148,7 +190,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
 
     $scope.drawdiscard = function () {
         $http.get('/json/drawDiscard').success(function (data) {
-            $scope.update(data);
+            //$scope.update(data);
         });
     };
 
@@ -157,7 +199,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
             var selectedCards = $scope.getSelectedCards();
             if (selectedCards.length == 1) {
                 $http.get('/json/addToPhase/' + selectedCards[0] + "/" + stacknumber).success(function (data) {
-                    $scope.update(data);
+                    //$scope.update(data);
                 });
             }
         } else if ($scope.state === "PlayerTurnNotFinished") {
@@ -168,7 +210,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $http) {
                     cardString += number + ";";
                 });
                 $http.get('/json/playPhase/' + cardString).success(function (data) {
-                    $scope.update(data);
+                    //$scope.update(data);
                 });
             }
         }
