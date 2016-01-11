@@ -45,9 +45,7 @@ public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     private RuntimeEnvironment env;
     private Chat chat;
-    public static Map<String,WUIController> gameControllerMap = new HashMap<>();
-    public static Map<String,Players> roomPlayerMap = new HashMap<>();
-    public static Semaphore createGameSem;
+
 
 
     /**
@@ -60,7 +58,6 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        createGameSem = new Semaphore(1);
     }
 
     /**
@@ -75,119 +72,16 @@ public class Application extends Controller {
             logger.debug("access granted to index");
         }
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-//        return chat.chatRoom(user.main.fullName().get(), "teest");
-        //return ok(index.render(user, SecureSocial.env()));
         return ok(homepage.render());
     }
 
     @SecuredAction
     public Result goToChatRoom(String roomName){
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        return chat.chatRoom(user.main.fullName().get(), roomName);
+        return chat.chatRoom(user, roomName);
     }
 
-
-
-
-
-    @SecuredAction
-    public Result getJsonUpdate() {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
-    }
-
-    @SecuredAction
-    public String getRoomNameOfPlayer(DemoUser player) {
-        String roomName = "";
-        System.out.println(roomPlayerMap.toString());
-        for(String room : roomPlayerMap.keySet()) {
-            if(roomPlayerMap.get(room).getPlayer1().equals(player) || roomPlayerMap.get(room).getPlayer2().equals(player)) {
-                roomName = room;
-                break;
-            }
-        }
-        System.out.println("got the room: " + roomName);
-        return roomName;
-    }
-
-
-
-    @SecuredAction
-    public synchronized Result createGame(String roomName) throws InterruptedException {
-        try {
-            System.out.println("Creating a new Game");
-            createGameSem.acquire();
-            System.out.println("Got Mutex");
-
-            if(gameControllerMap.containsKey(roomName)) {
-                System.out.println("Adding Player 2 to Game");
-                Players players = roomPlayerMap.get(roomName);
-                DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-                players.addPlayer2(player2);
-                System.out.println("Player 2 is: " + player2.main.fullName().get());
-                gameControllerMap.get(roomName).setPlayer2(player2);
-                return ok(newGamefield.render(1));
-            } else {
-
-                System.out.println("Creating a new Game Controller");
-                DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-                System.out.println("Player 1 is: " + player1.main.fullName().get());
-                UIController controller = new controller.impl.Controller(2);
-                WUIController wuiController = new WUIController(controller, player1);
-                wuiController.start();
-                System.out.println("Mapping Room and Players");
-                gameControllerMap.put(roomName, wuiController);
-
-                Players players = new Players(player1);
-                roomPlayerMap.put(roomName, players);
-                System.out.println(roomPlayerMap.toString());
-                System.out.println(gameControllerMap.toString());
-                System.out.println("init game ready");
-
-                return ok(newGamefield.render(0));
-            }
-        } finally {
-            createGameSem.release();
-        }
-    }
-
-    @SecuredAction
-    public Result getDrawHidden() {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawHidden(player));
-    }
-
-    @SecuredAction
-    public Result getDrawOpen() {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getDrawOpen(player));
-    }
-
-    @SecuredAction
-    public Result discard(int index) {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).discard(index,player));
-    }
-
-    @SecuredAction
-    public Result playPhase(String cards) {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).playPhase(cards,player));
-    }
-
-    @SecuredAction
-    public Result addToPhase(int cardindex, int stackIndex) {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).addToPhase(cardindex,stackIndex,player));
-    }
-
-
+    //SecureSocial Methods
 
     @UserAwareAction
     public Result userAware() {

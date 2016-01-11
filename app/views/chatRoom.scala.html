@@ -1,9 +1,9 @@
-@(username: String, roomName: String)
+@(username: String, roomName: String, playerNumber: Int)
 
 @chatMain(username, roomName) {
 
     <div class="page-header">
-        <h1>Welcome to the chat room <small>You are chatting as @username</small></h1>
+        <h1>Welcome to the Lobby <small>You are chatting as @username</small></h1>
     </div>
 
     <div id="onError" class="alert-message error">
@@ -25,6 +25,64 @@
             </ul>
         </div>
     </div>
+
+    @*<body style="background:url( @routes.Assets.versioned("images/Background.png") ) ; background-size:100%">*@
+
+        <div id="gameContainer" class="row" ng-controller="GameCtrl">
+            <div id="opponentCardsContainer" class="col-xs-10">
+                <card ng-if="@playerNumber == 0" ng-repeat="card in player2Cards" number="BACK" color="BACK" ></card>
+                <card ng-if="@playerNumber == 1" ng-repeat="card in player1Cards" number="BACK" color="BACK" ></card>
+            </div>
+            <div id="textContainer" class="col-xs-2" align="left">
+                <b>{{currentPlayerName}}</b>'s turn<br/>
+                current Phase:<br/>
+                <b>{{currentPlayerPhase}}</b><br/>
+                {{roundState}}
+            </div>
+            <div id="fieldContainer" class="row">
+                <div id="stackContainer" class="col-xs-8">
+
+                    <div id="stackRowLeft" class="col-xs-6">
+                        <div id="stack1" ng-click="stackClick(0)" class="stack">
+                            <stackcard ng-if="stack1empty == true" number="NO" color="NO" ></stackcard>
+                            <stackcard ng-if="stack1empty == false" ng-repeat="card in stack1" number="{{card.number}}" color="{{card.color}}"></stackcard>
+                        </div>
+                        <div id="stack2" ng-click="stackClick(1)" class="stack">
+                            <stackcard ng-if="stack2empty == true" number="NO" color="NO" ></stackcard>
+                            <stackcard ng-if="stack2empty == false" ng-repeat="card in stack2" number="{{card.number}}" color="{{card.color}}"></stackcard>
+                        </div>
+                    </div>
+
+                    <div id="stackRowRight" class="col-xs-6">
+                        <div id="stack3" ng-click="stackClick(2)" class="stack">
+                            <stackcard ng-if="stack3empty == true" number="NO" color="NO" ></stackcard>
+                            <stackcard ng-if="stack3empty == false" ng-repeat="card in stack3" number="{{card.number}}" color="{{card.color}}"></stackcard>
+                        </div>
+                        <div id="stack4" ng-click="stackClick(3)" class="stack">
+                            <stackcard ng-if="stack4empty == true" number="NO" color="NO" ></stackcard>
+                            <stackcard ng-if="stack4empty == false" ng-repeat="card in stack4" number="{{card.number}}" color="{{card.color}}"></stackcard>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="pileContainer" class="col-xs-4">
+                    <div id="drawPile" class="row" >
+                        <img class="PileCard" src="../assets/images/Card/CardBACK.png" ng-click="drawhidden()">
+                    </div>
+                    <div id="discardPile" class="row">
+                        <pilecard ng-if="discardEmpty == true" number="NO" color="NO" ng-click="discardclick()" ></pilecard>
+                        <pilecard ng-if="discardEmpty == false" number="{{discardPile.number}}" color="{{discardPile.color}}" ng-click="discardclick()"></pilecard>
+                    </div>
+                </div>
+
+            </div>
+            <div id="playerCardsContainer" class="row" ng-re>
+                <card ng-if="@playerNumber == 0" ng-repeat="card in player1Cards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
+                <card ng-if="@playerNumber == 1" ng-repeat="card in player2Cards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
+            </div>
+        </div>
+
+    @*</body>*@
 
     <script type="text/javascript" charset="utf-8" src="@routes.Chat.chatRoomJs(username, roomName)"></script>
 
