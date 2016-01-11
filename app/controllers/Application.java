@@ -47,7 +47,7 @@ public class Application extends Controller {
     private Chat chat;
     public static Map<String,WUIController> gameControllerMap = new HashMap<>();
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
-    private ReentrantLock createGameSem;
+    public static Semaphore createGameSem;
 
 
     /**
@@ -60,7 +60,7 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        createGameSem = new ReentrantLock();
+        createGameSem = new Semaphore(1);
     }
 
     /**
@@ -114,10 +114,10 @@ public class Application extends Controller {
 
 
     @SecuredAction
-    public synchronized Result createGame(String roomName) {
+    public synchronized Result createGame(String roomName) throws InterruptedException {
         try {
             System.out.println("Creating a new Game");
-            createGameSem.lock();
+            createGameSem.acquire();
             System.out.println("Got Mutex");
 
             if(gameControllerMap.containsKey(roomName)) {
@@ -148,7 +148,7 @@ public class Application extends Controller {
                 return ok(newGamefield.render(0));
             }
         } finally {
-            createGameSem.unlock();
+            createGameSem.release();
         }
     }
 
