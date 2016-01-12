@@ -4,6 +4,7 @@
 
 var phaseXApp = angular.module('ngApp', ['ngWebSocket']);
 
+
 var origin = "phasex.herokuapp.com";
 //var origin = "localhost:9000";
 
@@ -14,6 +15,16 @@ phaseXApp.directive('card', function () {
             color: '@'
         },
         templateUrl: '../assets/html/card.html'
+    }
+});
+
+phaseXApp.directive('opponentcard', function () {
+    return {
+        scope: {
+            number: '@',
+            color: '@'
+        },
+        templateUrl: '../assets/html/opponentcard.html'
     }
 });
 
@@ -148,6 +159,7 @@ phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
             }
             i += 1;
         }
+        i = 0;
         while (i < $scope.player2Cards.length) {
             if ($scope.player2Cards[i].selected == true) {
                 indexArray.push(i);

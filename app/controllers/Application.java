@@ -49,8 +49,8 @@ public class Application extends Controller {
     private Chat chat;
     public static Map<String,WUIController> gameControllerMap = new HashMap<>();
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
-    public static Semaphore createGameSem;
-    public static Semaphore socketSem;
+    public static Semaphore createGameSem = new Semaphore(1);
+    public static Semaphore socketSem= new Semaphore(1);
 
 
     /**
@@ -63,8 +63,6 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        Application.createGameSem = new Semaphore(1);
-        Application.socketSem = new Semaphore(1);
     }
 
     /**
@@ -121,15 +119,25 @@ public class Application extends Controller {
         try {
             System.out.println("Creating a new Game");
             createGameSem.acquire();
-            System.out.println("Got Mutex");
+            System.out.println("Got createGame Mutex");
 
             if(gameControllerMap.containsKey(roomName)) {
-                System.out.println("Adding Player 2 to Game");
+                //System.out.println("Adding Player 2 to Game");
                 Players players = roomPlayerMap.get(roomName);
-                DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-                players.addPlayer2(player2);
-                System.out.println("Player 2 is: " + player2.main.fullName().get());
-                gameControllerMap.get(roomName).setPlayer2(player2);
+                DemoUser newPlayer = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+                if(players.getPlayer1().equals(newPlayer) ) {
+                    System.out.println("redirecting Player1");
+                    return ok(newGamefield.render(0,roomName));
+                }
+                try {
+                    if(players.getPlayer2().equals(newPlayer)) {
+                        return ok(newGamefield.render(1,roomName));
+                    }
+                } catch (NullPointerException npe) {}
+
+                players.addPlayer2(newPlayer);
+                System.out.println("Player 2 is: " + newPlayer.main.fullName().get());
+                gameControllerMap.get(roomName).setPlayer2(newPlayer);
                 return ok(newGamefield.render(1,roomName));
             } else {
 
@@ -151,9 +159,11 @@ public class Application extends Controller {
                 return ok(newGamefield.render(0,roomName));
             }
         } finally {
-            System.out.println("Semaphore timeout");
+            System.out.println("release create Game Mutex");
             createGameSem.release();
         }
+
+
     }
 
     @SecuredAction
@@ -167,7 +177,7 @@ public class Application extends Controller {
         try {
             System.out.println("Get Socket Called");
             socketSem.acquire();
-            //DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+            System.out.println("Got Socket Mutex");
             WUIController wuictrl = null;
             DemoUser player = null;
             for (WUIController wui : gameControllerMap.values()) {
@@ -189,9 +199,9 @@ public class Application extends Controller {
                 }
             }
             System.out.println(wuictrl.toString());
-            socketSem.release();
             return wuictrl.getSocket(player);
         } finally {
+            System.out.println("Release Socket Mutex");
             socketSem.release();
         }
     }

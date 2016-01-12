@@ -1,8 +1,9 @@
 @verschiebung: -7%;
 @StackCardScaling: 22%;
 @handCardsPadding: 3%;
-@handCardsScaling: 8%;
+@handCardsScaling: 7.325%;
 @PileCardScaling: 22%;
+@opponentCardScaling: 9%;
 // #####################################
 // Overall Design
 // #####################################
@@ -12,7 +13,7 @@ body {
   overflow: hidden;
 }
 #playerCardsContainer {
-  padding-left: @handCardsPadding;
+  padding-left: @handCardsPadding + 0.5%;
   padding-right: @handCardsPadding;
   padding-top: @handCardsPadding /2;
 
@@ -64,6 +65,11 @@ body {
   //width: @cardScaling;
   background-size: contain !important;
   width: @handCardsScaling;
+}
+
+.opponentCard {
+  background-size: contain !important;
+  width: @opponentCardScaling;
 }
 
 .CardUp {

@@ -19,7 +19,7 @@ GET        /json/drawDiscard                              @controllers.Applicati
 GET        /json/discard/:index                           @controllers.Application.discard(index: Int)
 GET        /json/playPhase/*cards                         @controllers.Application.playPhase(cards: String)
 GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Application.addToPhase(cardIndex: Int,stackIndex: Int)
-GET        /getSocket/:userID                               @controllers.Application.getSocket(userID: String)
+GET        /getSocket/:userID                             @controllers.Application.getSocket(userID: String)
 GET        /getUserID                                     @controllers.Application.getUserID()
 
 

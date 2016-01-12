@@ -11,8 +11,8 @@
 
 <div id="gameContainer" class="row" ng-controller="GameCtrl">
     <div id="opponentCardsContainer" class="col-xs-10">
-        <card ng-if="@playerNumber == 0" ng-repeat="card in player2Cards" number="BACK" color="BACK" ></card>
-        <card ng-if="@playerNumber == 1" ng-repeat="card in player1Cards" number="BACK" color="BACK" ></card>
+        <opponentcard ng-if="@playerNumber == 0" ng-repeat="card in player2Cards" number="BACK" color="BACK" ></opponentcard>
+        <opponentcard ng-if="@playerNumber == 1" ng-repeat="card in player1Cards" number="BACK" color="BACK" ></opponentcard>
     </div>
     <div id="textContainer" class="col-xs-2" align="left">
         <b>{{currentPlayerName}}</b>'s turn<br/>
