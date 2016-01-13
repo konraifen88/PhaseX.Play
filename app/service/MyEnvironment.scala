@@ -25,7 +25,8 @@ import scala.collection.immutable.ListMap
 class MyEnvironment extends RuntimeEnvironment.Default {
   type U = DemoUser
   override lazy val providers = ListMap(
-    include(new FacebookProvider(routes, cacheService, oauth2ClientFor(FacebookProvider.Facebook))),
+    //See securesocial.conf for reason why deactivated
+    //include(new FacebookProvider(routes, cacheService, oauth2ClientFor(FacebookProvider.Facebook))),
     include(new GitHubProvider(routes, cacheService, oauth2ClientFor(GitHubProvider.GitHub))),
     include(new GoogleProvider(routes, cacheService, oauth2ClientFor(GoogleProvider.Google))),
     // oauth 1 client providers
