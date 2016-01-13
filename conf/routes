@@ -11,14 +11,14 @@ GET        /current-user                                  @controllers.Applicati
 
 # Applicaton
 GET        /home                                          controllers.Assets.at(path="/public/html",file="homepage.scala.html")
-GET        /ngApp/*roomName                               @controllers.Application.createGame(roomName: String)
+#GET        /ngApp/*roomName                               @controllers.Chat.createGame(roomName: String)
 
-GET        /json/update                                   @controllers.Application.getJsonUpdate()
-GET        /json/drawHidden                               @controllers.Application.getDrawHidden()
-GET        /json/drawDiscard                              @controllers.Application.getDrawOpen()
-GET        /json/discard/:index                           @controllers.Application.discard(index: Int)
-GET        /json/playPhase/*cards                         @controllers.Application.playPhase(cards: String)
-GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Application.addToPhase(cardIndex: Int,stackIndex: Int)
+GET        /json/update                                   @controllers.Chat.getJsonUpdate()
+GET        /json/drawHidden                               @controllers.Chat.getDrawHidden()
+GET        /json/drawDiscard                              @controllers.Chat.getDrawOpen()
+GET        /json/discard/:index                           @controllers.Chat.discard(index: Int)
+GET        /json/playPhase/*cards                         @controllers.Chat.playPhase(cards: String)
+GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Chat.addToPhase(cardIndex: Int,stackIndex: Int)
 
 
 GET        /chat/:roomName                                @controllers.Application.goToChatRoom(roomName: String)
@@ -29,7 +29,7 @@ GET        /assets/javascripts/chatroom.js                @controllers.Chat.chat
 
 # Test for Chat
 GET        /chat                                          @controllers.Chat.chatIndex()
-GET        /room                                          @controllers.Chat.chatRoom(username: String ?= null, roomName: String ?=null)
+GET        /room                                          @controllers.Chat.chatRoomString(username: String ?= null, roomName: String ?=null)
 GET        /room/:roomName/chat                           @controllers.Chat.chat(username, roomName: String)
 
 # Map static resources from the /public folder to the /assets URL path

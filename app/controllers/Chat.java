@@ -45,6 +45,18 @@ public class Chat extends Controller {
         return ok(chatIndex.render());
     }
 
+    public Result chatRoomString(String user, String roomName) {
+        DemoUser usr = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if (user.equals(usr.main.fullName().get())) {
+            chatRoom(usr, roomName);
+            //Cannot get here, because return happens in chatRoom
+            return ok();
+        } else {
+            System.out.println("Error with user");
+            return ok();
+        }
+    }
+
     /**
      * Display the chat room.
      */
