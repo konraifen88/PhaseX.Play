@@ -51,6 +51,7 @@ public class Application extends Controller {
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem= new Semaphore(1);
+    public static Semaphore updateSem= new Semaphore(1);
 
 
     /**
@@ -88,15 +89,27 @@ public class Application extends Controller {
         return chat.chatRoom(user.main.fullName().get(), roomName);
     }
 
-
+    @SecuredAction
+    public Result leaveGame() {
+        System.out.println("Player left the game");
+        return ok();
+    }
 
 
 
     @SecuredAction
-    public Result getJsonUpdate() {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        System.out.println("JSON Update from Player: " + player.main.fullName().get());
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
+    public Result getJsonUpdate() throws InterruptedException {
+        System.out.println("Update called");
+        try {
+            updateSem.acquire();
+            System.out.println("got Update Mutex");
+            DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+            System.out.println("JSON Update from Player: " + player.main.fullName().get());
+            return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
+        } finally {
+            System.out.println("release Update Mutex");
+            updateSem.release();
+        }
     }
 
     @SecuredAction

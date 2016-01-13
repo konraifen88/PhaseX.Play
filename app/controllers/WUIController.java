@@ -28,6 +28,7 @@ import views.html.newGamefield;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.stream.Stream;
 
 @SecuredAction
 public class WUIController implements IObserver {
@@ -40,8 +41,10 @@ public class WUIController implements IObserver {
 
     private WebSocket<String> socketPlayer1;
     private Out<String> outPlayer1;
+    private WebSocket.In<String> inPlayer1;
     private WebSocket<String> socketPlayer2;
     private Out<String> outPlayer2;
+    private WebSocket.In<String> inPlayer2;
 
 
     public WUIController(UIController controller, DemoUser player1) {
@@ -52,6 +55,7 @@ public class WUIController implements IObserver {
             public void onReady(In<String> in, Out<String> out) {
                 System.out.println("Init Socket for Player1");
                 outPlayer1=out;
+                inPlayer1 = in;
             }
         };
         socketPlayer2 = new WebSocket<String>() {
@@ -59,7 +63,10 @@ public class WUIController implements IObserver {
             public void onReady(In<String> in, Out<String> out) {
                 System.out.println("Init Socket for Player2");
                 outPlayer2 = out;
+                inPlayer2 = in;
+
             }
+
         };
         System.out.println("Adding Observer");
         controller.addObserver(this);
