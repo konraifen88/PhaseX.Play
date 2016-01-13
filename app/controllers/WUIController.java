@@ -12,6 +12,7 @@ import models.Message;
 import models.WUIObserver;
 import phasex.Init;
 import play.api.i18n.DefaultMessagesApi;
+import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -50,26 +51,49 @@ public class WUIController implements IObserver {
     public WUIController(UIController controller, DemoUser player1) {
         this.controller = controller;
         this.player1 = player1;
+
         socketPlayer1 = new WebSocket<String>() {
             @Override
             public void onReady(In<String> in, Out<String> out) {
                 System.out.println("Init Socket for Player1");
                 outPlayer1=out;
-                inPlayer1 = in;
+
+                in.onClose(new F.Callback0() {
+                    @Override
+                    public void invoke() throws Throwable {
+                        System.out.println("Player1 has quit the game");
+                        quitEvent(outPlayer2);
+                    }
+                });
+
             }
         };
+
         socketPlayer2 = new WebSocket<String>() {
             @Override
             public void onReady(In<String> in, Out<String> out) {
                 System.out.println("Init Socket for Player2");
                 outPlayer2 = out;
-                inPlayer2 = in;
+
+                in.onClose(new F.Callback0() {
+                    @Override
+                    public void invoke() throws Throwable {
+                        System.out.println("Player2 has quit the game");
+                        quitEvent(outPlayer1);
+                    }
+                });
 
             }
-
         };
+
         System.out.println("Adding Observer");
         controller.addObserver(this);
+    }
+
+    private void quitEvent(Out otherPlayer) {
+        try {
+            otherPlayer.write("playerLeft");
+        } catch (NullPointerException npe) {}
     }
 
     public void setPlayer2(DemoUser user) {

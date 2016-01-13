@@ -6,7 +6,7 @@ var phaseXApp = angular.module('ngApp', ['ngWebSocket']);
 
 
 //var origin = "phasex.herokuapp.com";
-var origin = "localhost:9000";
+//var origin = "localhost:9000";
 
 phaseXApp.directive('card', function () {
     return {
@@ -53,14 +53,15 @@ phaseXApp.directive('pilecard', function () {
 phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
     var socket;
     var getSocket = function(user) {
-        var sock = $websocket("ws://"+ origin +"/getSocket/" + user);
+        var origin = window.location.origin.replace("http","ws");
+        console.log(origin);
+        var sock = $websocket(origin + "/getSocket/" + user);
         sock.onOpen(function() {
             console.log("got Socket");
         });
 
         sock.onClose(function() {
             console.log("Socket closed");
-            sock.write("playerLeft");
         });
 
         sock.onError(function() {
