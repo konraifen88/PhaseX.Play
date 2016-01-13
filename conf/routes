@@ -21,8 +21,9 @@ GET        /json/playPhase/*cards                         @controllers.Applicati
 GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Application.addToPhase(cardIndex: Int,stackIndex: Int)
 GET        /getSocket/:userID                             @controllers.Application.getSocket(userID: String)
 GET        /getUserID                                     @controllers.Application.getUserID()
-GET        /leaveGame                                     @controllers.Application.leaveGame()
+GET        /quitGame/:roomName                            @controllers.Application.quitGame(roomName: String)
 
+GET        /loser                                         controllers.Assets.at(path="/public/html",file="loser.html")
 
 GET        /chat/:roomName                                @controllers.Application.goToChatRoom(roomName: String)
 

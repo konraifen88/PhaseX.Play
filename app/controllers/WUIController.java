@@ -42,10 +42,8 @@ public class WUIController implements IObserver {
 
     private WebSocket<String> socketPlayer1;
     private Out<String> outPlayer1;
-    private WebSocket.In<String> inPlayer1;
     private WebSocket<String> socketPlayer2;
     private Out<String> outPlayer2;
-    private WebSocket.In<String> inPlayer2;
 
 
     public WUIController(UIController controller, DemoUser player1) {

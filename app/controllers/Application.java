@@ -90,8 +90,10 @@ public class Application extends Controller {
     }
 
     @SecuredAction
-    public Result leaveGame() {
+    public Result quitGame(String roomName) {
         System.out.println("Player left the game");
+        gameControllerMap.remove(roomName);
+        roomPlayerMap.remove(roomName);
         return ok();
     }
 
