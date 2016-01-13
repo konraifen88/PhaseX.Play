@@ -51,7 +51,8 @@ phaseXApp.directive('pilecard', function () {
 phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
     var socket;
     var getSocket = function(user) {
-        var origin = window.location.origin.replace("http","ws");
+        var origin = window.location.origin.replace("https","http");
+        origin = origin.replace("http","ws");
         console.log(origin);
         var sock = $websocket(origin + "/getSocket/" + user);
         $scope.roomName = window.location.pathname.split('/')[2];
