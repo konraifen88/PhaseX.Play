@@ -15,6 +15,7 @@
  */
 package controllers;
 
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
@@ -30,6 +31,7 @@ import securesocial.core.java.SecureSocial;
 import securesocial.core.java.SecuredAction;
 import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
+import views.html.homePageNew;
 import views.html.homepage;
 import views.html.linkResult;
 import views.html.newGamefield;
@@ -49,6 +51,20 @@ public class Application extends Controller {
     private Chat chat;
     public static Map<String,WUIController> gameControllerMap = new HashMap<>();
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
+    /**
+     * Idea:
+     * [
+     *  {
+     *      lobbyName: "Name"
+     *      users: int
+     *  },
+     *  {
+     *      lobbyName: "Name2"
+     *      users: int
+     *  }
+     * ]
+     */
+    public static Map<String,Integer> availableLobbies = new HashMap<>();
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem= new Semaphore(1);
     public static Semaphore updateSem= new Semaphore(1);
@@ -84,8 +100,21 @@ public class Application extends Controller {
     }
 
     @SecuredAction
+    public Result getTestPage() {
+        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        Gson gson = new Gson();
+        String lobbies = gson.toJson(availableLobbies);
+        return ok(homePageNew.render(user.main.fullName().get(), lobbies));
+    }
+
+    @SecuredAction
     public Result goToChatRoom(String roomName){
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if (availableLobbies.containsKey(roomName)) {
+            availableLobbies.put(roomName, 2);
+        } else {
+            availableLobbies.put(roomName, 1);
+        }
         return chat.chatRoom(user.main.fullName().get(), roomName);
     }
 

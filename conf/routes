@@ -10,12 +10,12 @@ GET        /link-result                                   @controllers.Applicati
 GET        /current-user                                  @controllers.Application.currentUser
 
 # Applicaton
-GET        /home                                          controllers.Assets.at(path="/public/html",file="homepage.scala.html")
+GET        /test                                          @controllers.Application.getTestPage
 GET        /ngApp/*roomName                               @controllers.Application.createGame(roomName: String)
 
-GET        /json/update                                   @controllers.Application.getJsonUpdate()
-GET        /json/drawHidden                               @controllers.Application.getDrawHidden()
-GET        /json/drawDiscard                              @controllers.Application.getDrawOpen()
+GET        /json/update                                   @controllers.Application.getJsonUpdate
+GET        /json/drawHidden                               @controllers.Application.getDrawHidden
+GET        /json/drawDiscard                              @controllers.Application.getDrawOpen
 GET        /json/discard/:index                           @controllers.Application.discard(index: Int)
 GET        /json/playPhase/*cards                         @controllers.Application.playPhase(cards: String)
 GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Application.addToPhase(cardIndex: Int,stackIndex: Int)

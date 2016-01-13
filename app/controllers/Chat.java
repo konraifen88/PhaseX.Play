@@ -49,7 +49,7 @@ public class Chat extends Controller {
                 try {
                     ChatRoom.join(roomName, username, in, out);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    //ex.printStackTrace();
                 }
             }
         };

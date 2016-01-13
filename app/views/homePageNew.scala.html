@@ -1,0 +1,51 @@
+@(playerName: String, lobbies: String)
+
+<html ng-app="mainPage">
+<html lang="en">
+    <head>
+        <title>PhaseX</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="../assets/javascripts/mainPage.js"></script>
+    </head>
+    <body ng-controller="mainCtrl">
+
+
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">PhaseX</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Profile Information</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div align="center">
+            <img src="assets/images/Logo.png"/>
+        </div>
+        <div id="lobbyData" style="display: none" >@lobbies</div>
+
+        <div class="row">
+            <ul class="list-group">
+                @*TODO Add item failed if users > 1*@
+                <a href="/chat/{{lobby.lobbyName}}" class="list-group-item list-group-item-success" ng-repeat="lobby in lobbies">{{lobby.lobbyName}}({{lobby.users}}/2)</a>
+            </ul>
+        </div>
+
+        <div class="container">
+            <h3>Right Aligned Navbar</h3>
+            <p>The .navbar-right class is used to right-align navigation bar buttons.</p>
+        </div>
+
+    </body>
+</html>
