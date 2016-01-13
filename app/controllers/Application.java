@@ -18,10 +18,12 @@ package controllers;
 import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
+import models.WUIObserver;
 import play.Logger;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.WebSocket;
 import securesocial.core.BasicProfile;
 import securesocial.core.RuntimeEnvironment;
 import securesocial.core.java.SecureSocial;
@@ -47,7 +49,9 @@ public class Application extends Controller {
     private Chat chat;
     public static Map<String,WUIController> gameControllerMap = new HashMap<>();
     public static Map<String,Players> roomPlayerMap = new HashMap<>();
-    public static Semaphore createGameSem;
+    public static Semaphore createGameSem = new Semaphore(1);
+    public static Semaphore socketSem= new Semaphore(1);
+    public static Semaphore updateSem= new Semaphore(1);
 
 
     /**
@@ -60,7 +64,6 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        createGameSem = new Semaphore(1);
     }
 
     /**
@@ -86,15 +89,27 @@ public class Application extends Controller {
         return chat.chatRoom(user.main.fullName().get(), roomName);
     }
 
-
+    @SecuredAction
+    public Result leaveGame() {
+        System.out.println("Player left the game");
+        return ok();
+    }
 
 
 
     @SecuredAction
-    public Result getJsonUpdate() {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-
-        return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
+    public Result getJsonUpdate() throws InterruptedException {
+        System.out.println("Update called");
+        try {
+            updateSem.acquire();
+            System.out.println("got Update Mutex");
+            DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+            System.out.println("JSON Update from Player: " + player.main.fullName().get());
+            return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
+        } finally {
+            System.out.println("release Update Mutex");
+            updateSem.release();
+        }
     }
 
     @SecuredAction
@@ -107,7 +122,6 @@ public class Application extends Controller {
                 break;
             }
         }
-        System.out.println("got the room: " + roomName);
         return roomName;
     }
 
@@ -118,16 +132,26 @@ public class Application extends Controller {
         try {
             System.out.println("Creating a new Game");
             createGameSem.acquire();
-            System.out.println("Got Mutex");
+            System.out.println("Got createGame Mutex");
 
             if(gameControllerMap.containsKey(roomName)) {
-                System.out.println("Adding Player 2 to Game");
+                //System.out.println("Adding Player 2 to Game");
                 Players players = roomPlayerMap.get(roomName);
-                DemoUser player2 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-                players.addPlayer2(player2);
-                System.out.println("Player 2 is: " + player2.main.fullName().get());
-                gameControllerMap.get(roomName).setPlayer2(player2);
-                return ok(newGamefield.render(1));
+                DemoUser newPlayer = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+                if(players.getPlayer1().equals(newPlayer) ) {
+                    System.out.println("redirecting Player1");
+                    return ok(newGamefield.render(0,roomName));
+                }
+                try {
+                    if(players.getPlayer2().equals(newPlayer)) {
+                        return ok(newGamefield.render(1,roomName));
+                    }
+                } catch (NullPointerException npe) {}
+
+                players.addPlayer2(newPlayer);
+                System.out.println("Player 2 is: " + newPlayer.main.fullName().get());
+                gameControllerMap.get(roomName).setPlayer2(newPlayer);
+                return ok(newGamefield.render(1,roomName));
             } else {
 
                 System.out.println("Creating a new Game Controller");
@@ -145,10 +169,53 @@ public class Application extends Controller {
                 System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
 
-                return ok(newGamefield.render(0));
+                return ok(newGamefield.render(0,roomName));
             }
         } finally {
+            System.out.println("release create Game Mutex");
             createGameSem.release();
+        }
+
+
+    }
+
+    @SecuredAction
+    public Result getUserID() {
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        return ok(player.main.userId());
+    }
+
+    @SecuredAction
+    public synchronized   WebSocket<String> getSocket(String userID) throws InterruptedException {
+        try {
+            System.out.println("Get Socket Called");
+            socketSem.acquire();
+            System.out.println("Got Socket Mutex");
+            WUIController wuictrl = null;
+            DemoUser player = null;
+            for (WUIController wui : gameControllerMap.values()) {
+                System.out.println("is Player1:" + wui.getPlayer1().main.userId().equals(userID));
+                if (wui.getPlayer1().main.userId().equals(userID)) {
+                    wuictrl = wui;
+                    player = wuictrl.getPlayer1();
+                    break;
+                }
+                try {
+                    System.out.println("is Player2: " + wui.getPlayer2().main.userId().equals(userID));
+                    if (wui.getPlayer2().main.userId().equals(userID)) {
+                        wuictrl = wui;
+                        player = wuictrl.getPlayer2();
+                        break;
+                    }
+                } catch (NullPointerException npe) {
+                    //player 2 is not in the game yet
+                }
+            }
+            System.out.println(wuictrl.toString());
+            return wuictrl.getSocket(player);
+        } finally {
+            System.out.println("Release Socket Mutex");
+            socketSem.release();
         }
     }
 
