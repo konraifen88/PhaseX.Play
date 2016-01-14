@@ -1,8 +1,8 @@
 /**
-* If everything works right this class was
-* created by Konraifen88 on 13.01.2016.
-* If it doesn't work I don't know who the hell wrote it.
-*/
+ * If everything works right this class was
+ * created by Konraifen88 on 13.01.2016.
+ * If it doesn't work I don't know who the hell wrote it.
+ */
 
 var mainPage = angular.module('mainPage', []);
 mainPage.controller('mainCtrl', function ($scope, $http) {
@@ -12,16 +12,15 @@ mainPage.controller('mainCtrl', function ($scope, $http) {
     };
 
     $('#newLobbyBtn').on('click', function (e) {
-        $http.get('/chat/' + $('#newLobbyInput').text()).success(function() {
-            window.location.replace("/")
-        });
+        window.location.replace('/chat/' + $('#newLobbyInput').val());
     });
+
 
     $scope.separateLobbies = function () {
         $scope.freeLobbies = [];
         $scope.fullLobbies = [];
-        angular.forEach($scope.lobbies, function(value, key) {
-            if (parseInt(value) <= 1 ) $scope.freeLobbies.push(key);
+        angular.forEach($scope.lobbies, function (value, key) {
+            if (parseInt(value) <= 1) $scope.freeLobbies.push(key);
             else $scope.fullLobbies.push(key);
         });
 
