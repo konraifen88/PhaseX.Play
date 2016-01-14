@@ -31,10 +31,7 @@ import securesocial.core.java.SecureSocial;
 import securesocial.core.java.SecuredAction;
 import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
-import views.html.homePageNew;
-import views.html.homepage;
-import views.html.linkResult;
-import views.html.newGamefield;
+import views.html.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,12 +96,18 @@ public class Application extends Controller {
         return ok(homepage.render());
     }
 
-    @SecuredAction
+//    @SecuredAction
     public Result getTestPage() {
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         Gson gson = new Gson();
         String lobbies = gson.toJson(availableLobbies);
-        return ok(homePageNew.render(user.main.fullName().get(), lobbies));
+//        return ok(homePageNew.render(user.main.fullName().get(), lobbies));
+        return ok(homePageNew.render("konraifen88", lobbies));
+    }
+
+    @UserAwareAction
+    public Result getInstruction() {
+        return ok(instruction.render());
     }
 
     @SecuredAction

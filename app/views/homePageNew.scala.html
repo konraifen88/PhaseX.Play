@@ -24,6 +24,8 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li><a href="/link-result"><span class="glyphicon glyphicon-user"></span> Profile Information</a></li>
+                    @*To show it as a Popup: see http://www.stichpunkt.de/beitrag/popup.html*@
+                    <li><a href="/instruction"><span class="glyphicon glyphicon glyphicon-question-sign"></span>Instructions</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
@@ -42,77 +44,24 @@
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="button">Enter!</button>
                     </span>
-                </div><!-- /input-group -->
+                </div>
             </div>
 
 
         </div>
-            <div class="row col-xs-offset-3">
+        @*Printing available lobbies*@
+        <div class="row col-xs-offset-3">
                 <h3>Available lobbies</h3>
             </div>
         <div class="row">
             <div id="lobbyData" style="display: none" >@lobbies</div>
-                <div class="btn-group-vertical col-xs-offset-4 col-xs-4" role="group">
-                    @*TODO Add item failed if users > 1*@
-                    @*<a href="" class="btn btn-primary lobbyStyle btn-success" type="button"*@
-                        @*ng-repeat="(name, users) in lobbies">{{name}} ({{users}}/2)</a>*@
-                    <a href="/chat/{{name}}" class="list-group-item list-group-item-success" ng-repeat="(name,
-                    users) in lobbies">{{name}} ({{users}}/2)</a>
-                    <div class="row">
-                </div>
+            <div class="btn-group-vertical col-xs-offset-4 col-xs-4" role="group">
+                <a href="/chat/{{lobby}}" class="list-group-item list-group-item-success" ng-repeat="lobby in
+                    freeLobbies">{{lobby}}</a>
+                <a href="#" class="list-group-item list-group-item-danger" ng-repeat="lobby in
+                    fullLobbies">{{lobby}}</a>
             </div>
-        </div>
-
-        <div class="container">
-            <h3>Right Aligned Navbar</h3>
-            <p>The .navbar-right class is used to right-align navigation bar buttons.</p>
-        </div>
-
-        @*description*@
-
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-        Collapsible Group 1</a>
-                    </h4>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse in">
-                    <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat.</div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-        Collapsible Group 2</a>
-                    </h4>
-                </div>
-                <div id="collapse2" class="panel-collapse collapse">
-                    <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat.</div>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
-        Collapsible Group 3</a>
-                    </h4>
-                </div>
-                <div id="collapse3" class="panel-collapse collapse">
-                    <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                        minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat.</div>
-                </div>
-            </div>
+            <a class="glyphicon glyphicon-refresh" href="/test"></a>
         </div>
     </body>
 </html>

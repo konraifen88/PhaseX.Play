@@ -11,6 +11,7 @@ GET        /current-user                                  @controllers.Applicati
 
 # Applicaton
 GET        /test                                          @controllers.Application.getTestPage
+GET        /instruction                                   @controllers.Application.getInstruction
 GET        /ngApp/*roomName                               @controllers.Application.createGame(roomName: String)
 
 GET        /json/update                                   @controllers.Application.getJsonUpdate
