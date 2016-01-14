@@ -1,4 +1,4 @@
-@(playerName: String, lobbies: String)
+@(playerName: String, lobbies: String, navBar: Html)
 
 <html ng-app="mainPage">
 <html lang="en">
@@ -16,22 +16,7 @@
     </head>
     <body ng-controller="mainCtrl">
 
-
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">PhaseX</a>
-                </div>
-                <ul class="nav navbar-nav">
-                    <li><a href="/link-result"><span class="glyphicon glyphicon-user"></span> Profile Information</a></li>
-                    @*To show it as a Popup: see http://www.stichpunkt.de/beitrag/popup.html*@
-                    <li><a href="/instruction"><span class="glyphicon glyphicon glyphicon-question-sign"></span>Instructions</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-                </ul>
-            </div>
-        </nav>
+        @navBar
 
         <div align="center">
             <img src="assets/images/Logo.png"/>
@@ -40,9 +25,9 @@
         <div class="row">
             <div class="col-xs-offset-4 col-xs-4">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Enter new Lobby Name">
+                    <input id="newLobbyInput" type="text" class="form-control" placeholder="Enter new Lobby Name">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="button">Enter!</button>
+                        <button class="btn btn-default" id="newLobbyBtn" type="button">Enter!</button>
                     </span>
                 </div>
             </div>

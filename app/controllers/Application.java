@@ -102,12 +102,12 @@ public class Application extends Controller {
         Gson gson = new Gson();
         String lobbies = gson.toJson(availableLobbies);
 //        return ok(homePageNew.render(user.main.fullName().get(), lobbies));
-        return ok(homePageNew.render("konraifen88", lobbies));
+        return ok(homePageNew.render("konraifen88", lobbies, navBar.render()));
     }
 
     @UserAwareAction
     public Result getInstruction() {
-        return ok(instruction.render());
+        return ok(instruction.render(navBar.render()));
     }
 
     @SecuredAction

@@ -5,11 +5,17 @@
 */
 
 var mainPage = angular.module('mainPage', []);
-mainPage.controller('mainCtrl', function ($scope) {
+mainPage.controller('mainCtrl', function ($scope, $http) {
 
     $scope.getLobbies = function () {
         $scope.lobbies = JSON.parse($("#lobbyData").text());
     };
+
+    $('#newLobbyBtn').on('click', function (e) {
+        $http.get('/chat/' + $('#newLobbyInput').text()).success(function() {
+            window.location.replace("/")
+        });
+    });
 
     $scope.separateLobbies = function () {
         $scope.freeLobbies = [];
