@@ -318,7 +318,7 @@ public class Application extends Controller {
     @SecuredAction
     public Result linkResult() {
         DemoUser current = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        return ok(linkResult.render(current, current.identities));
+        return ok(linkResult.render(current, current.identities, navBar.render()));
     }
 
     /**

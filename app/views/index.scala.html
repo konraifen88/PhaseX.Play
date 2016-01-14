@@ -1,8 +1,8 @@
-@(user: service.DemoUser, env: securesocial.core.RuntimeEnvironment)
+@(user: service.DemoUser, env: securesocial.core.RuntimeEnvironment, navBar: Html)
 @import Http.Context.Implicit
 @import securesocial.core.AuthenticationMethod._
 
-@main("SecureSocial - Sample Protected Page") {
+@main("SecureSocial - Sample Protected Page", navBar) {
     <div class="page-header">
         <h2><img src="@user.main.avatarUrl" alt="@user.main.fullName" width="40px" height="40px"/>
             Welcome @user.main.firstName</h2>

@@ -1,6 +1,6 @@
-@(current: service.DemoUser, linkedIdentities: java.util.List[securesocial.core.BasicProfile])
+@(current: service.DemoUser, linkedIdentities: java.util.List[securesocial.core.BasicProfile], navBar: Html)
 
-    @main("SecureSocial - Account Link Result") {
+    @main("PhaseX - User Information", navBar) {
         <div class="page-header">
             <h2><img src="@current.main.avatarUrl.getOrElse("")" alt="@current.main.firstName.getOrElse("")" width="40px" height="40px"/>
                 Hey @current.main.firstName.getOrElse("")</h2>
@@ -45,6 +45,4 @@
                 <hr>
             }
         </div>
-
-        <a class="btn" href="/">Ok</a>
     }
