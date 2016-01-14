@@ -15,12 +15,12 @@
         <div class="topbar">
             <div class="fill">
                 <div class="container">
-                    <a class="brand" href="@routes.Application.index()">Websocket Chat-Room</a>
+                    <a class="brand" href="@routes.Application.getMainPage()">Websocket Chat-Room</a>
 
                     @if(connected != null) {
                         <p class="pull-right">
                             Logged in as @connected —
-                            <a href="@routes.Application.index()">Disconnect</a>
+                            <a href="@routes.Application.getMainPage()">Disconnect</a>
                         </p>
                     } else {
                         <form action="@routes.Chat.chatRoom()" class="pull-right">

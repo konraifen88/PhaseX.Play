@@ -3,14 +3,13 @@
 # ~~~~
 
 # Securesocial
-GET        /                                              @controllers.Application.index
+GET        /                                              @controllers.Application.getMainPage
 GET        /userAware                                     @controllers.Application.userAware
 GET        /only-twitter                                  @controllers.Application.onlyTwitter
 GET        /link-result                                   @controllers.Application.linkResult
 GET        /current-user                                  @controllers.Application.currentUser
 
 # Applicaton
-GET        /test                                          @controllers.Application.getTestPage
 GET        /instruction                                   @controllers.Application.getInstruction
 GET        /ngApp/*roomName                               @controllers.Application.createGame(roomName: String)
 

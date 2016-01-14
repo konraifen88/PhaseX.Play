@@ -84,25 +84,16 @@ public class Application extends Controller {
      *
      * @return
      */
-
-    @SecuredAction
-    public Result index() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("access granted to index");
-        }
+    @UserAwareAction
+    public Result getMainPage() {
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-//        return chat.chatRoom(user.main.fullName().get(), "teest");
-        //return ok(index.render(user, SecureSocial.env()));
-        return ok(homepage.render());
-    }
-
-//    @SecuredAction
-    public Result getTestPage() {
-        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        System.out.println("\t\tUser Test: " + user);
         Gson gson = new Gson();
         String lobbies = gson.toJson(availableLobbies);
-//        return ok(homePageNew.render(user.main.fullName().get(), lobbies));
-        return ok(homePageNew.render("konraifen88", lobbies, navBar.render()));
+        if(user != null){
+            return ok(homePage.render(user.main.fullName().get(), lobbies, navBar.render()));
+        }
+        return ok(homePage.render(null, lobbies, navBar.render()));
     }
 
     @UserAwareAction
