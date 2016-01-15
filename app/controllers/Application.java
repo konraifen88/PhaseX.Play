@@ -66,8 +66,6 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-        availableLobbies.put("testFull", 2);
-        availableLobbies.put("testFree", 1);
     }
 
     /**

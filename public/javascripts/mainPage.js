@@ -8,7 +8,6 @@ var mainPage = angular.module('mainPage', []);
 mainPage.controller('mainCtrl', function ($scope) {
 
     $scope.getLobbies = function () {
-        alert("lobbies parsing")
         $scope.lobbies = JSON.parse($("#lobbyData").text());
     };
 
@@ -20,7 +19,6 @@ mainPage.controller('mainCtrl', function ($scope) {
     $scope.separateLobbies = function () {
         $scope.freeLobbies = [];
         $scope.fullLobbies = [];
-        alert($scope.lobbies)
         angular.forEach($scope.lobbies, function (value, key) {
             if (parseInt(value) <= 1) {
                 $scope.freeLobbies.push(key);
