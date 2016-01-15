@@ -1,6 +1,10 @@
 @(lobbies: String, playerName: String)
 
-@main("PhaseX - Home", playerName){
+@scripts = {
+    <script src="../assets/javascripts/mainPage.js"></script>
+}
+
+@main("PhaseX - Home", playerName, scripts){
     <div ng-app="mainPage">
         <div ng-controller="mainCtrl ">
             <div id="lobbyData" style="display: none" >@lobbies</div>
