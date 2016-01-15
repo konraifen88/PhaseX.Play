@@ -8,5 +8,8 @@ $(function() {
     if ((window.location.pathname === "/")) {
         $(backButton).hide()
     }
+    if ((window.location.pathname.search("\/chat\/+") == -1)) {
+        $(disconnect).hide()
+    }
 });
 

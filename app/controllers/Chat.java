@@ -8,6 +8,7 @@ import views.html.chatIndex;
 import views.html.chatRoom;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import views.html.navBar;
 
 /**
  * If everything works right this class was
@@ -20,7 +21,7 @@ public class Chat extends Controller {
      * Display the home page.
      */
     public Result chatIndex() {
-        return ok(chatIndex.render());
+        return ok(chatIndex.render(navBar.render()));
     }
 
     /**
@@ -32,7 +33,7 @@ public class Chat extends Controller {
             return redirect(controllers.routes.Chat.chatIndex());
         }
 
-        return ok(chatRoom.render(username, roomName));
+        return ok(chatRoom.render(username, roomName, navBar.render()));
     }
 
     public Result chatRoomJs(String username, final String roomName) {
