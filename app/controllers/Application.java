@@ -20,7 +20,6 @@ import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
 import play.Logger;
-import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -30,11 +29,16 @@ import securesocial.core.java.SecureSocial;
 import securesocial.core.java.SecuredAction;
 import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
-import views.html.*;
+import views.html.homePage;
+import views.html.instruction;
+import views.html.linkResult;
+import views.html.newGamefield;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 
 /**
@@ -44,19 +48,6 @@ public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     public static Map<String, WUIController> gameControllerMap = new HashMap<>();
     public static Map<String, Players> roomPlayerMap = new HashMap<>();
-    /**
-     * Idea:
-     * [
-     * {
-     * lobbyName: "Name"
-     * users: int
-     * },
-     * {
-     * lobbyName: "Name2"
-     * users: int
-     * }
-     * ]
-     */
     public static Map<String, Integer> availableLobbies = new HashMap<>();
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem = new Semaphore(1);
@@ -84,38 +75,30 @@ public class Application extends Controller {
      */
     @UserAwareAction
     public Result getMainPage() {
-        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        System.out.println("\t\tUser Test: " + user);
         Gson gson = new Gson();
         String lobbies = gson.toJson(availableLobbies);
-        if (user != null) {
-            return ok(homePage.render(user.main.fullName().get(), lobbies, navBar.render()));
-        }
-        return ok(homePage.render(null, lobbies, navBar.render()));
+        return ok(homePage.render(lobbies, getCurrentPlayerName()));
     }
 
     @UserAwareAction
     public Result getInstruction() {
-        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        if (user == null)
-            return ok(instruction.render(null, navBar.render()));
-        return ok(instruction.render(user.main.fullName().get(), navBar.render()));
+        return ok(instruction.render(getCurrentPlayerName()));
     }
 
     @SecuredAction
     public Result goToChatRoom(String roomName) {
-        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) > 2) {
+        if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) < 2) {
             availableLobbies.put(roomName, 2);
         } else {
             availableLobbies.put(roomName, 1);
         }
-        return chat.chatRoom(user.main.fullName().get(), roomName);
+        return chat.chatRoom(getCurrentPlayerName(), roomName);
     }
 
     @SecuredAction
     public Result quitGame(String roomName) {
         System.out.println("Player left the game");
+        availableLobbies.remove(roomName);
         gameControllerMap.remove(roomName);
         roomPlayerMap.remove(roomName);
         return ok();
@@ -280,7 +263,7 @@ public class Application extends Controller {
         return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).addToPhase(cardindex, stackIndex, player));
     }
 
-
+    //TODO: Remove if no more needed
     @UserAwareAction
     public Result userAware() {
         DemoUser demoUser = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
@@ -300,36 +283,31 @@ public class Application extends Controller {
         return ok("Hello " + userName + ", you are seeing a public page");
     }
 
-
-    @SecuredAction(authorization = WithProvider.class, params = {"twitter"})
-    public Result onlyTwitter() {
-        return ok("You are seeing this because you logged in using Twitter");
-    }
-
     @SecuredAction
     public Result linkResult() {
         DemoUser current = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        return ok(linkResult.render(current, current.identities, navBar.render()));
+        return ok(linkResult.render(current, current.identities));
     }
 
-    /**
-     * Sample use of SecureSocial.currentUser. Access the /current-user to test it
-     */
-    public F.Promise<Result> currentUser() {
-        return SecureSocial.currentUser(env).map(new F.Function<Object, Result>() {
-            @Override
-            public Result apply(Object maybeUser) throws Throwable {
-                String id;
-
-                if (maybeUser != null) {
-                    DemoUser user = (DemoUser) maybeUser;
-                    id = user.main.userId();
-                } else {
-                    id = "not available. Please log in.";
+    private static String getCurrentPlayerName() {
+        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if (user == null) {
+            return null;
+        }
+        if (!isNullOrEmpty(user.main.fullName().get())) {
+            return user.main.fullName().get();
+        } else if (!isNullOrEmpty(user.main.firstName().get())) {
+            return user.main.fullName().get();
+        } else if (user.identities != null) {
+            for (BasicProfile prof : user.identities) {
+                if (!isNullOrEmpty(prof.fullName().get())) {
+                    return prof.fullName().get();
+                } else if (!isNullOrEmpty(prof.firstName().get())) {
+                    return prof.firstName().get();
                 }
-                return ok("your id is " + id);
             }
-        });
+        }
+        return null;
     }
 
 

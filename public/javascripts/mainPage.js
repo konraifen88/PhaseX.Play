@@ -5,7 +5,7 @@
  */
 
 var mainPage = angular.module('mainPage', []);
-mainPage.controller('mainCtrl', function ($scope, $http) {
+mainPage.controller('mainCtrl', function ($scope) {
 
     $scope.getLobbies = function () {
         $scope.lobbies = JSON.parse($("#lobbyData").text());
@@ -20,18 +20,12 @@ mainPage.controller('mainCtrl', function ($scope, $http) {
         $scope.freeLobbies = [];
         $scope.fullLobbies = [];
         angular.forEach($scope.lobbies, function (value, key) {
-            if (parseInt(value) <= 1) $scope.freeLobbies.push(key);
-            else $scope.fullLobbies.push(key);
+            if (parseInt(value) <= 1) {
+                $scope.freeLobbies.push(key);
+            } else {
+                $scope.fullLobbies.push(key);
+            }
         });
-
-        //for (var l in $('#lobbies')) {
-        //    if (!$('#lobbies').hasOwnProperty(l)) continue;
-        //    if (1 === parseInt($('#lobbies')[l])) {
-        //        $scope.freeLobbies.push(l);
-        //    } else {
-        //        $scope.fullLobbies.push(l);
-        //    }
-        //}
 
     };
     $scope.getLobbies();

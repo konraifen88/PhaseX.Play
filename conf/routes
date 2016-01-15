@@ -5,9 +5,7 @@
 # Securesocial
 GET        /                                              @controllers.Application.getMainPage
 GET        /userAware                                     @controllers.Application.userAware
-GET        /only-twitter                                  @controllers.Application.onlyTwitter
 GET        /link-result                                   @controllers.Application.linkResult
-GET        /current-user                                  @controllers.Application.currentUser
 
 # Applicaton
 GET        /instruction                                   @controllers.Application.getInstruction
@@ -20,7 +18,7 @@ GET        /json/discard/:index                           @controllers.Applicati
 GET        /json/playPhase/*cards                         @controllers.Application.playPhase(cards: String)
 GET        /json/addToPhase/*cardIndex/*stackIndex        @controllers.Application.addToPhase(cardIndex: Int,stackIndex: Int)
 GET        /getSocket/:userID                             @controllers.Application.getSocket(userID: String)
-GET        /getUserID                                     @controllers.Application.getUserID()
+GET        /getUserID                                     @controllers.Application.getUserID
 GET        /quitGame/:roomName                            @controllers.Application.quitGame(roomName: String)
 
 GET        /loser                                         controllers.Assets.at(path="/public/html",file="loser.html")
@@ -32,7 +30,6 @@ GET        /chat/:roomName                                @controllers.Applicati
 GET        /assets/javascripts/chatroom.js                @controllers.Chat.chatRoomJs(username, roomName)
 
 # Test for Chat
-GET        /chat                                          @controllers.Chat.chatIndex()
 GET        /room                                          @controllers.Chat.chatRoom(username: String ?= null, roomName: String ?=null)
 GET        /room/:roomName/chat                           @controllers.Chat.chat(username, roomName: String)
 

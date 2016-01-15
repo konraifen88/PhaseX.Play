@@ -5,9 +5,7 @@ import components.ChatRoom;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
-import views.html.chatIndex;
 import views.html.chatRoom;
-import views.html.navBar;
 
 /**
  * If everything works right this class was
@@ -17,22 +15,14 @@ import views.html.navBar;
 public class Chat extends Controller {
 
     /**
-     * Display the home page.
-     */
-    public Result chatIndex() {
-        return ok(chatIndex.render(navBar.render()));
-    }
-
-    /**
      * Display the chat room.
      */
     public Result chatRoom(String username, String roomName) {
         if (username == null || username.trim().equals("")) {
             flash("error", "Please choose a valid username.");
-            return redirect(controllers.routes.Chat.chatIndex());
+            return redirect(routes.Application.getMainPage());
         }
-
-        return ok(chatRoom.render(username, roomName, navBar.render()));
+        return ok(chatRoom.render(username, roomName));
     }
 
     public Result chatRoomJs(String username, final String roomName) {

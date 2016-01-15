@@ -1,107 +1,93 @@
-@(playerName: String, navBar: Html)
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>PhaseX-Instruction</title>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-        <script src="../assets/javascripts/navBar.js"></script>
-    </head>
-    <body>
-        <div id="playerName" style="display: none" >@playerName</div>
-        @navBar
-        @*description*@
-        <div class="row col-xs-offset-2 col-xs-8">
-            <h3>Play</h3>
-            Players hold their 10 cards in hand, so that other players cannot see them. The remaining deck is placed face down in the center of the play area, to become the draw pile. The top card of the draw pile is turned over and placed next to the draw pile, to become the discard pile.
-            In turn, a player draws one card-either the top card from the draw pile or the top card from the discard pile-and adds it to the player's hand. The player ends the turn by discarding one card of choice onto the discard pile.
-            Play of the first hand begins, with each player trying to complete the first Phase of the 10 Phases. Each player can make only one Phase during the play of a hand. Phases are made of sets, runs, cards all of one color, or a combination of sets and runs.
-        </div>
-        <div class="row col-xs-8 col-xs-offset-2">
-            <h3>The X Phases are:</h3>
-        </div>
-        <div class="panel-group col-xs-offset-3" id="accordion">
-            <div class="panel panel-default col-xs-8 row">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#phase1">Phase 1</a>
-                    </h4>
-                </div>
-                <div id="phase1" class="panel-collapse collapse col-xs-6">
-                    <div class="panel-body">A Set of two triples.</div>
-                </div>
+@(playerName: String)
+
+@main("PhaseX - Instruction", playerName){
+    <div class="row col-xs-offset-2 col-xs-8">
+        <h3>Play</h3>
+        Players hold their 10 cards in hand, so that other players cannot see them. The remaining deck is placed face down in the center of the play area, to become the draw pile. The top card of the draw pile is turned over and placed next to the draw pile, to become the discard pile.
+        In turn, a player draws one card-either the top card from the draw pile or the top card from the discard pile-and adds it to the player's hand. The player ends the turn by discarding one card of choice onto the discard pile.
+        Play of the first hand begins, with each player trying to complete the first Phase of the 10 Phases. Each player can make only one Phase during the play of a hand. Phases are made of sets, runs, cards all of one color, or a combination of sets and runs.
+    </div>
+    <div class="row col-xs-8 col-xs-offset-2">
+        <h3>The X Phases are:</h3>
+    </div>
+    <div class="panel-group col-xs-offset-3" id="accordion">
+        <div class="panel panel-default col-xs-8 row">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#phase1">Phase 1</a>
+                </h4>
             </div>
-            <div class="panel panel-default col-xs-8 row">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#phase2">Phase 2</a>
-                    </h4>
-                </div>
-                <div id="phase2" class="panel-collapse collapse col-xs-6">
-                    <div class="panel-body">
-                        A run of six numbers.</div>
-                </div>
-            </div>
-            <div class="panel panel-default col-xs-8 row">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#phase3">Phase 3</a>
-                    </h4>
-                </div>
-                <div id="phase3" class="panel-collapse collapse col-xs-6">
-                    <div class="panel-body">Six cards of the same color.</div>
-                </div>
-            </div>
-            <div class="panel panel-default col-xs-8 row">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#phase4">Phase 4</a>
-                    </h4>
-                </div>
-                <div id="phase4" class="panel-collapse collapse col-xs-6">
-                    <div class="panel-body">A set of two cards and one of four cards.</div>
-                </div>
-            </div>
-            <div class="panel panel-default col-xs-8 row">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#phase5">Phase 5</a>
-                    </h4>
-                </div>
-                <div id="phase5" class="panel-collapse collapse col-xs-6">
-                    <div class="panel-body">Two sets of four cards.</div>
-                </div>
+            <div id="phase1" class="panel-collapse collapse col-xs-6">
+                <div class="panel-body">A Set of two triples.</div>
             </div>
         </div>
-        <div class="row col-xs-8 col-xs-offset-2">
-            <h2>Definitions</h2>
-            <h3>Sets</h3>
-            A set is made of two or more cards with the same number showing on their face.<br>
-            <i>Example:</i> Phase 1 consists of 2 sets of 3, which could be 3 "7's" and 3 "10's". The cards can be in any
-            combination of colors.
-
-            <h3>Runs</h3>
-            A run is made of four or more cards numbered in order.<br>
-            <i>Example:</i> Part of Phase 2 requires a run of 4, which could be "3", "4", "5", "6". The cards can be in any combination of colors.
-
-            <h3>All One Color</h3>
-            The cards are all the same color.<br>
-            <i>Example:</i> Phase 3 requires 6 cards of one color, which could be 6 red cards
-            or 7 green cards etc.
-
-            <h3>Making a Phase</h3>
-            If, during the turn, the player makes a Phase with the cards in hand, the player may lay it down, face up on the table. For example, the player is trying to make Phase 1 and has 3 "5's" and 2 "7's", and draws another "7". The player now has 2 sets of 3 and may lay then down.
-            <b>NOTE:</b> A player may never lay down part of a Phase, but must have the whole Phase in hand before laying it down.
-
-            <h3>Going Out</h3>
-            The player who gets rid of the last card in hand, by discarding or hitting, is said to go out. This player wins the hand. The winner of the hand, and any other players who also complete their Phase, will advance to the next Phase for the next hand.
-
-            <h3>The Winner</h3>
-            When, at the end of a hand, a player has completed Phase X, that player is declared the winner. In the
-            event of a tie, the first one to go out is the winner.
+        <div class="panel panel-default col-xs-8 row">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#phase2">Phase 2</a>
+                </h4>
+            </div>
+            <div id="phase2" class="panel-collapse collapse col-xs-6">
+                <div class="panel-body">
+                    A run of six numbers.</div>
+            </div>
         </div>
-    </body>
-</html>
+        <div class="panel panel-default col-xs-8 row">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#phase3">Phase 3</a>
+                </h4>
+            </div>
+            <div id="phase3" class="panel-collapse collapse col-xs-6">
+                <div class="panel-body">Six cards of the same color.</div>
+            </div>
+        </div>
+        <div class="panel panel-default col-xs-8 row">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#phase4">Phase 4</a>
+                </h4>
+            </div>
+            <div id="phase4" class="panel-collapse collapse col-xs-6">
+                <div class="panel-body">A set of two cards and one of four cards.</div>
+            </div>
+        </div>
+        <div class="panel panel-default col-xs-8 row">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#phase5">Phase 5</a>
+                </h4>
+            </div>
+            <div id="phase5" class="panel-collapse collapse col-xs-6">
+                <div class="panel-body">Two sets of four cards.</div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-xs-8 col-xs-offset-2">
+        <h2>Definitions</h2>
+        <h3>Sets</h3>
+        A set is made of two or more cards with the same number showing on their face.<br>
+        <i>Example:</i> Phase 1 consists of 2 sets of 3, which could be 3 "7's" and 3 "10's". The cards can be in any
+        combination of colors.
+
+        <h3>Runs</h3>
+        A run is made of four or more cards numbered in order.<br>
+        <i>Example:</i> Part of Phase 2 requires a run of 4, which could be "3", "4", "5", "6". The cards can be in any combination of colors.
+
+        <h3>All One Color</h3>
+        The cards are all the same color.<br>
+        <i>Example:</i> Phase 3 requires 6 cards of one color, which could be 6 red cards
+        or 7 green cards etc.
+
+        <h3>Making a Phase</h3>
+        If, during the turn, the player makes a Phase with the cards in hand, the player may lay it down, face up on the table. For example, the player is trying to make Phase 1 and has 3 "5's" and 2 "7's", and draws another "7". The player now has 2 sets of 3 and may lay then down.
+        <b>NOTE:</b> A player may never lay down part of a Phase, but must have the whole Phase in hand before laying it down.
+
+        <h3>Going Out</h3>
+        The player who gets rid of the last card in hand, by discarding or hitting, is said to go out. This player wins the hand. The winner of the hand, and any other players who also complete their Phase, will advance to the next Phase for the next hand.
+
+        <h3>The Winner</h3>
+        When, at the end of a hand, a player has completed Phase X, that player is declared the winner. In the
+        event of a tie, the first one to go out is the winner.
+    </div>
+}
