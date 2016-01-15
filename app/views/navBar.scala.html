@@ -5,14 +5,15 @@
         </div>
         <ul class="nav navbar-nav">
             <li><a id="backButton" href="#" onclick="history.go(-1);"><span class="glyphicon glyphicon-menu-left"></span>Back</a></li>
-            <li><a href="/link-result"><span class="glyphicon glyphicon-user"></span> Profile Information</a></li>
+            <li><a id="profileInformation" href="/link-result"><span class="glyphicon glyphicon-user"></span> Profile
+                Information</a></li>
             @*To show it as a Popup: see http://www.stichpunkt.de/beitrag/popup.html*@
-            <li><a href="/instruction"><span class="glyphicon glyphicon glyphicon-question-sign"></span>
-                Instructions</a>
+            <li><a id="instructions" href="/instruction"><span class="glyphicon glyphicon glyphicon-question-sign"></span>Instructions</a>
             </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="/auth/logout"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+            <li><a id="disconnect" href="@routes.Application.getMainPage()"><span class="glyphicon glyphicon glyphicon-log-out"></span>Leave Lobby</a> </li>
+            <li><a id="logout" href="/auth/logout"><span class="glyphicon glyphicon glyphicon-off"></span>Logout</a></li>
         </ul>
     </div>
 </nav>

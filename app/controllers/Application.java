@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
-import models.WUIObserver;
 import play.Logger;
 import play.libs.F;
 import play.mvc.Controller;
@@ -36,7 +35,6 @@ import views.html.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -104,7 +102,7 @@ public class Application extends Controller {
     @SecuredAction
     public Result goToChatRoom(String roomName){
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        if (availableLobbies.containsKey(roomName)) {
+        if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) > 2) {
             availableLobbies.put(roomName, 2);
         } else {
             availableLobbies.put(roomName, 1);
