@@ -96,7 +96,10 @@ public class Application extends Controller {
 
     @UserAwareAction
     public Result getInstruction() {
-        return ok(instruction.render(navBar.render()));
+        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if(user == null)
+            return ok(instruction.render(null, navBar.render()));
+        return ok(instruction.render(user.main.fullName().get(), navBar.render()));
     }
 
     @SecuredAction

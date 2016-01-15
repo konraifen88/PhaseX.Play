@@ -11,5 +11,9 @@ $(function() {
     if ((window.location.pathname.search("\/chat\/+") == -1)) {
         $(disconnect).hide()
     }
+    if($("#playerName").text() == ""){
+        $(profileInformation).hide()
+        $(logout).hide()
+    }
 });
 
