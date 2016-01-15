@@ -66,6 +66,8 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
+        availableLobbies.put("testFull", 2);
+        availableLobbies.put("testFree", 1);
     }
 
     /**
@@ -77,12 +79,12 @@ public class Application extends Controller {
     public Result getMainPage() {
         Gson gson = new Gson();
         String lobbies = gson.toJson(availableLobbies);
-        return ok(homePage.render(lobbies, getCurrentPlayerName()));
+        return ok(homePage.render(lobbies, getCurrentPlayerName(), env));
     }
 
     @UserAwareAction
     public Result getInstruction() {
-        return ok(instruction.render(getCurrentPlayerName()));
+        return ok(instruction.render(getCurrentPlayerName(), env));
     }
 
     @SecuredAction
@@ -92,7 +94,7 @@ public class Application extends Controller {
         } else {
             availableLobbies.put(roomName, 1);
         }
-        return chat.chatRoom(getCurrentPlayerName(), roomName);
+        return chat.chatRoom(getCurrentPlayerName(), roomName, env);
     }
 
     @SecuredAction
@@ -286,7 +288,7 @@ public class Application extends Controller {
     @SecuredAction
     public Result linkResult() {
         DemoUser current = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        return ok(linkResult.render(current, current.identities));
+        return ok(linkResult.render(current, current.identities, env));
     }
 
     private static String getCurrentPlayerName() {

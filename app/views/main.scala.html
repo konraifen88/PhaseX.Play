@@ -1,4 +1,19 @@
-@(title: String, playerName: String, scripts: Html = Html(""))(content: Html)
+@(title: String, playerName: String, env: securesocial.core.RuntimeEnvironment, scripts: Html = Html(""))(content:
+Html)
+
+@import securesocial.core.AuthenticationMethod._
+
+@login = {
+    @if(playerName != ""){
+        @env.providers.values.map { provider =>
+            @if(provider.authMethod == OAuth1 || provider.authMethod == OAuth2) {
+                @defining("images/providers/%s.png".format(provider.id)) { imageUrl =>
+                    <li><a href="@env.routes.authenticationUrl(provider.id, Some("/"))"> <img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
+                }
+            }
+        }
+    }
+}
 
 <!DOCTYPE html>
 
@@ -7,41 +22,50 @@
         <title>@title</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script src="../assets/javascripts/navBar.js"></script>
+        @scripts
     </head>
     <body>
-        <nav id="main_nav" class="navbar navbar-inverse">
-            <div id="playerName" style="display: none" >@playerName</div>
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">PhaseX</a>
+        <div id="mainNav" ng-controller="navCtrl">
+            <nav class="navbar navbar-inverse">
+                <div id="playerName" style="display: none" >@playerName</div>
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">PhaseX</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                        <li ng-if="isHomePage()"><a id="backButton" href="#" onclick="history.go(-1);"><span
+                        class="glyphicon
+                        glyphicon-menu-left"></span>
+                            Back</a>
+                        </li>
+                        <li ng-if="isUserLoggedIn()"><a id="profileInformation" href="/link-result"><span
+                        class="glyphicon
+                        glyphicon-user"></span> Profile
+                            Information</a>
+                        </li>
+                        <li><a id="instructions" href="/instruction"><span class="glyphicon glyphicon-question-sign"></span>
+                            Instructions</a>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li ng-if="notInLobby()"><a id="disconnect" href="@routes.Application.getMainPage()"><span
+                        class="glyphicon
+                        glyphicon glyphicon-log-out"></span>
+                            Leave Lobby</a>
+                        </li>
+                        <li ng-if="isUserLoggedIn()"><a id="logout" href="/auth/logout"><span class="glyphicon glyphicon-off"></span>Logout</a></li>
+                        <li id="authIcons">@login</li>
+                        <li ng-if="!isUserLoggedIn()"><a id="loginUserPass" href="/auth/login"><span class="glyphicon glyphicon-log-in"></span> Login with Account</a></li>
+                    </ul>
                 </div>
-                <ul class="nav navbar-nav">
-                    <li><a id="backButton" href="#" onclick="history.go(-1);"><span class="glyphicon glyphicon-menu-left"></span>
-                        Back</a>
-                    </li>
-                    <li><a id="profileInformation" href="/link-result"><span class="glyphicon glyphicon-user"></span> Profile
-                        Information</a>
-                    </li>
-                    @*To show it as a Popup: see http://www.stichpunkt.de/beitrag/popup.html*@
-                    <li><a id="instructions" href="/instruction"><span class="glyphicon glyphicon glyphicon-question-sign"></span>
-                        Instructions</a>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a id="disconnect" href="@routes.Application.getMainPage()"><span class="glyphicon glyphicon glyphicon-log-out"></span>
-                        Leave Lobby</a>
-                    </li>
-                    <li><a id="logout" href="/auth/logout"><span class="glyphicon glyphicon glyphicon-off"></span>Logout</a></li>
-                </ul>
-            </div>
-        </nav>
+            </nav>
+        </div>
         <div class="content">
             @content
         </div>
     </body>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="../assets/javascripts/navBar.js"></script>
-    @scripts
 </html>

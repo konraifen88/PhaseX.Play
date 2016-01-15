@@ -1,6 +1,6 @@
-@(current: service.DemoUser, linkedIdentities: java.util.List[securesocial.core.BasicProfile])
+@(current: service.DemoUser, linkedIdentities: java.util.List[securesocial.core.BasicProfile], env: securesocial.core.RuntimeEnvironment)
 
-@main("PhaseX - User Information", current.main.userId){
+@main("PhaseX - User Information", current.main.userId, env){
     <div class="page-header">
         <h2><img src="@current.main.avatarUrl.getOrElse("")" alt="@current.main.firstName.getOrElse("")" width="40px" height="40px"/>
             Hey @current.main.firstName.getOrElse("")</h2>

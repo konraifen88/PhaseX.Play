@@ -30,7 +30,7 @@ GET        /chat/:roomName                                @controllers.Applicati
 GET        /assets/javascripts/chatroom.js                @controllers.Chat.chatRoomJs(username, roomName)
 
 # Test for Chat
-GET        /room                                          @controllers.Chat.chatRoom(username: String ?= null, roomName: String ?=null)
+GET        /room                                          @controllers.Chat.chatRoomWithoutEnv(username: String ?= null, roomName: String ?=null)
 GET        /room/:roomName/chat                           @controllers.Chat.chat(username, roomName: String)
 
 # Map static resources from the /public folder to the /assets URL path

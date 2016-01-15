@@ -5,6 +5,7 @@ import components.ChatRoom;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
+import securesocial.core.RuntimeEnvironment;
 import views.html.chatRoom;
 
 /**
@@ -17,12 +18,16 @@ public class Chat extends Controller {
     /**
      * Display the chat room.
      */
-    public Result chatRoom(String username, String roomName) {
+    public Result chatRoom(String username, String roomName, RuntimeEnvironment env) {
         if (username == null || username.trim().equals("")) {
             flash("error", "Please choose a valid username.");
             return redirect(routes.Application.getMainPage());
         }
-        return ok(chatRoom.render(username, roomName));
+        return ok(chatRoom.render(username, roomName, env));
+    }
+
+    public Result chatRoomWithoutEnv(String username, String roomName) {
+        return chatRoom(username, roomName, null);
     }
 
     public Result chatRoomJs(String username, final String roomName) {

@@ -1,12 +1,12 @@
-@(lobbies: String, playerName: String)
+@(lobbies: String, playerName: String, env: securesocial.core.RuntimeEnvironment)
 
 @scripts = {
     <script src="../assets/javascripts/mainPage.js"></script>
 }
 
-@main("PhaseX - Home", playerName, scripts){
-    <div ng-app="mainPage">
-        <div ng-controller="mainCtrl ">
+@main("PhaseX - Home", playerName, env, scripts){
+    <div id="lobbyApp">
+        <div ng-controller="mainCtrl">
             <div id="lobbyData" style="display: none" >@lobbies</div>
             <div align="center">
                 <img src="assets/images/Logo.png"/>

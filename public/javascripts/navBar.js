@@ -4,16 +4,31 @@
  * If it doesn't work I don't know who the hell wrote it.
  */
 
-$(function () {
-    if ((window.location.pathname === "/")) {
-        $(backButton).hide()
+var navBar = angular.module('navBar', []);
+navBar.controller('navCtrl', function ($scope, $http) {
+    $scope.isHomePage = function () {
+        return !(window.location.pathname === "/");
+    };
+
+    $scope.isUserLoggedIn = function () {
+        return $("#playerName").text() != "";
+    };
+
+    $scope.notInLobby = function () {
+        return window.location.pathname.search("\/chat\/+") != -1;
+    };
+
+    $scope.getEnv = function () {
+        if( !$scope.isUserLoggedIn() ) {
+            $http.get('/getEnv').success(function (data) {
+                $scope.env = parseJSON(data);
+            });
+        }
     }
-    if ((window.location.pathname.search("\/chat\/+") == -1)) {
-        $(disconnect).hide()
-    }
-    if ($("#playerName").text() == "") {
-        $(profileInformation).hide()
-        $(logout).hide()
-    }
+
 });
+angular.element(document).ready(function() {
+    angular.bootstrap(document.getElementById("mainNav"),["navBar"]);
+});
+
 

@@ -1,6 +1,6 @@
-@(playerName: String)
+@(playerName: String, env: securesocial.core.RuntimeEnvironment)
 
-@main("PhaseX - Instruction", playerName){
+@main("PhaseX - Instruction", playerName, env){
     <div class="row col-xs-offset-2 col-xs-8">
         <h3>Play</h3>
         Players hold their 10 cards in hand, so that other players cannot see them. The remaining deck is placed face down in the center of the play area, to become the draw pile. The top card of the draw pile is turned over and placed next to the draw pile, to become the discard pile.

@@ -1,10 +1,10 @@
-@(username: String, roomName: String)
+@(username: String, roomName: String, env: securesocial.core.RuntimeEnvironment)
 
 @scripts = {
     <script type="text/javascript" charset="utf-8" src="@routes.Chat.chatRoomJs(username, roomName)"></script>
 }
 
-@main("PhaseX - Lobby", username, scripts) {
+@main("PhaseX - Lobby", username, env, scripts) {
     <div class="page-header">
         <h1>Welcome to the chat room <small>You are chatting as @username</small></h1>
     </div>
