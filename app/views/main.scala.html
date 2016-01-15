@@ -8,7 +8,7 @@ Html)
         @env.providers.values.map { provider =>
             @if(provider.authMethod == OAuth1 || provider.authMethod == OAuth2) {
                 @defining("images/providers/%s.png".format(provider.id)) { imageUrl =>
-                    <li><a href="@env.routes.authenticationUrl(provider.id, Some("/"))"> <img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
+                    <li><a ng-if="!isUserLoggedIn()" href="@env.routes.authenticationUrl(provider.id, Some("/"))"><img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
                 }
             }
         }
@@ -58,7 +58,7 @@ Html)
                             Leave Lobby</a>
                         </li>
                         <li ng-if="isUserLoggedIn()"><a id="logout" href="/auth/logout"><span class="glyphicon glyphicon-off"></span>Logout</a></li>
-                        <li id="authIcons">@login</li>
+                        @login
                         <li ng-if="!isUserLoggedIn()"><a id="loginUserPass" href="/auth/login"><span class="glyphicon glyphicon-log-in"></span> Login with Account</a></li>
                     </ul>
                 </div>

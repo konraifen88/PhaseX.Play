@@ -26,6 +26,12 @@ navBar.controller('navCtrl', function ($scope, $http) {
         }
     }
 
+    $scope.hideLoginIcons = function () {
+        if ($scope.isUserLoggedIn()) {
+            $("authIcons").hide()
+        }
+    }
+
 });
 angular.element(document).ready(function() {
     angular.bootstrap(document.getElementById("mainNav"),["navBar"]);

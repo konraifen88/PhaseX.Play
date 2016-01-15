@@ -15,7 +15,6 @@ mainPage.controller('mainCtrl', function ($scope) {
         window.location.replace('/chat/' + $('#newLobbyInput').val());
     });
 
-
     $scope.separateLobbies = function () {
         $scope.freeLobbies = [];
         $scope.fullLobbies = [];
