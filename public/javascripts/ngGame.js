@@ -5,7 +5,6 @@
 var phaseXApp = angular.module('ngApp', ['ngWebSocket']);
 
 
-
 phaseXApp.directive('card', function () {
     return {
         scope: {
@@ -48,35 +47,35 @@ phaseXApp.directive('pilecard', function () {
 });
 
 
-phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
+phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
     var socket;
-    var getSocket = function(user) {
-        var origin = window.location.origin.replace("https","http");
-        origin = origin.replace("http","ws");
+    var getSocket = function (user) {
+        var origin = window.location.origin.replace("https", "http");
+        origin = origin.replace("http", "ws");
         console.log(origin);
         var sock = $websocket(origin + "/getSocket/" + user);
         $scope.roomName = window.location.pathname.split('/')[2];
-        sock.onOpen(function() {
+        sock.onOpen(function () {
             console.log("got Socket");
         });
 
-        sock.onClose(function() {
+        sock.onClose(function () {
             console.log("Socket closed");
         });
 
-        sock.onError(function() {
+        sock.onError(function () {
             console.log("got Socket Error");
         });
 
-        sock.onMessage(function(message) {
+        sock.onMessage(function (message) {
             console.log("got Socket Message %o", message);
-            if(message.data === "update") {
+            if (message.data === "update") {
                 $http.get('/json/update').success(function (data) {
                     $scope.update(data);
                 });
-            } else if(message.data === "playerLeft") {
+            } else if (message.data === "playerLeft") {
                 alert("The Other Player has left the Game");
-                $http.get('/quitGame/' + $scope.roomName).success(function() {
+                $http.get('/quitGame/' + $scope.roomName).success(function () {
                     window.location.replace("/")
                 });
             } else {
@@ -87,7 +86,7 @@ phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
         return sock;
     };
 
-    $http.get('/getUserID').success(function(data) {
+    $http.get('/getUserID').success(function (data) {
         console.log("Got UserID:");
         console.log(data);
         $scope.userID = data;
@@ -107,7 +106,6 @@ phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
             return stack;
         }
     };
-
 
 
     $scope.update = function (data) {
@@ -139,7 +137,7 @@ phaseXApp.controller('GameCtrl', function ($scope,$websocket, $http) {
             $http.get('/json/drawHidden').success(function (data) {
                 /*$scope.playerCards = data.map.playerHand;
                  $scope.state = data.map.state;
-                $scope.update(data);*/
+                 $scope.update(data);*/
             });
         }
 

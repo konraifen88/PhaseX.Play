@@ -1,48 +1,48 @@
 @(playerName: String, lobbies: String, navBar: Html)
 
 <html ng-app="mainPage">
-<html lang="en">
-    <head>
-        <title>PhaseX</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-        <script src="../assets/javascripts/mainPage.js"></script>
-        <script src="../assets/javascripts/navBar.js"></script>
-    </head>
-    <body ng-controller="mainCtrl ">
-        <div id="lobbyData" style="display: none" >@lobbies</div>
-        <div id="playerName" style="display: none" >@playerName</div>
-        @navBar
-        <div align="center">
-            <img src="assets/images/Logo.png"/>
-        </div>
+    <html lang="en">
+        <head>
+            <title>PhaseX</title>
+            <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+            <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+            <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
+            <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+            <script src="../assets/javascripts/mainPage.js"></script>
+            <script src="../assets/javascripts/navBar.js"></script>
+        </head>
+        <body ng-controller="mainCtrl ">
+            <div id="lobbyData" style="display: none" >@lobbies</div>
+            <div id="playerName" style="display: none" >@playerName</div>
+            @navBar
+            <div align="center">
+                <img src="assets/images/Logo.png"/>
+            </div>
 
-        <div class="row">
-            <div class="col-xs-offset-4 col-xs-4">
-                <div class="input-group">
-                    <input id="newLobbyInput" type="text" class="form-control" placeholder="Enter new Lobby Name">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" id="newLobbyBtn" type="button">Enter!</button>
-                    </span>
+            <div class="row">
+                <div class="col-xs-offset-4 col-xs-4">
+                    <div class="input-group">
+                        <input id="newLobbyInput" type="text" class="form-control" placeholder="Enter new Lobby Name">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="newLobbyBtn" type="button">Enter!</button>
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        @*Printing available lobbies*@
-        <div class="row col-xs-offset-3">
+            @*Printing available lobbies*@
+            <div class="row col-xs-offset-3">
                 <h3>Available lobbies</h3>
             </div>
-        <div class="row">
-            <div class="btn-group-vertical col-xs-offset-4 col-xs-4" role="group">
-                <a href="/chat/{{lobby}}" class="list-group-item list-group-item-success" ng-repeat="lobby in
+            <div class="row">
+                <div class="btn-group-vertical col-xs-offset-4 col-xs-4" role="group">
+                    <a href="/chat/{{lobby}}" class="list-group-item list-group-item-success" ng-repeat="lobby in
                     freeLobbies">{{lobby}}</a>
-                <a href="#" class="list-group-item list-group-item-danger" ng-repeat="lobby in
+                    <a href="#" class="list-group-item list-group-item-danger" ng-repeat="lobby in
                     fullLobbies">{{lobby}}</a>
+                </div>
+                <a class="glyphicon glyphicon-refresh" href="/"></a>
             </div>
-            <a class="glyphicon glyphicon-refresh" href="/"></a>
-        </div>
-    </body>
-</html>
+        </body>
+    </html>

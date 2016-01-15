@@ -4,17 +4,12 @@ package controllers;
 import controller.UIController;
 import model.card.ICard;
 import model.card.impl.Card;
-import model.card.impl.CardValueComparator;
 import model.deckOfCards.IDeckOfCards;
 import model.deckOfCards.impl.DeckOfCards;
 import model.stack.ICardStack;
 import models.Message;
-import models.WUIObserver;
 import phasex.Init;
-import play.api.i18n.DefaultMessagesApi;
 import play.libs.F;
-import play.mvc.Controller;
-import play.mvc.Result;
 import play.mvc.WebSocket;
 import play.mvc.WebSocket.Out;
 import play.twirl.api.Html;
@@ -24,12 +19,9 @@ import util.Event;
 import util.IObserver;
 import view.tui.TUI;
 import views.html.gamefield;
-import views.html.newGamefield;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.stream.Stream;
 
 @SecuredAction
 public class WUIController implements IObserver {
@@ -54,7 +46,7 @@ public class WUIController implements IObserver {
             @Override
             public void onReady(In<String> in, Out<String> out) {
                 System.out.println("Init Socket for Player1");
-                outPlayer1=out;
+                outPlayer1 = out;
 
                 in.onClose(new F.Callback0() {
                     @Override
@@ -63,7 +55,6 @@ public class WUIController implements IObserver {
                         quitEvent(outPlayer2);
                     }
                 });
-
             }
         };
 
@@ -91,11 +82,8 @@ public class WUIController implements IObserver {
     private void quitEvent(Out otherPlayer) {
         try {
             otherPlayer.write("playerLeft");
-        } catch (NullPointerException npe) {}
-    }
-
-    public void setPlayer2(DemoUser user) {
-        this.player2 = user;
+        } catch (NullPointerException npe) {
+        }
     }
 
     public DemoUser getPlayer1() {
@@ -104,6 +92,10 @@ public class WUIController implements IObserver {
 
     public DemoUser getPlayer2() {
         return player2;
+    }
+
+    public void setPlayer2(DemoUser user) {
+        this.player2 = user;
     }
 
     public WebSocket<String> getSocket(DemoUser du) {
@@ -131,21 +123,9 @@ public class WUIController implements IObserver {
         return gamefield.render(getUI());
     }
 
-    /*
-    public Html ngApp() {
-        controller.startGame();
-        return newGamefield.render();
-    }
-
-    public Html restart() {
-        controller = new controller.impl.Controller(2);
-        controller.startGame();
-        return newGamefield.render();
-    }*/
-
     public String getDrawOpen(DemoUser user) {
         System.out.println("Attempt to drawOpen");
-        if(isCurrentPlayer(user)) {
+        if (isCurrentPlayer(user)) {
             System.out.println("Got Drawing Permission");
             controller.drawOpen();
         }
@@ -155,7 +135,7 @@ public class WUIController implements IObserver {
 
     public String getDrawHidden(DemoUser user) {
         System.out.println("Attempt to DrawHidden");
-        if(isCurrentPlayer(user)) {
+        if (isCurrentPlayer(user)) {
             System.out.println("Got Drawing Permission");
             controller.drawHidden();
         }
@@ -165,7 +145,7 @@ public class WUIController implements IObserver {
 
     public String discard(int index, DemoUser user) {
         System.out.println("Attempt to discard");
-        if(isCurrentPlayer(user)) {
+        if (isCurrentPlayer(user)) {
             System.out.println("discarding at index" + index);
             ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(),
                     controller.getCurrentPlayersHand().get(index).getColor());
@@ -178,7 +158,7 @@ public class WUIController implements IObserver {
 
     public String playPhase(String cards, DemoUser user) {
         System.out.println("Attempt to play Phase");
-        if(isCurrentPlayer(user)) {
+        if (isCurrentPlayer(user)) {
             System.out.println("playing Phase");
             cards = cards.substring(0, cards.length() - 1);
             IDeckOfCards phases = new DeckOfCards();
@@ -195,7 +175,7 @@ public class WUIController implements IObserver {
 
     public String addToPhase(int cardIndex, int stackIndex, DemoUser user) {
         System.out.println("Attempt to add to Phase");
-        if(isCurrentPlayer(user)) {
+        if (isCurrentPlayer(user)) {
             System.out.println("adding to Phase");
             controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
                     controller.getAllStacks().get(stackIndex));
@@ -220,10 +200,10 @@ public class WUIController implements IObserver {
 
     private boolean isCurrentPlayer(DemoUser user) {
 
-        if(controller.getCurrentPlayer().getPlayerNumber() == 0 && user.equals(player1)) {
+        if (controller.getCurrentPlayer().getPlayerNumber() == 0 && user.equals(player1)) {
             return true;
         }
-        if(controller.getCurrentPlayer().getPlayerNumber() == 1 && user.equals(player2)) {
+        if (controller.getCurrentPlayer().getPlayerNumber() == 1 && user.equals(player2)) {
             return true;
         }
         return false;
@@ -236,7 +216,7 @@ public class WUIController implements IObserver {
         m.put("playerHand", playerHand);
 
         m.put("opponent", controller.getOpponentPlayer().getDeckOfCards());
-        if(controller.getCurrentPlayer().getPlayerNumber() == 0) {
+        if (controller.getCurrentPlayer().getPlayerNumber() == 0) {
             m.put("player1Cards", controller.getCurrentPlayersHand());
             m.put("player2Cards", controller.getOpponentPlayer().getDeckOfCards());
         } else {
@@ -272,12 +252,12 @@ public class WUIController implements IObserver {
         m.put("currentPlayerStats", controller.getCurrentPlayer());
         m.put("currentPlayerPhase", controller.getCurrentPlayer().getPhase().getDescription());
         m.put("roundState", controller.getRoundState().toString());
-        if(controller.getCurrentPlayer().getPlayerNumber() == 0) {
-            m.put("currentPlayerName",player1.main.fullName().get());
-        } else if(player2 != null) {
-            m.put("currentPlayerName",player2.main.fullName().get());
+        if (controller.getCurrentPlayer().getPlayerNumber() == 0) {
+            m.put("currentPlayerName", player1.main.fullName().get());
+        } else if (player2 != null) {
+            m.put("currentPlayerName", player2.main.fullName().get());
         } else {
-            m.put("currentPlayerName","player2");
+            m.put("currentPlayerName", "player2");
         }
         Message message = new Message(m);
         return message;
@@ -296,17 +276,16 @@ public class WUIController implements IObserver {
     }
 
 
-
     public String discard() {
         Message message = getCurrentMessage();
         return message.toJson();
     }
 
     public void updateAll() {
-        if(outPlayer1 != null) {
+        if (outPlayer1 != null) {
             outPlayer1.write("update");
         }
-        if(outPlayer2 != null) {
+        if (outPlayer2 != null) {
             outPlayer2.write("update");
         }
     }

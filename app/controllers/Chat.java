@@ -1,13 +1,12 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import components.ChatRoom;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import views.html.chatIndex;
 import views.html.chatRoom;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import views.html.navBar;
 
 /**

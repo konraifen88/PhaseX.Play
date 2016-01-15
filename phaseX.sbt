@@ -9,9 +9,9 @@ scalaVersion := "2.11.7"
 scalariformSettings
 
 libraryDependencies ++= Seq(
-javaJdbc,
-cache,
-javaWs
+  javaJdbc,
+  cache,
+  javaWs
 )
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.5"

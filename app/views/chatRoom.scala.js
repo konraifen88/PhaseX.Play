@@ -1,4 +1,4 @@
-@(username:String, roomName:String)
+@(username: String, roomName: String)
 
 $(function () {
     var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket;
@@ -29,7 +29,7 @@ $(function () {
         } else {
             $("#onChat").show()
         }
-        if(data.message === "GAME"){
+        if (data.message === "GAME") {
             window.location.replace("../ngApp/" + '@roomName');
         } else {
             // Create the message element

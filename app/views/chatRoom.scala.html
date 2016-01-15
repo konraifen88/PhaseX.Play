@@ -1,31 +1,31 @@
 @(username: String, roomName: String, navBar: Html)
 
-@chatMain(username, roomName, navBar) {
+    @chatMain(username, roomName, navBar) {
 
-    <div class="page-header">
-        <h1>Welcome to the chat room <small>You are chatting as @username</small></h1>
-    </div>
+        <div class="page-header">
+            <h1>Welcome to the chat room <small>You are chatting as @username</small></h1>
+        </div>
 
-    <div id="onError" class="alert-message error">
-        <p>
-            <strong>Oops!</strong> <span></span>
-        </p>
-    </div>
+        <div id="onError" class="alert-message error">
+            <p>
+                <strong>Oops!</strong> <span></span>
+            </p>
+        </div>
 
-    <div id="onChat" class="row">
-        <div class="span10" id="main">
-            <div id="messages">
+        <div id="onChat" class="row">
+            <div class="span10" id="main">
+                <div id="messages">
+                </div>
+                <textarea id="talk"></textarea>
             </div>
-            <textarea id="talk"></textarea>
+            <div class="span4">
+                <h2>Members</h2>
+                <ul id="members">
+                </ul>
+                <button type="button" class="btn btn-primary btn-xs" id="startButton">Start Game</button>
+            </div>
         </div>
-        <div class="span4">
-            <h2>Members</h2>
-            <ul id="members">
-            </ul>
-            <button type="button" class="btn btn-primary btn-xs" id="startButton">Start Game</button>
-        </div>
-    </div>
 
-    <script type="text/javascript" charset="utf-8" src="@routes.Chat.chatRoomJs(username, roomName)"></script>
+        <script type="text/javascript" charset="utf-8" src="@routes.Chat.chatRoomJs(username, roomName)"></script>
 
-}
+    }
