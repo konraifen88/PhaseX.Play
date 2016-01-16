@@ -20,8 +20,12 @@ import static akka.pattern.Patterns.ask;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
+ * Main-Sources from
+ * @author paullabis
+ * @source https://github.com/paullabis/play-websockets-chat.git
+ *
  * If everything works right this class was
- * created by Konraifen88 on 08.01.2016.
+ * adapted by Konraifen88 on 08.01.2016.
  * If it doesn't work I don't know who the hell wrote it.
  */
 public class ChatRoom extends UntypedActor {
