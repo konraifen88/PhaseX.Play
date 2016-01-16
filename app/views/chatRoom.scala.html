@@ -2,10 +2,12 @@
 
 @scripts = {
     <script type="text/javascript" charset="utf-8" src="@routes.Chat.chatRoomJs(username, roomName)"></script>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.css")">
 }
 
 @main("PhaseX - Lobby", username, env, scripts) {
-    <div class="page-header">
+    <div class="page-header row">
         <h1>Welcome to the chat room <small>You are chatting as @username</small></h1>
     </div>
 
@@ -16,16 +18,16 @@
     </div>
 
     <div id="onChat" class="row">
-        <div class="span10" id="main">
+        <div class="col-xs-offset2 col-xs-8" id="main">
             <div id="messages">
             </div>
             <textarea id="talk"></textarea>
         </div>
-        <div class="span4">
+        <div class="col-xs-2">
             <h2>Members</h2>
             <ul id="members">
             </ul>
-            <button type="button" class="btn btn-primary btn-xs" id="startButton">Start Game</button>
+            <button type="button" class="btn btn-xs" id="startButton">Start Game</button>
         </div>
     </div>
 }

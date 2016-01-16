@@ -27,13 +27,15 @@ html, body {
 /* Page header tweaks */
 .page-header {
     background-color: #f5f5f5;
-    padding: 20px 20px 10px;
+    padding: 20px 40px 10px;
     margin: -20px -20px 20px;
 }
 
 /* Styles you shouldn't keep as they are for displaying this base example only */
 .content .span10,
-.content .span4 {
+.content .span4,
+.content .col-xs-8,
+.content .col-xs-2{
     min-height: 500px;
 }
 
@@ -76,7 +78,8 @@ html, body {
     left: 0;
     right: 0;
     width: auto;
-    height: 40px
+    height: 10%;
+    margin-left: 5%;
 }
 
 .message {
@@ -91,7 +94,7 @@ html, body {
     text-align: right;
     font-weight: bold;
     margin-right: 5px;
-    display: inline-block;
+    /*display: inline-block;*/
     vertical-align: top;
     position: relative;
     top: -1px;
@@ -105,6 +108,7 @@ html, body {
 
 .message.me {
     background: #FFC;
+    margin-left: 3%;
 }
 
 .message.join, .message.quit {

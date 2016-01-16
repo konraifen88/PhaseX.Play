@@ -55,6 +55,8 @@ public class WUIController implements IObserver {
                         quitEvent(outPlayer2);
                     }
                 });
+
+
             }
         };
 
