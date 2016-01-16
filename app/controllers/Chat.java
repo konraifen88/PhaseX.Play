@@ -6,7 +6,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import securesocial.core.RuntimeEnvironment;
-import views.html.chatRoom;
+import views.html.lobby.chatRoom;
 
 /**
  * Main-Sources from
@@ -36,7 +36,7 @@ public class Chat extends Controller {
 
     public Result chatRoomJs(String username, final String roomName) {
 
-        return ok(views.js.chatRoom.render(username, roomName));
+        return ok(views.js.lobby.chatRoom.render(username, roomName));
     }
 
     /**

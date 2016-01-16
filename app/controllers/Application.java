@@ -29,10 +29,10 @@ import securesocial.core.java.SecureSocial;
 import securesocial.core.java.SecuredAction;
 import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
-import views.html.homePage;
-import views.html.instruction;
-import views.html.linkResult;
-import views.html.newGamefield;
+import views.html.common.homePage;
+import views.html.common.instruction;
+import views.html.login.linkResult;
+import views.html.gamefield.newGamefield;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -159,21 +159,23 @@ public class Application extends Controller {
                 DemoUser newPlayer = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 if (players.getPlayer1().equals(newPlayer)) {
                     System.out.println("redirecting Player1");
-                    return ok(newGamefield.render(0, roomName));
+                    return ok(newGamefield.render(0, roomName, getCurrentPlayerName(), env));
                 }
                 try {
                     if (players.getPlayer2().equals(newPlayer)) {
-                        return ok(newGamefield.render(1, roomName));
+                        return ok(newGamefield.render(1, roomName, getCurrentPlayerName(), env));
                     }
                     if(!players.getPlayer2().equals(newPlayer) && !players.getPlayer1().equals(newPlayer)) {
                         System.out.println("redirect third player to the homepage");
                         return getMainPage();
                     }
-                } catch (NullPointerException npe) {}
+                } catch (NullPointerException npe) {
+                    //doNothing
+                }
                 players.addPlayer2(newPlayer);
                 System.out.println("Player 2 is: " + newPlayer.main.fullName().get());
                 gameControllerMap.get(roomName).setPlayer2(newPlayer);
-                return ok(newGamefield.render(1, roomName));
+                return ok(newGamefield.render(1, roomName, getCurrentPlayerName(), env));
             } else {
 
                 System.out.println("Creating a new Game Controller");
@@ -191,7 +193,7 @@ public class Application extends Controller {
                 System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
 
-                return ok(newGamefield.render(0, roomName));
+                return ok(newGamefield.render(0, roomName, getCurrentPlayerName(), env));
             }
         } finally {
             System.out.println("release create Game Mutex");

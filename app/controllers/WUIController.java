@@ -18,7 +18,7 @@ import service.DemoUser;
 import util.Event;
 import util.IObserver;
 import view.tui.TUI;
-import views.html.gamefield;
+import views.html.gamefield.gamefield;
 
 import java.util.HashMap;
 import java.util.LinkedList;

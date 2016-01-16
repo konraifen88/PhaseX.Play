@@ -250,6 +250,10 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
     });
 });
 
+angular.element(document).ready(function() {
+    angular.bootstrap(document.getElementById("gameContainer"),["ngApp"]);
+});
+
 function debug(data) {
     console.log(data);
     return data;
