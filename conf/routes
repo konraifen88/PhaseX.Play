@@ -22,6 +22,8 @@ GET        /getUserID                                     @controllers.Applicati
 GET        /quitGame/:roomName                            @controllers.Application.quitGame(roomName: String)
 
 GET        /loser                                         controllers.Assets.at(path="/public/html",file="loser.html")
+GET        /winner                                         controllers.Assets.at(path="/public/html",file="winner.html")
+
 
 GET        /chat/:roomName                                @controllers.Application.goToChatRoom(roomName: String)
 

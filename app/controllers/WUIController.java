@@ -37,10 +37,15 @@ public class WUIController implements IObserver {
     private WebSocket<String> socketPlayer2;
     private Out<String> outPlayer2;
 
+    private boolean running;
+    private String roomName;
 
-    public WUIController(UIController controller, DemoUser player1) {
+
+    public WUIController(UIController controller, DemoUser player1, String roomName) {
         this.controller = controller;
         this.player1 = player1;
+        this.running = true;
+        this.roomName = roomName;
 
         socketPlayer1 = new WebSocket<String>() {
             @Override
@@ -52,10 +57,24 @@ public class WUIController implements IObserver {
                     @Override
                     public void invoke() throws Throwable {
                         System.out.println("Player1 has quit the game");
+                        running = false;
                         quitEvent(outPlayer2);
                     }
                 });
 
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (running) {
+                            try {
+                                Thread.sleep(30000);
+                            } catch (InterruptedException e) {
+                            }
+                            outPlayer1.write("stayingAlive");
+                        }
+
+                    }
+                }).start();
 
             }
         };
@@ -69,10 +88,25 @@ public class WUIController implements IObserver {
                 in.onClose(new F.Callback0() {
                     @Override
                     public void invoke() throws Throwable {
-                        System.out.println("Player2 has quit the game");
+                        running = false;
                         quitEvent(outPlayer1);
                     }
                 });
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (running) {
+                            System.out.println("stay alive Player2");
+                            try {
+                                Thread.sleep(30000);
+                            } catch (InterruptedException e) {
+                            }
+                            outPlayer2.write("stayingAlive");
+                        }
+
+                    }
+                }).start();
 
             }
         };
@@ -85,7 +119,12 @@ public class WUIController implements IObserver {
         try {
             otherPlayer.write("playerLeft");
         } catch (NullPointerException npe) {
+            Application.quit1Player(this.roomName);
         }
+    }
+
+    public String getRoomName() {
+        return this.roomName;
     }
 
     public DemoUser getPlayer1() {
@@ -265,21 +304,10 @@ public class WUIController implements IObserver {
         return message;
     }
 
-//    public void updateAll() {
-//        socketPlayer1.Out.write("update");
-//        socketPlayer2.write("update");
-//    }
-
     public String getJsonUpdate() {
 
         Message message = getCurrentMessage();
 
-        return message.toJson();
-    }
-
-
-    public String discard() {
-        Message message = getCurrentMessage();
         return message.toJson();
     }
 

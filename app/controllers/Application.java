@@ -52,6 +52,7 @@ public class Application extends Controller {
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem = new Semaphore(1);
     public static Semaphore updateSem = new Semaphore(1);
+
     private RuntimeEnvironment env;
     private Chat chat;
 
@@ -103,6 +104,16 @@ public class Application extends Controller {
         roomPlayerMap.remove(roomName);
         return ok();
     }
+
+    public static void quit1Player(String roomName) {
+        System.out.println("Player left the game");
+        availableLobbies.remove(roomName);
+        gameControllerMap.remove(roomName);
+        roomPlayerMap.remove(roomName);
+    }
+
+
+
 
 
     @SecuredAction
@@ -169,7 +180,7 @@ public class Application extends Controller {
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 System.out.println("Player 1 is: " + player1.main.fullName().get());
                 UIController controller = new controller.impl.Controller(2);
-                WUIController wuiController = new WUIController(controller, player1);
+                WUIController wuiController = new WUIController(controller, player1,roomName);
                 wuiController.start();
                 System.out.println("Mapping Room and Players");
                 gameControllerMap.put(roomName, wuiController);

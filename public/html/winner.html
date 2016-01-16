@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        document.write("<table width='100%'>")
+        for (i = 0; i < 30; i++) {
+            document.write("<tr>")
+            for (j = 0; j < 43; j++) {
+                document.write("<td><div class='party'><div class='text' align='center'>You Won</div></div></td>");
+            }
+            document.write("</tr>")
+        }
+        document.write("</table>")
+        function getRGBVal() {
+            return Math.floor(Math.random() * 255);
+        }
+        ;
+        var randomNum = function () {
+            return Math.random() * 10 + 10;
+        }
+        var rand = function (elem) {
+            $(elem).css("background-color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")");
+        }
+        var randText = function (elem) {
+            $(elem).css("color", "rgb(" + getRGBVal() + "," + getRGBVal() + "," + getRGBVal() + ")");
+        }
+        acidVictim = 'div.party'
+        elements = $('body').find('div.party');
+        setInterval(rand, randomNum(), $('body'));
+        setInterval(randText, randomNum(), $('body'));
+        for (var i = 0; i < elements.length; i++) {
+            setInterval(rand, randomNum(), elements[i]);
+            setInterval(randText, randomNum(), elements[i]);
+        }
+
+        console.log(b)
+    </script>
+    <style>div.text {
+        font-weight: bold;
+        font-size-adjust: 1
+    }
+
+    td.party {
+        z-index = "100";
+    }
+
+    .description_text {
+        align: center;
+        text-align: center;
+    }
+    </style>
+</head>
+<body style="overflow: hidden">
+
+</body>
+</html>

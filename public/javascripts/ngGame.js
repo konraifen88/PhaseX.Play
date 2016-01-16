@@ -55,6 +55,8 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         console.log(origin);
         var sock = $websocket(origin + "/getSocket/" + user);
         $scope.roomName = window.location.pathname.split('/')[2];
+        $scope.playerNumber = $("#player").text();
+        console.log("PlayerNumber: %o", $scope.playerNumber);
         sock.onOpen(function () {
             console.log("got Socket");
         });
@@ -78,6 +80,8 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
                 $http.get('/quitGame/' + $scope.roomName).success(function () {
                     window.location.replace("/")
                 });
+            }else if(message.data === "stayingAlive") {
+                console.log("stayingAlive");
             } else {
                 console.log("unknown message");
             }
@@ -110,7 +114,6 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
 
     $scope.update = function (data) {
         $scope.debug = debug(data);
-        //$scope.playerCards = $scope.setPlayerCardsUnselected(data.map.playerHand);
         $scope.stack1empty = data.map.stack1.length === 0;
         $scope.stack1 = data.map.stack1;
         $scope.stack2empty = data.map.stack2.length === 0;
@@ -122,22 +125,27 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         $scope.roundState = data.map.roundState;
         $scope.currentPlayerPhase = data.map.currentPlayerPhase;
         $scope.currentPlayerName = data.map.currentPlayerName;
-        //$scope.opponentsCards = data.map.opponent;
+        $scope.currentPlayerNumber= data.map.currentPlayerStats.playerNumber;
         $scope.player1Cards = data.map.player1Cards;
         $scope.player2Cards = data.map.player2Cards;
         $scope.discardEmpty = data.map.discardIsEmpty;
         $scope.discardPile = data.map.discard[data.map.discard.length - 1];
         $scope.state = data.map.state;
         $scope.selectedCards = [];
-        debug(data);
+        if($scope.roundState === "EndPhase") {
+            if($scope.currentPlayerNumber == $scope.playerNumber) {
+                window.location.replace("/winner");
+            } else {
+                window.location.replace("/loser");
+            }
+        }
+        //debug(data);
     };
 
     $scope.drawhidden = function () {
         if ($scope.state === "DrawPhase") {
             $http.get('/json/drawHidden').success(function (data) {
-                /*$scope.playerCards = data.map.playerHand;
-                 $scope.state = data.map.state;
-                 $scope.update(data);*/
+
             });
         }
 
@@ -187,8 +195,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         if (selectedCards.length == 1) {
             console.log("trying to discard");
             $http.get('/json/discard/' + selectedCards[0]).success(function (data) {
-                //$scope.update(data);
-                console.log("discarding");
+
             });
         }
     };
@@ -212,7 +219,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
 
     $scope.drawdiscard = function () {
         $http.get('/json/drawDiscard').success(function (data) {
-            //$scope.update(data);
+
         });
     };
 
@@ -221,7 +228,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
             var selectedCards = $scope.getSelectedCards();
             if (selectedCards.length == 1) {
                 $http.get('/json/addToPhase/' + selectedCards[0] + "/" + stacknumber).success(function (data) {
-                    //$scope.update(data);
+
                 });
             }
         } else if ($scope.state === "PlayerTurnNotFinished") {
@@ -232,7 +239,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
                     cardString += number + ";";
                 });
                 $http.get('/json/playPhase/' + cardString).success(function (data) {
-                    //$scope.update(data);
+
                 });
             }
         }
