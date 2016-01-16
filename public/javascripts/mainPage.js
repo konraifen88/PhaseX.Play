@@ -12,7 +12,14 @@ mainPage.controller('mainCtrl', function ($scope) {
     };
 
     $('#newLobbyBtn').on('click', function (e) {
-        window.location.replace('/chat/' + $('#newLobbyInput').val());
+        var newLobbyName = $('#newLobbyInput').val();
+        var lobbyRegExp = new RegExp('^[a-zA-Z0-9]+$');
+        if(lobbyRegExp.test(newLobbyName)) {
+            window.location.replace('/chat/' + $('#newLobbyInput').val());
+        } else {
+            alert("Roomname can only contain letters and numbers");
+        }
+        //window.location.replace('/chat/' + $('#newLobbyInput').val());
     });
 
     $scope.separateLobbies = function () {
