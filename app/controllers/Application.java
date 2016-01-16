@@ -154,9 +154,11 @@ public class Application extends Controller {
                     if (players.getPlayer2().equals(newPlayer)) {
                         return ok(newGamefield.render(1, roomName));
                     }
-                } catch (NullPointerException npe) {
-                }
-
+                    if(!players.getPlayer2().equals(newPlayer) && !players.getPlayer1().equals(newPlayer)) {
+                        System.out.println("redirect third player to the homepage");
+                        return getMainPage();
+                    }
+                } catch (NullPointerException npe) {}
                 players.addPlayer2(newPlayer);
                 System.out.println("Player 2 is: " + newPlayer.main.fullName().get());
                 gameControllerMap.get(roomName).setPlayer2(newPlayer);
