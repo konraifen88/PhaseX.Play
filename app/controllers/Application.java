@@ -31,8 +31,8 @@ import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
 import views.html.common.homePage;
 import views.html.common.instruction;
-import views.html.login.linkResult;
 import views.html.gamefield.newGamefield;
+import views.html.login.linkResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +41,6 @@ import java.util.concurrent.Semaphore;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 
-/**
- * A sample controller
- */
 public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     public static Map<String, WUIController> gameControllerMap = new HashMap<>();
@@ -57,23 +54,12 @@ public class Application extends Controller {
     private Chat chat;
 
 
-    /**
-     * A constructor needed to get a hold of the environment instance.
-     * This could be injected using a DI framework instead too.
-     *
-     * @param env
-     */
     @Inject()
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
     }
 
-    /**
-     * This action only gets called if the user is logged in.
-     *
-     * @return
-     */
     @UserAwareAction
     public Result getMainPage() {
         Gson gson = new Gson();
@@ -111,9 +97,6 @@ public class Application extends Controller {
         gameControllerMap.remove(roomName);
         roomPlayerMap.remove(roomName);
     }
-
-
-
 
 
     @SecuredAction
@@ -165,7 +148,7 @@ public class Application extends Controller {
                     if (players.getPlayer2().equals(newPlayer)) {
                         return ok(newGamefield.render(1, roomName, getCurrentPlayerName(), env));
                     }
-                    if(!players.getPlayer2().equals(newPlayer) && !players.getPlayer1().equals(newPlayer)) {
+                    if (!players.getPlayer2().equals(newPlayer) && !players.getPlayer1().equals(newPlayer)) {
                         System.out.println("redirect third player to the homepage");
                         return getMainPage();
                     }
@@ -182,7 +165,7 @@ public class Application extends Controller {
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 System.out.println("Player 1 is: " + player1.main.fullName().get());
                 UIController controller = new controller.impl.Controller(2);
-                WUIController wuiController = new WUIController(controller, player1,roomName);
+                WUIController wuiController = new WUIController(controller, player1, roomName);
                 wuiController.start();
                 System.out.println("Mapping Room and Players");
                 gameControllerMap.put(roomName, wuiController);
@@ -324,6 +307,4 @@ public class Application extends Controller {
         }
         return null;
     }
-
-
 }
