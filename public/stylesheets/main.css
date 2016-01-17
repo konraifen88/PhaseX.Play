@@ -14,7 +14,7 @@ html, body {
 .content {
     background-color: #fff;
     padding: 20px;
-    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+    margin: 0 /*-20px*/; /* negative indent the amount of the padding to maintain the grid system */
     -webkit-border-radius: 0 0 6px 6px;
     -moz-border-radius: 0 0 6px 6px;
     border-radius: 0 0 6px 6px;
@@ -36,7 +36,8 @@ html, body {
 .content .span4,
 .content .col-xs-8,
 .content .col-xs-2{
-    min-height: 500px;
+    /*min-height: 500px;*/
+    min-height: 77%;
 }
 
 /* Give a quick and non-cross-browser friendly divider */
@@ -70,6 +71,7 @@ html, body {
 #messages {
     position: absolute;
     bottom: 60px;
+    width: 90%;
 }
 
 #talk {
@@ -77,9 +79,10 @@ html, body {
     bottom: 0;
     left: 0;
     right: 0;
-    width: auto;
+    /*width: auto;*/
     height: 10%;
     margin-left: 5%;
+    width: 87%;
 }
 
 .message {
@@ -108,7 +111,7 @@ html, body {
 
 .message.me {
     background: #FFC;
-    margin-left: 3%;
+    margin-left: 4%;
 }
 
 .message.join, .message.quit {
