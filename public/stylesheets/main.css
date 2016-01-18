@@ -37,7 +37,7 @@ html, body {
 .content .col-xs-8,
 .content .col-xs-2{
     /*min-height: 500px;*/
-    min-height: 77%;
+    min-height: 70%;
 }
 
 /* Give a quick and non-cross-browser friendly divider */
@@ -72,6 +72,7 @@ html, body {
     position: absolute;
     bottom: 60px;
     width: 90%;
+    margin-bottom: 2%;
 }
 
 #talk {
