@@ -34,6 +34,8 @@ public class WUIController implements IObserver {
     private DemoUser player1;
     private DemoUser player2;
 
+    private Application homeApplication;
+
     private WebSocket<String> socketPlayer1;
     private Out<String> outPlayer1;
     private WebSocket<String> socketPlayer2;
@@ -45,7 +47,8 @@ public class WUIController implements IObserver {
     private Thread quitter;
 
 
-    public WUIController(UIController controller, DemoUser player1, String roomName) {
+    public WUIController(UIController controller, DemoUser player1, String roomName, Application app) {
+        this.homeApplication = app;
         this.controller = controller;
         this.player1 = player1;
         this.running = true;
@@ -95,6 +98,7 @@ public class WUIController implements IObserver {
                     System.out.println("Player1 has quit the game");
                     running = false;
                     t.interrupt();
+
                     quitEvent(isPlayer1);
                 });
 
@@ -114,6 +118,11 @@ public class WUIController implements IObserver {
     }
 
     private void quitEvent(boolean isPlayer1) {
+        if(player2 == null) {
+            this.homeApplication.quitGame(roomName);
+            return;
+        }
+
         WebSocket.Out otherPlayer;
         if (isPlayer1) {
             otherPlayer = outPlayer2;

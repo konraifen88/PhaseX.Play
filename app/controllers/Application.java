@@ -91,22 +91,6 @@ public class Application extends Controller {
         return ok();
     }
 
-    public static void quit1Player(String roomName) {
-        try {
-            createGameSem.acquire();
-            System.out.println("Player left the game");
-            availableLobbies.remove(roomName);
-            gameControllerMap.remove(roomName);
-            roomPlayerMap.remove(roomName);
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
-        } finally {
-            createGameSem.release();
-        }
-
-    }
-
-
     @SecuredAction
     public Result getJsonUpdate() throws InterruptedException {
         System.out.println("Update called");
@@ -173,7 +157,7 @@ public class Application extends Controller {
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 System.out.println("Player 1 is: " + player1.main.fullName().get());
                 UIController controller = new controller.impl.Controller(2);
-                WUIController wuiController = new WUIController(controller, player1, roomName);
+                WUIController wuiController = new WUIController(controller, player1, roomName,this);
                 wuiController.start();
                 System.out.println("Mapping Room and Players");
                 gameControllerMap.put(roomName, wuiController);
