@@ -92,10 +92,18 @@ public class Application extends Controller {
     }
 
     public static void quit1Player(String roomName) {
-        System.out.println("Player left the game");
-        availableLobbies.remove(roomName);
-        gameControllerMap.remove(roomName);
-        roomPlayerMap.remove(roomName);
+        try {
+            createGameSem.acquire();
+            System.out.println("Player left the game");
+            availableLobbies.remove(roomName);
+            gameControllerMap.remove(roomName);
+            roomPlayerMap.remove(roomName);
+        } catch (InterruptedException ie) {
+            ie.printStackTrace();
+        } finally {
+            createGameSem.release();
+        }
+
     }
 
 

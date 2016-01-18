@@ -9,7 +9,9 @@ import model.deckOfCards.impl.DeckOfCards;
 import model.stack.ICardStack;
 import models.Message;
 import phasex.Init;
+import play.api.mvc.WebSocket$;
 import play.libs.F;
+import play.mvc.Results;
 import play.mvc.WebSocket;
 import play.mvc.WebSocket.Out;
 import play.twirl.api.Html;
@@ -40,6 +42,8 @@ public class WUIController implements IObserver {
     private boolean running;
     private String roomName;
 
+    private Thread quitter;
+
 
     public WUIController(UIController controller, DemoUser player1, String roomName) {
         this.controller = controller;
@@ -47,80 +51,90 @@ public class WUIController implements IObserver {
         this.running = true;
         this.roomName = roomName;
 
-        socketPlayer1 = new WebSocket<String>() {
-            @Override
-            public void onReady(In<String> in, Out<String> out) {
-                System.out.println("Init Socket for Player1");
-                outPlayer1 = out;
+        socketPlayer1 = createSocket(true);
 
-                in.onClose(new F.Callback0() {
-                    @Override
-                    public void invoke() throws Throwable {
-                        System.out.println("Player1 has quit the game");
-                        running = false;
-                        quitEvent(outPlayer2);
-                    }
-                });
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (running) {
-                            try {
-                                Thread.sleep(30000);
-                            } catch (InterruptedException e) {
-                            }
-                            outPlayer1.write("stayingAlive");
-                        }
-
-                    }
-                }).start();
-
-            }
-        };
-
-        socketPlayer2 = new WebSocket<String>() {
-            @Override
-            public void onReady(In<String> in, Out<String> out) {
-                System.out.println("Init Socket for Player2");
-                outPlayer2 = out;
-
-                in.onClose(new F.Callback0() {
-                    @Override
-                    public void invoke() throws Throwable {
-                        running = false;
-                        quitEvent(outPlayer1);
-                    }
-                });
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (running) {
-                            System.out.println("stay alive Player2");
-                            try {
-                                Thread.sleep(30000);
-                            } catch (InterruptedException e) {
-                            }
-                            outPlayer2.write("stayingAlive");
-                        }
-
-                    }
-                }).start();
-
-            }
-        };
+        socketPlayer2 = createSocket(false);
 
         System.out.println("Adding Observer");
         controller.addObserver(this);
     }
 
-    private void quitEvent(Out otherPlayer) {
-        try {
-            otherPlayer.write("playerLeft");
-        } catch (NullPointerException npe) {
-            Application.quit1Player(this.roomName);
+    private WebSocket<String> getSocket(boolean isPlayer1) {
+        if (isPlayer1) {
+            if (this.socketPlayer1 == null) {
+                System.out.println("Player 1 rejoined the game");
+                this.quitter.interrupt();
+                this.socketPlayer1 = createSocket(true);
+            }
+            return this.socketPlayer1;
+        } else  {
+            if (this.socketPlayer2 == null) {
+                System.out.println("Player 2 rejoined the game");
+                this.quitter.interrupt();
+                this.socketPlayer2 = createSocket(false);
+            }
+            return this.socketPlayer2;
         }
+    }
+
+    private WebSocket<String> createSocket(boolean isPlayer1) {
+        return new WebSocket<String>() {
+            private Thread t;
+
+            @Override
+            public void onReady(In<String> in, Out<String> out) {
+                System.out.println("Init Socket for Player1");
+                if(isPlayer1) {
+                    outPlayer1 = out;
+                } else {
+                    outPlayer2 = out;
+                }
+
+
+                in.onClose(() -> {
+                    System.out.println("Player1 has quit the game");
+                    running = false;
+                    t.interrupt();
+                    quitEvent(isPlayer1);
+                });
+
+                this.t = new Thread(() -> {
+                    while (running) {
+                        try {
+                            Thread.sleep(30000);
+                            out.write("stayingAlive");
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+
+                }, "HEART_BEATER");
+                t.start();
+            }
+        };
+    }
+
+    private void quitEvent(boolean isPlayer1) {
+        WebSocket.Out otherPlayer;
+        if (isPlayer1) {
+            otherPlayer = outPlayer2;
+            this.outPlayer1 = null;
+            this.socketPlayer1 = null;
+        } else {
+            otherPlayer = outPlayer1;
+            this.outPlayer2 = null;
+            this.socketPlayer2 = null;
+        }
+
+
+        this.quitter = new Thread(() -> {
+            try {
+                Thread.sleep(10000);
+                otherPlayer.write("playerLeft");
+            } catch (NullPointerException | InterruptedException ignored) {
+                //other player is not in the game
+            }
+        }, "QUITTER");
+        this.quitter.start();
     }
 
     public String getRoomName() {
@@ -140,10 +154,11 @@ public class WUIController implements IObserver {
     }
 
     public WebSocket<String> getSocket(DemoUser du) {
-        if (du.equals(player1)) {
+        return this.getSocket(du.equals(player1));
+        /*if (du.equals(player1)) {
             return socketPlayer1;
         }
-        return socketPlayer2;
+        return socketPlayer2;*/
     }
 
     public String getUI() {
