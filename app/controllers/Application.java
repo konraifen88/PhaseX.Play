@@ -32,6 +32,7 @@ import service.DemoUser;
 import views.html.common.homePage;
 import views.html.common.instruction;
 import views.html.gamefield.newGamefield;
+import views.html.gamefield.gamefield;
 import views.html.login.linkResult;
 
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class Application extends Controller {
     public static Map<String, WUIController> gameControllerMap = new HashMap<>();
     public static Map<String, Players> roomPlayerMap = new HashMap<>();
     public static Map<String, Integer> availableLobbies = new HashMap<>();
+    public static Map<DemoUser, WUI1PlayerController> singlePlayerMap = new HashMap<>();
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem = new Semaphore(1);
     public static Semaphore updateSem = new Semaphore(1);
@@ -120,6 +122,38 @@ public class Application extends Controller {
         return roomName;
     }
 
+    @SecuredAction
+    public Result singlePlayer() {
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        WUI1PlayerController wctrl = new WUI1PlayerController(new controller.impl.Controller(2),player,player.main.fullName().get(),this);
+        wctrl.start();
+        singlePlayerMap.put(player,wctrl);
+        return ok(gamefield.render(player.main.userId()));
+    }
+
+    @SecuredAction
+    public synchronized WebSocket<String> getSinglePlayerSocket(String userID) {
+        WUI1PlayerController ctrl = getSinglePlayerController(userID);
+        return ctrl.getSocket();
+    }
+
+
+
+    private WUI1PlayerController getSinglePlayerController(String userID) {
+        WUI1PlayerController ctrl = null;
+        for(DemoUser user : singlePlayerMap.keySet()) {
+            if(user.main.userId().equals(userID)) {
+                ctrl = singlePlayerMap.get(user);
+            }
+        }
+        return ctrl;
+    }
+
+
+    public void quitSinglePlayer(DemoUser player) {
+        //singlePlayerMap.remove(player);
+    }
+
 
     @SecuredAction
     public synchronized Result createGame(String roomName) throws InterruptedException {
@@ -178,11 +212,14 @@ public class Application extends Controller {
 
     }
 
+
     @SecuredAction
     public Result getUserID() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         return ok(player.main.userId());
     }
+
+
 
     @SecuredAction
     public synchronized WebSocket<String> getSocket(String userID) throws InterruptedException {

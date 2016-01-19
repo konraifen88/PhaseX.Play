@@ -80,16 +80,16 @@ html, body {
     bottom: 0;
     left: 0;
     right: 0;
-    /*width: auto;*/
     height: 10%;
-    margin-left: 5%;
     width: 87%;
+    margin-left: 5%;
 }
 
 .message {
     padding: 4px 0;
     border-bottom: 1px solid #eee;
     position: relative;
+    margin-left: 5%;
 }
 
 .message span {
@@ -112,7 +112,6 @@ html, body {
 
 .message.me {
     background: #FFC;
-    margin-left: 4%;
 }
 
 .message.join, .message.quit {

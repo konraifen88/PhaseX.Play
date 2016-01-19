@@ -1,15 +1,14 @@
-@(message: String)
+@(userID: String)
 
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>PhaseX</title>
-        @*<link rel="stylesheet" href='assets/stylesheets/main.css'/>*@
-        <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("less/main.css")'>
+        <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("less/game.css")'>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
+        <div style="display: none" id="UID">@userID</div>
     </head>
-    <body style="background: url( @routes.Assets.versioned("../../../public/images/Background.png"));background-size: 100%">
-
+    <body>
         <div id="gameContainer" class="row">
             <div id="opponentCardsContainer" class="row"></div>
             <div id="fieldContainer" class="row">

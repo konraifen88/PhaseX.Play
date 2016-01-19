@@ -1,0 +1,250 @@
+package controllers;
+
+
+import controller.UIController;
+import model.card.ICard;
+import model.card.impl.Card;
+import model.deckOfCards.IDeckOfCards;
+import model.deckOfCards.impl.DeckOfCards;
+import model.stack.ICardStack;
+import models.Message;
+import phasex.Init;
+import play.mvc.WebSocket;
+import play.mvc.WebSocket.Out;
+import play.twirl.api.Html;
+import securesocial.core.java.SecuredAction;
+import service.DemoUser;
+import util.Event;
+import util.IObserver;
+import view.tui.TUI;
+import views.html.gamefield.gamefield;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+
+@SecuredAction
+public class WUI1PlayerController implements IObserver {
+
+
+    private UIController controller = Init.getInstance().getIn().getInstance(UIController.class);
+    private TUI tui = Init.getInstance().getTui();
+    private DemoUser player1;
+
+    private Application homeApplication;
+
+    private WebSocket<String> socketPlayer1;
+    private Out<String> outPlayer1;
+
+    private boolean running;
+    private String roomName;
+
+    public WUI1PlayerController(UIController controller, DemoUser player1, String roomName, Application app) {
+        this.homeApplication = app;
+        this.controller = controller;
+        this.player1 = player1;
+        this.running = true;
+        this.roomName = roomName;
+
+        socketPlayer1 = createSocket();
+
+        System.out.println("Adding Observer");
+        controller.addObserver(this);
+    }
+
+    public WebSocket<String> getSocket() {
+        return this.socketPlayer1;
+    }
+
+    private WebSocket<String> createSocket() {
+        return new WebSocket<String>() {
+            private Thread t;
+
+            @Override
+            public void onReady(In<String> in, Out<String> out) {
+                System.out.println("Init Socket for Player1");
+                outPlayer1 = out;
+
+                in.onClose(() -> {
+                    System.out.println("Player1 has quit the game");
+                    running = false;
+                    t.interrupt();
+                    quitEvent();
+                });
+
+                in.onMessage((mesg) -> {
+                    System.out.println("SinglePlayer Message:");
+                    System.out.println(mesg);
+                    if(mesg.equals("drawOpen")) {
+                        controller.drawOpen();
+                    }
+                    if(mesg.equals("drawHidden")) {
+                        controller.drawHidden();
+                    }
+                    out.write(getJsonUpdate());
+                });
+
+                this.t = new Thread(() -> {
+                    while (running) {
+                        try {
+                            Thread.sleep(30000);
+                            out.write("stayingAlive");
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+
+                }, "HEART_BEATER");
+                t.start();
+            }
+        };
+    }
+
+    private void quitEvent() {
+        this.homeApplication.quitSinglePlayer(player1);
+    }
+
+    public String getRoomName() {
+        return this.roomName;
+    }
+
+    public DemoUser getPlayer1() {
+        return player1;
+    }
+
+
+
+    public String getUI() {
+        String ui = tui.getSb().toString();
+        ui = ui.replaceAll("\n", "<br>");
+        ui = ui.replaceAll(" ", "&nbsp;");
+        return ui;
+    }
+
+    public Html play(String command) {
+        System.out.println(command);
+        tui.processInputLine(command);
+        return gamefield.render(getUI());
+    }
+
+    public Html start() {
+        controller.startGame();
+        return gamefield.render(getUI());
+    }
+
+
+    public String getDrawHidden(DemoUser user) {
+        controller.drawHidden();
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    public String discard(int index, DemoUser user) {
+        ICard card = new Card(controller.getCurrentPlayersHand().get(index).getNumber(), controller.getCurrentPlayersHand().get(index).getColor());
+        controller.discard(card);
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    public String playPhase(String cards, DemoUser user) {
+        cards = cards.substring(0, cards.length() - 1);
+        IDeckOfCards phases = new DeckOfCards();
+        for (String card : cards.split(";")) {
+            int index = Integer.parseInt(card);
+            ICard cardObject = controller.getCurrentPlayersHand().get(index);
+            phases.add(cardObject);
+        }
+        controller.playPhase(phases);
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    public String addToPhase(int cardIndex, int stackIndex, DemoUser user) {
+        System.out.println("adding to Phase");
+        controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex), controller.getAllStacks().get(stackIndex));
+        Message message = getCurrentMessage();
+        return message.toJson();
+    }
+
+    private IDeckOfCards getFirstAndLast(ICardStack stack) {
+        IDeckOfCards list = stack.getList();
+        if (list.size() > 4) {
+            IDeckOfCards retList = new DeckOfCards();
+            retList.add(list.get(0));
+            retList.add(list.get(1));
+            retList.add(list.get(list.size() - 2));
+            retList.add(list.get(list.size() - 1));
+            return retList;
+        } else {
+            return list;
+        }
+    }
+
+    private Message getCurrentMessage() {
+        HashMap<String, Object> m = new HashMap<>();
+        IDeckOfCards playerHand = controller.getCurrentPlayersHand();
+        //Collections.sort(playerHand, new CardValueComparator());
+        m.put("playerHand", playerHand);
+
+        m.put("opponent", controller.getOpponentPlayer().getDeckOfCards());
+        if (controller.getCurrentPlayer().getPlayerNumber() == 0) {
+            m.put("player1Cards", controller.getCurrentPlayersHand());
+            m.put("player2Cards", controller.getOpponentPlayer().getDeckOfCards());
+        } else {
+            m.put("player2Cards", controller.getCurrentPlayersHand());
+            m.put("player1Cards", controller.getOpponentPlayer().getDeckOfCards());
+        }
+
+
+        m.put("stack", controller.getAllStacks());
+        int numberOfStacks = controller.getAllStacks().size();
+        m.put("stack1", new LinkedList<>());
+        m.put("stack2", new LinkedList<>());
+        m.put("stack3", new LinkedList<>());
+        m.put("stack4", new LinkedList<>());
+        for (int i = 0; i <= numberOfStacks; i++) {
+            if (i == 1) {
+                m.put("stack1", getFirstAndLast(controller.getAllStacks().get(0)));
+            }
+            if (i == 2) {
+                m.put("stack2", getFirstAndLast(controller.getAllStacks().get(1)));
+            }
+            if (i == 3) {
+                m.put("stack3", getFirstAndLast(controller.getAllStacks().get(2)));
+            }
+            if (i == 4) {
+                m.put("stack4", getFirstAndLast(controller.getAllStacks().get(3)));
+            }
+        }
+
+        m.put("discardIsEmpty", controller.getDiscardPile().size() == 0);
+        m.put("discard", controller.getDiscardPile());
+        m.put("state", controller.getRoundState().toString());
+        m.put("currentPlayerStats", controller.getCurrentPlayer());
+        m.put("currentPlayerPhase", controller.getCurrentPlayer().getPhase().getDescription());
+        m.put("roundState", controller.getRoundState().toString());
+        if(controller.getCurrentPlayer().getPlayerNumber() == 0) {
+            m.put("currentPlayerName","Player1");
+        } else {
+            m.put("currentPlayerName","Player2");
+        }
+        Message message = new Message(m);
+        return message;
+    }
+
+    public String getJsonUpdate() {
+
+        Message message = getCurrentMessage();
+
+        return message.toJson();
+    }
+
+
+
+    @Override
+    public void update(Event event) {
+        try {
+            outPlayer1.write("update");
+        } catch (NullPointerException npe) {
+            //play doesn't have the Socket at initialization
+        }
+    }
+}

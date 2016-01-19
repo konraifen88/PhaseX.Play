@@ -27,6 +27,10 @@ GET        /winner                                         controllers.Assets.at
 
 GET        /chat/:roomName                                @controllers.Application.goToChatRoom(roomName: String)
 
+#single player
+GET        /singlePlayer                                  @controllers.Application.singlePlayer()
+GET        /singlePlayer/socket/:userID                   @controllers.Application.getSinglePlayerSocket(userID: String)
+
 
 
 GET        /assets/javascripts/chatroom.js                @controllers.Chat.chatRoomJs(username, roomName)
