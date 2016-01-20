@@ -80,6 +80,25 @@ public class WUI1PlayerController implements IObserver {
                     if(mesg.equals("drawHidden")) {
                         controller.drawHidden();
                     }
+                    if(mesg.startsWith("discard")) {
+                        System.out.println("discarding event");
+                        discard(Integer.parseInt(mesg.split(" ")[1]),player1);
+                    }
+                    if(mesg.startsWith("playPhase")) {
+                        System.out.println("playing Phase");
+                        String cardString = "";
+                        String[] cardArray = mesg.split(" ");
+                        for(int i = 1; i < cardArray.length; i++) {
+                            cardString += cardArray[i] + ";";
+                        }
+                        System.out.println("playing the Cards " + cardString);
+                        playPhase(cardString,player1);
+                    }
+                    if(mesg.startsWith("addToPhase")) {
+                        int stackNumber = Integer.parseInt(mesg.split(" ")[1]);
+                        int cardNumber = Integer.parseInt(mesg.split(" ")[2]);
+                        addToPhase(cardNumber,stackNumber,player1);
+                    }
                     out.write(getJsonUpdate());
                 });
 
@@ -111,6 +130,9 @@ public class WUI1PlayerController implements IObserver {
     }
 
 
+    private ICard getCardOfIndex(int index) {
+        return null;
+    }
 
     public String getUI() {
         String ui = tui.getSb().toString();
@@ -152,6 +174,7 @@ public class WUI1PlayerController implements IObserver {
             ICard cardObject = controller.getCurrentPlayersHand().get(index);
             phases.add(cardObject);
         }
+        System.out.println(phases.toString());
         controller.playPhase(phases);
         Message message = getCurrentMessage();
         return message.toJson();

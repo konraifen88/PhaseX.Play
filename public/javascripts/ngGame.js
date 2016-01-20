@@ -111,6 +111,9 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         }
     };
 
+    $scope.statusMessageParser = function (msg) {
+
+    };
 
     $scope.update = function (data) {
         $scope.debug = debug(data);

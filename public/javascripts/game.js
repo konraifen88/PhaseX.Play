@@ -80,11 +80,13 @@ function fillStack(stack) {
         $(stackID).append(emptyCard);
     } else {
         var cards = $(stackID);
-        stackarray.forEach(function (entry) {
-            cards.append(createCard(entry[0], entry[1], "StackCard"));
-        });
+        for(var cardCounter = 0; cardCounter < stackarray.length; cardCounter++) {
+            var entry = stackarray[cardCounter];
+            cards.append(createCard(entry.number, entry.color, "StackCard"));
+        }
     }
 }
+
 
 function createHand(hand) {
     var handID;
@@ -150,8 +152,8 @@ function createHand(hand) {
 function getSelectedCards() {
     var allCards = $("#playerCardsContainer").find("img");
     var returnString = "";
-    for(var cardCounter = 0; allCards.length; cardCounter += 1) {
-        var classes = allCards[cardCounter].split(" ");
+    for(var cardCounter = 0; cardCounter < allCards.length; cardCounter += 1) {
+        var classes = allCards[cardCounter].className.split(" ");
         for (var classCounter = 0; classCounter < classes.length; classCounter += 1) {
             if (classes[classCounter] === "CardUp") {
                 returnString += (" " + cardCounter);
@@ -182,6 +184,7 @@ function updateGameField() {
     var discardElement = $("#discardPile");
 
     discardElement.empty();
+    discardElement.off();
     if(discardIsEmtpy) {
         discardElement.append(createCard(null, null, "PileCard"));
     } else {
@@ -202,7 +205,28 @@ function discardClick() {
         socket.send("drawOpen");
     }
     if(roundState == "PlayerTurnFinished" || roundState == "PlayerTurnNotFinished") {
-        alert("discard" + getSelectedCards());
+        var selectedCards = "discard" + getSelectedCards();
+        if (selectedCards.split(" ").length == 2) {
+            socket.send(selectedCards);
+        } else {
+            alert("You cannot discard more than one Card");
+        }
+    }
+}
+
+function stackClick(stackNumber) {
+    if(roundState === "PlayerTurnNotFinished") {
+        var selected = "playPhase" + getSelectedCards();
+        if(selected.length > 9) {
+            socket.send(selected);
+        }
+    } if(roundState === "PlayerTurnFinished") {
+        var selected = "addToPhase " + stackNumber + getSelectedCards();
+        if(selected.split(" ").length != 3 ) {
+            alert("You can only add 1 Card to a Phase");
+        } else {
+            socket.send(selected);
+        }
     }
 }
 
@@ -223,6 +247,7 @@ function connect() {
 
     socket.onmessage = function (msg) {
         if(msg.data != "stayingAlive") {
+            console.log(msg.data);
             var data = JSON.parse(msg.data);
             console.log(data);
             playerCards = data.map.playerHand;
