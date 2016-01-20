@@ -50,6 +50,7 @@ public class Chat extends Controller {
                 } catch (Exception ex) {
                     //ex.printStackTrace();
                 }
+
             }
         };
     }
