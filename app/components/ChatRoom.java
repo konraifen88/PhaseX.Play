@@ -6,6 +6,8 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.Application;
+import controllers.Chat;
 import play.cache.Cache;
 import play.libs.Akka;
 import play.libs.Json;
@@ -71,7 +73,7 @@ public class ChatRoom extends UntypedActor {
                 System.out.println("Channel for user " + username + " closed.");
                 // Send a Quit message to the room.
                 defaultRoom.tell(new Quit(username), null);
-
+                Chat.playerLeftChat(roomName);
             });
 
 

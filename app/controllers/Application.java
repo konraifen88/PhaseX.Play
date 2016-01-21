@@ -35,6 +35,7 @@ import views.html.gamefield.newGamefield;
 import views.html.gamefield.gamefield;
 import views.html.login.linkResult;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
@@ -46,7 +47,7 @@ public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
     public static Map<String, WUIController> gameControllerMap = new HashMap<>();
     public static Map<String, Players> roomPlayerMap = new HashMap<>();
-    public static Map<String, Integer> availableLobbies = new HashMap<>();
+    public static Map<String, Integer> availableLobbies = Collections.synchronizedMap(new HashMap<>());
     public static Map<DemoUser, WUI1PlayerController> singlePlayerMap = new HashMap<>();
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem = new Semaphore(1);
@@ -61,6 +62,7 @@ public class Application extends Controller {
         this.env = env;
         chat = new Chat();
     }
+
 
     @UserAwareAction
     public Result getMainPage() {
@@ -83,6 +85,7 @@ public class Application extends Controller {
         }
         return chat.chatRoom(getCurrentPlayerName(), roomName, env);
     }
+
 
     @SecuredAction
     public Result quitGame(String roomName) {
