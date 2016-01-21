@@ -60,7 +60,7 @@ html, body {
 }
 
 #main {
-    position: relative;
+    /*position: relative;*/
     overflow: hidden;
 }
 
@@ -69,20 +69,27 @@ html, body {
 }
 
 #messages {
-    position: absolute;
+    /*position: absolute;*/
     bottom: 60px;
     width: 90%;
     margin-bottom: 2%;
+    overflow-y: scroll;
+    height: 100%;
 }
 
 #talk {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     height: 10%;
     width: 87%;
     margin-left: 5%;
+    margin-bottom: 6%;
+}
+
+#onChat {
+    height: 50%;
 }
 
 .message {
@@ -100,7 +107,7 @@ html, body {
     margin-right: 5px;
     /*display: inline-block;*/
     vertical-align: top;
-    position: relative;
+    /*position: relative;*/
     top: -1px;
 }
 

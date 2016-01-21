@@ -75,7 +75,7 @@ $(function () {
             var payload = new Object();
             payload.stay = "stayingAlive";
             chatSocket.send(JSON.stringify(payload));
-            setTimeout(arguments.callee,3000);
+            setTimeout(arguments.callee,30000);
         }else if(chatSocket.readyState == 0) {
             setTimeout(arguments.callee,200);
         } else {
