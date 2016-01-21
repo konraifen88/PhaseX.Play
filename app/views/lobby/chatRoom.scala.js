@@ -47,6 +47,7 @@ $(function () {
                 li.textContent = this;
                 $("#members").append(li);
             })
+            $('#messages')[0].scrollTop = 9999;
         }
 
     };
