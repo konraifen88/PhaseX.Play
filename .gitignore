@@ -11,3 +11,4 @@ target
 .sbtserver.lock
 *.bak
 /conf/local.conf
+/public/bower
