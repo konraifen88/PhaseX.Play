@@ -51,6 +51,7 @@ public class Application extends Controller {
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem = new Semaphore(1);
     public static Semaphore updateSem = new Semaphore(1);
+    public static Semaphore lobbySem = new Semaphore(1);
 
 
     public static List<WebSocket.Out<String>> lobbySockets = new LinkedList<>();
@@ -87,13 +88,42 @@ public class Application extends Controller {
         return chat.chatRoom(getCurrentPlayerName(), roomName, env);
     }
 
-    public static synchronized void addToAvailableLobbies(String roomName) {
-        if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) < 2) {
-            availableLobbies.put(roomName, 2);
-        } else {
-            availableLobbies.put(roomName, 1);
+    public static synchronized void addToAvailableLobbies(String roomName){
+        try {
+            //lobbySem.acquire();
+
+            if(availableLobbies.containsKey(roomName)) {
+                int numberInRoom = availableLobbies.get(roomName);
+                availableLobbies.put(roomName,++numberInRoom);
+            } else {
+                availableLobbies.put(roomName,1);
+            }
+
+            notifiyAllSocketLobbys();
+        //} catch (InterruptedException itre) {
+
+        } finally {
+            //lobbySem.release();
         }
-        notifiyAllSocketLobbys();
+
+    }
+
+    public static synchronized void deleteFromAvailableSockets(String roomName) {
+        try {
+            //lobbySem.acquire();
+            int numberInRoom = availableLobbies.get(roomName);
+            if(numberInRoom > 1) {
+                availableLobbies.put(roomName, --numberInRoom);
+            } else {
+                availableLobbies.remove(roomName);
+            }
+            notifiyAllSocketLobbys();
+        //} catch (InterruptedException itre) {
+
+        } finally {
+            //lobbySem.release();
+        }
+
     }
 
     public WebSocket<String> createLobbySocket() {
@@ -139,15 +169,6 @@ public class Application extends Controller {
         }
     }
 
-    public static void deleteFromAvailableSockets(String roomName) {
-        int numberInRoom = availableLobbies.get(roomName);
-        if(numberInRoom > 1) {
-            availableLobbies.put(roomName, --numberInRoom);
-        } else {
-            availableLobbies.remove(roomName);
-        }
-        notifiyAllSocketLobbys();
-    }
 
     @SecuredAction
     public Result getJsonUpdate() throws InterruptedException {

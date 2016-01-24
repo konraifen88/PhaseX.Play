@@ -29,6 +29,13 @@ mainPage.controller('mainCtrl', function ($scope) {
 
     $scope.joinLobby = function () {
         var newLobbyName = $('#newLobbyInput').val();
+        for(var i = 0; i < $scope.fullLobbies.length;i += 1) {
+            if(newLobbyName === $scope.fullLobbies[i]) {
+                alert("There are already 2 Players in that game");
+                $('#newLobbyInput').val("");
+                return;
+            }
+        }
         var lobbyRegExp = new RegExp('^[a-zA-Z0-9]+$');
         if(lobbyRegExp.test(newLobbyName)) {
             window.location.replace('/chat/' + $('#newLobbyInput').val());
