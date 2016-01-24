@@ -11,7 +11,7 @@ mainPage.controller('mainCtrl', function ($scope) {
         $scope.lobbies = JSON.parse($("#lobbyData").text());
     };
 
-    $('#newLobbyBtn').on('click', function (e) {
+    $scope.joinLobby = function () {
         var newLobbyName = $('#newLobbyInput').val();
         var lobbyRegExp = new RegExp('^[a-zA-Z0-9]+$');
         if(lobbyRegExp.test(newLobbyName)) {
@@ -20,7 +20,9 @@ mainPage.controller('mainCtrl', function ($scope) {
             alert("Roomname can only contain letters and numbers");
         }
         //window.location.replace('/chat/' + $('#newLobbyInput').val());
-    });
+    };
+
+    $('#newLobbyBtn').on('click', $scope.joinLobby);
 
     $scope.separateLobbies = function () {
         $scope.freeLobbies = [];

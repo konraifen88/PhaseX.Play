@@ -101,7 +101,7 @@ public class WUIController implements IObserver {
                     if(isPlayer1) {
                         player1.isInGameOrLobby = false;
                     } else {
-                        player2.isInGameOrLobby = true;
+                        player2.isInGameOrLobby = false;
                     }
                     t.interrupt();
 
@@ -129,10 +129,11 @@ public class WUIController implements IObserver {
     }
 
     private void quitEvent(boolean isPlayer1) {
+        /*
         if(player2 == null) {
             this.homeApplication.quitGame(roomName);
             return;
-        }
+        }*/
 
         WebSocket.Out otherPlayer;
         if (isPlayer1) {

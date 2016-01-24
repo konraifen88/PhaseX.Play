@@ -234,6 +234,7 @@ public class Application extends Controller {
             System.out.println("Get Socket Called");
             socketSem.acquire();
             System.out.println("Got Socket Mutex");
+            System.out.println(gameControllerMap);
             WUIController wuictrl = null;
             DemoUser player = null;
             for (WUIController wui : gameControllerMap.values()) {
