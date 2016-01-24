@@ -140,7 +140,12 @@ public class Application extends Controller {
     }
 
     public static void deleteFromAvailableSockets(String roomName) {
-        availableLobbies.remove(roomName);
+        int numberInRoom = availableLobbies.get(roomName);
+        if(numberInRoom > 1) {
+            availableLobbies.put(roomName, --numberInRoom);
+        } else {
+            availableLobbies.remove(roomName);
+        }
         notifiyAllSocketLobbys();
     }
 
@@ -227,6 +232,7 @@ public class Application extends Controller {
                     }
                     if (!players.getPlayer2().equals(newPlayer) && !players.getPlayer1().equals(newPlayer)) {
                         System.out.println("redirect third player to the homepage");
+                        flash("error","You are not part of this game");
                         return redirect("/");
                     }
                 } catch (NullPointerException npe) {
