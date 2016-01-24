@@ -56,7 +56,7 @@
             </div>
 
         </div>
-        <div id="playerCardsContainer" class="row" ng-re>
+        <div id="playerCardsContainer" class="col-xs-10" ng-re>
             <card ng-if="@playerNumber == 0" ng-repeat="card in player1Cards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
             <card ng-if="@playerNumber == 1" ng-repeat="card in player2Cards" number="{{card.number}}" color="{{card.color}}" ng-class="styleup(card.selected)" ng-click="cardup(card)"></card>
         </div>

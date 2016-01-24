@@ -102,6 +102,11 @@ public class WUIController implements IObserver {
                     quitEvent(isPlayer1);
                 });
 
+                in.onMessage((message) -> {
+                    outPlayer1.write(message);
+                    outPlayer2.write(message);
+                });
+
                 this.t = new Thread(() -> {
                     while (running) {
                         try {

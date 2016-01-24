@@ -83,7 +83,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
             }else if(message.data === "stayingAlive") {
                 console.log("stayingAlive");
             } else {
-                console.log("unknown message");
+                console.log(message);
             }
 
         });
