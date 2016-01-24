@@ -24,11 +24,13 @@ import java.util.List;
 public class DemoUser implements Serializable {
     public BasicProfile main;
     public List<BasicProfile> identities;
+    public boolean isInGameOrLobby;
 
     public DemoUser(BasicProfile user) {
         this.main = user;
         identities = new ArrayList<BasicProfile>();
         identities.add(user);
+        isInGameOrLobby = false;
     }
 
     @Override

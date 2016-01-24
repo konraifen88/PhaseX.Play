@@ -78,6 +78,10 @@ public class Application extends Controller {
 
     @SecuredAction
     public Result goToChatRoom(String roomName) {
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if(player.isInGameOrLobby) {
+            return redirect("/");
+        }
         if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) < 2) {
             availableLobbies.put(roomName, 2);
         } else {
@@ -154,7 +158,7 @@ public class Application extends Controller {
 
 
     public void quitSinglePlayer(DemoUser player) {
-        //singlePlayerMap.remove(player);
+        player.isInGameOrLobby = false;
     }
 
 
@@ -179,7 +183,7 @@ public class Application extends Controller {
                     }
                     if (!players.getPlayer2().equals(newPlayer) && !players.getPlayer1().equals(newPlayer)) {
                         System.out.println("redirect third player to the homepage");
-                        return getMainPage();
+                        return redirect("/");
                     }
                 } catch (NullPointerException npe) {
                     //doNothing

@@ -8,7 +8,7 @@
 
 
 @main("PhaseX - Game", playerName, env, scripts){
-    <div id="gameContainer" class="row" ng-controller="GameCtrl" style="background:url( @routes.Assets.versioned("images/Background.png") ) ; background-size:100%">
+    <div id="gameContainer" class="row" ng-controller="GameCtrl">
         <div id="opponentCardsContainer" class="col-xs-10">
             <opponentcard ng-if="@playerNumber == 0" ng-repeat="card in player2Cards" number="BACK" color="BACK" ></opponentcard>
             <opponentcard ng-if="@playerNumber == 1" ng-repeat="card in player1Cards" number="BACK" color="BACK" ></opponentcard>

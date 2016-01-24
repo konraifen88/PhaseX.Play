@@ -51,6 +51,7 @@ public class WUIController implements IObserver {
         this.homeApplication = app;
         this.controller = controller;
         this.player1 = player1;
+        player1.isInGameOrLobby = true;
         this.running = true;
         this.roomName = roomName;
 
@@ -97,6 +98,11 @@ public class WUIController implements IObserver {
                 in.onClose(() -> {
                     System.out.println("Player1 has quit the game");
                     running = false;
+                    if(isPlayer1) {
+                        player1.isInGameOrLobby = false;
+                    } else {
+                        player2.isInGameOrLobby = true;
+                    }
                     t.interrupt();
 
                     quitEvent(isPlayer1);
@@ -165,6 +171,7 @@ public class WUIController implements IObserver {
 
     public void setPlayer2(DemoUser user) {
         this.player2 = user;
+        this.player2.isInGameOrLobby = true;
     }
 
     public WebSocket<String> getSocket(DemoUser du) {

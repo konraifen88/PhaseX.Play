@@ -42,6 +42,7 @@ public class WUI1PlayerController implements IObserver {
         this.homeApplication = app;
         this.controller = controller;
         this.player1 = player1;
+        this.player1.isInGameOrLobby = true;
         this.running = true;
         this.roomName = roomName;
 
