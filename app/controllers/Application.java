@@ -56,7 +56,7 @@ public class Application extends Controller {
 
     public static List<WebSocket.Out<String>> lobbySockets = new LinkedList<>();
 
-    private RuntimeEnvironment env;
+    RuntimeEnvironment env;
     private Chat chat;
 
 
@@ -65,7 +65,6 @@ public class Application extends Controller {
         this.env = env;
         chat = new Chat();
     }
-
 
     @UserAwareAction
     public Result getMainPage() {
@@ -177,7 +176,6 @@ public class Application extends Controller {
             updateSem.acquire();
             System.out.println("got Update Mutex");
             DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-            System.out.println("JSON Update from Player: " + player.main.fullName().get());
             return ok(gameControllerMap.get(getRoomNameOfPlayer(player)).getJsonUpdate());
         } finally {
             System.out.println("release Update Mutex");
@@ -202,10 +200,11 @@ public class Application extends Controller {
     @SecuredAction
     public Result singlePlayer() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        WUI1PlayerController wctrl = new WUI1PlayerController(new controller.impl.Controller(2),player,player.main.fullName().get(),this);
+        System.out.println("is defined)" + player);
+        WUI1PlayerController wctrl = new WUI1PlayerController(new controller.impl.Controller(2),player, getCurrentPlayerName(),this);
         wctrl.start();
         singlePlayerMap.put(player,wctrl);
-        return ok(gamefield.render(player.main.userId()));
+        return ok(gamefield.render(getCurrentPlayerName(), env));
     }
 
     @SecuredAction
@@ -219,8 +218,18 @@ public class Application extends Controller {
     private WUI1PlayerController getSinglePlayerController(String userID) {
         WUI1PlayerController ctrl = null;
         for(DemoUser user : singlePlayerMap.keySet()) {
-            if(user.main.userId().equals(userID)) {
-                ctrl = singlePlayerMap.get(user);
+            System.out.println("containing Name:" + user.main.userId());
+            System.out.println("searching Name:" + userID);
+
+            if (user.main.fullName().isDefined()) {
+                if (userID.equals(user.main.fullName().get())) {
+                    ctrl = singlePlayerMap.get(user);
+                }
+            } else {
+                if (userID.equals(user.main.userId())) {
+                    ctrl = singlePlayerMap.get(user);
+                }
+
             }
         }
         return ctrl;
@@ -260,7 +269,7 @@ public class Application extends Controller {
                     //doNothing
                 }
                 players.addPlayer2(newPlayer);
-                System.out.println("Player 2 is: " + newPlayer.main.fullName().get());
+                System.out.println("Player 2 is: " + getCurrentPlayerName());
                 gameControllerMap.get(roomName).setPlayer2(newPlayer);
                 addToAvailableLobbies(roomName);
                 return ok(newGamefield.render(1, roomName, getCurrentPlayerName(), env));
@@ -268,7 +277,7 @@ public class Application extends Controller {
 
                 System.out.println("Creating a new Game Controller");
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-                System.out.println("Player 1 is: " + player1.main.fullName().get());
+                System.out.println("Player 1 is: " + getCurrentPlayerName());
                 UIController controller = new controller.impl.Controller(2);
                 WUIController wuiController = new WUIController(controller, player1, roomName,this);
                 wuiController.start();
@@ -396,24 +405,26 @@ public class Application extends Controller {
         return ok(linkResult.render(current, current.identities, env));
     }
 
-    private static String getCurrentPlayerName() {
+    public static String getCurrentPlayerName() {
         DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         if (user == null) {
             return null;
         }
-        if (!isNullOrEmpty(user.main.fullName().get())) {
-            return user.main.fullName().get();
-        } else if (!isNullOrEmpty(user.main.firstName().get())) {
-            return user.main.fullName().get();
-        } else if (user.identities != null) {
-            for (BasicProfile prof : user.identities) {
-                if (!isNullOrEmpty(prof.fullName().get())) {
-                    return prof.fullName().get();
-                } else if (!isNullOrEmpty(prof.firstName().get())) {
-                    return prof.firstName().get();
-                }
+        try {
+            if (user.main.fullName().isDefined()) {
+                return user.main.fullName().get();
+            } else if (user.main.firstName().isDefined()) {
+                return user.main.fullName().get();
+            } else if (!user.main.userId().isEmpty()){
+                return user.main.userId();
             }
+            return null;
+        } catch (NoSuchElementException e) {
+            return null;
         }
-        return null;
+    }
+
+    public RuntimeEnvironment getEnv() {
+        return env;
     }
 }

@@ -8,7 +8,7 @@ Html)
     @env.providers.values.map { provider =>
         @if(provider.authMethod == OAuth1 || provider.authMethod == OAuth2) {
             @defining("images/providers/%s.png".format(provider.id)) { imageUrl =>
-                <li><a ng-if="!isUserLoggedIn()" href="@env.routes.authenticationUrl(provider.id, Some("/"))"><img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
+                <li class="noPadding"><a class="loginButton" ng-if="!isUserLoggedIn()" href="@env.routes.authenticationUrl(provider.id, Some("/"))"><img class="noPadding" src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
             }
         }
     }
@@ -22,6 +22,7 @@ Html)
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href='@routes.Assets.versioned("less/header.css")'>
         <script src="../assets/javascripts/navBar.js"></script>
         <link rel="import" href="/assets/modules/gameChat.html">
         <link rel="import" href="/assets/modules/gameChatModal.html">

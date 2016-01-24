@@ -145,12 +145,12 @@ public class WUI1PlayerController implements IObserver {
     public Html play(String command) {
         System.out.println(command);
         tui.processInputLine(command);
-        return gamefield.render(getUI());
+        return gamefield.render(getUI(), homeApplication.getEnv());
     }
 
     public Html start() {
         controller.startGame();
-        return gamefield.render(getUI());
+        return gamefield.render(getUI(), homeApplication.getEnv());
     }
 
 

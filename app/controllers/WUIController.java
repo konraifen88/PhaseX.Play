@@ -190,15 +190,8 @@ public class WUIController implements IObserver {
         return ui;
     }
 
-    public Html play(String command) {
-        System.out.println(command);
-        tui.processInputLine(command);
-        return gamefield.render(getUI());
-    }
-
-    public Html start() {
+    public void start() {
         controller.startGame();
-        return gamefield.render(getUI());
     }
 
     public String getDrawOpen(DemoUser user) {
@@ -331,9 +324,9 @@ public class WUIController implements IObserver {
         m.put("currentPlayerPhase", controller.getCurrentPlayer().getPhase().getDescription());
         m.put("roundState", controller.getRoundState().toString());
         if (controller.getCurrentPlayer().getPlayerNumber() == 0) {
-            m.put("currentPlayerName", player1.main.fullName().get());
+            m.put("currentPlayerName", getUserName(player1));
         } else if (player2 != null) {
-            m.put("currentPlayerName", player2.main.fullName().get());
+            m.put("currentPlayerName", getUserName(player2));
         } else {
             m.put("currentPlayerName", "player2");
         }
@@ -360,5 +353,13 @@ public class WUIController implements IObserver {
     @Override
     public void update(Event event) {
         updateAll();
+    }
+
+    private String getUserName(DemoUser usr){
+        if (usr.main.fullName().isDefined()) {
+            return usr.main.fullName().get();
+        } else {
+            return usr.main.userId();
+        }
     }
 }
