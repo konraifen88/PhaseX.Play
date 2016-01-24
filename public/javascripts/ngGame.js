@@ -47,8 +47,8 @@ phaseXApp.directive('pilecard', function () {
 });
 
 
+var socket;
 phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
-    var socket;
     var getSocket = function (user) {
         var origin = window.location.origin.replace("https", "http");
         origin = origin.replace("http", "ws");
@@ -84,6 +84,8 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
                 console.log("stayingAlive");
             } else {
                 console.log(message);
+                var el = $(message.data);
+                $("#messages").append(el);
             }
 
         });

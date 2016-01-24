@@ -41,8 +41,9 @@
                 }
             },
             addMessage: function () {
-                var el = $("<chat-message username='" + $("#playerName").text() + "' text='" + this.chatMessage + "'></chat-message>");
-                $('#messages').append(el);
+                var el = "<chat-message username='" + $("#playerName").text() + "' text='" + this.chatMessage + "'></chat-message>";
+                socket.send(el);
+//                $('#messages').append(el);
                 this.chatMessage = "";
             }
 
