@@ -109,8 +109,12 @@ public class WUIController implements IObserver {
                 });
 
                 in.onMessage((message) -> {
-                    outPlayer1.write(message);
-                    outPlayer2.write(message);
+                    try {
+                        outPlayer1.write(message);
+                        outPlayer2.write(message);
+                    } catch (NullPointerException e) {
+                        System.out.println("player2 not in game yet");
+                    }
                 });
 
                 this.t = new Thread(() -> {
