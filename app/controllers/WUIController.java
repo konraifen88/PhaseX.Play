@@ -177,6 +177,7 @@ public class WUIController implements IObserver {
     public void setPlayer2(DemoUser user) {
         this.player2 = user;
         this.player2.isInGameOrLobby = true;
+        updateAll();
     }
 
     public WebSocket<String> getSocket(DemoUser du) {
