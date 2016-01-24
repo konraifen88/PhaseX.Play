@@ -146,7 +146,7 @@ public class WUIController implements IObserver {
             this.socketPlayer2 = null;
         }
 
-
+        Application.deleteFromAvailableSockets(roomName);
         this.quitter = new Thread(() -> {
             try {
                 Thread.sleep(10000);

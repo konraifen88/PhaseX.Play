@@ -83,13 +83,17 @@ public class Application extends Controller {
             flash("error", "WTF? Why do you want to play 2 games at the same time?");
             return redirect("/");
         }
+        addToAvailableLobbies(roomName);
+        return chat.chatRoom(getCurrentPlayerName(), roomName, env);
+    }
+
+    public static synchronized void addToAvailableLobbies(String roomName) {
         if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) < 2) {
             availableLobbies.put(roomName, 2);
         } else {
             availableLobbies.put(roomName, 1);
         }
         notifiyAllSocketLobbys();
-        return chat.chatRoom(getCurrentPlayerName(), roomName, env);
     }
 
     public WebSocket<String> createLobbySocket() {
@@ -126,8 +130,18 @@ public class Application extends Controller {
         Gson gson = new Gson();
         String lobbies = gson.toJson(availableLobbies);
         for(WebSocket.Out<String> out: lobbySockets) {
-            out.write(lobbies);
+            try {
+                out.write(lobbies);
+            } catch (NullPointerException npe) {
+                System.out.println("Socket no longer exists");
+            }
+
         }
+    }
+
+    public static void deleteFromAvailableSockets(String roomName) {
+        availableLobbies.remove(roomName);
+        notifiyAllSocketLobbys();
     }
 
     @SecuredAction
@@ -221,6 +235,7 @@ public class Application extends Controller {
                 players.addPlayer2(newPlayer);
                 System.out.println("Player 2 is: " + newPlayer.main.fullName().get());
                 gameControllerMap.get(roomName).setPlayer2(newPlayer);
+                addToAvailableLobbies(roomName);
                 return ok(newGamefield.render(1, roomName, getCurrentPlayerName(), env));
             } else {
 
@@ -232,9 +247,9 @@ public class Application extends Controller {
                 wuiController.start();
                 System.out.println("Mapping Room and Players");
                 gameControllerMap.put(roomName, wuiController);
-
                 Players players = new Players(player1);
                 roomPlayerMap.put(roomName, players);
+                addToAvailableLobbies(roomName);
                 System.out.println(roomPlayerMap.toString());
                 System.out.println(gameControllerMap.toString());
                 System.out.println("init game ready");
