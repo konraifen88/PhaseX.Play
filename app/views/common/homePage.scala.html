@@ -1,10 +1,11 @@
 @(lobbies: String, playerName: String, env: securesocial.core.RuntimeEnvironment)
 
 @scripts = {
+    <script src="https://cdn.rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.min.js"></script>
     <script src="../assets/javascripts/mainPage.js"></script>
 }
 
-@main("PhaseX - Home", playerName, env, scripts){
+@main("PhaseX - Home", playerName, env, scripts) {
     <div id="lobbyApp">
         <div ng-controller="mainCtrl">
             <div id="lobbyData" style="display: none" >@lobbies</div>
@@ -29,8 +30,11 @@
             </div>
             <div class="row">
                 <div class="btn-group-vertical col-xs-offset-4 col-xs-4" role="group">
-                    <a href="/chat/{{lobby}}" class="list-group-item list-group-item-success" ng-repeat="lobby in freeLobbies">{{lobby}}</a>
-                    <a href="#" class="list-group-item list-group-item-danger" ng-repeat="lobby in fullLobbies">{{lobby}}</a>
+                    <div ng-repeat="freelobby in freeLobbies">
+                        <a href="/chat/{{freelobby}}" class="list-group-item list-group-item-success">{{freelobby}}</a>
+                    </div>
+                    <a href="#" class="list-group-item list-group-item-danger" ng-repeat="fulllobby in fullLobbies">
+                        {{fulllobby}}</a>
                 </div>
                 <a class="glyphicon glyphicon-refresh" href="/"></a>
             </div>

@@ -20,6 +20,7 @@ import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
 import play.Logger;
+import play.api.mvc.WebSocket$;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -35,9 +36,7 @@ import views.html.gamefield.newGamefield;
 import views.html.gamefield.gamefield;
 import views.html.login.linkResult;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -52,6 +51,9 @@ public class Application extends Controller {
     public static Semaphore createGameSem = new Semaphore(1);
     public static Semaphore socketSem = new Semaphore(1);
     public static Semaphore updateSem = new Semaphore(1);
+
+
+    public static List<WebSocket.Out<String>> lobbySockets = new LinkedList<>();
 
     private RuntimeEnvironment env;
     private Chat chat;
@@ -87,7 +89,17 @@ public class Application extends Controller {
         } else {
             availableLobbies.put(roomName, 1);
         }
+        notifiyAllSocketLobbys();
         return chat.chatRoom(getCurrentPlayerName(), roomName, env);
+    }
+
+    public WebSocket<String> createLobbySocket() {
+        return new WebSocket<String>() {
+            @Override
+            public void onReady(In<String> in, Out<String> out) {
+                lobbySockets.add(out);
+            }
+        };
     }
 
 
@@ -95,9 +107,23 @@ public class Application extends Controller {
     public Result quitGame(String roomName) {
         System.out.println("Player left the game");
         availableLobbies.remove(roomName);
+        notifiyAllSocketLobbys();
         gameControllerMap.remove(roomName);
         roomPlayerMap.remove(roomName);
         return ok();
+    }
+
+    public WebSocket<String> getLobbySocket() {
+        WebSocket<String> socket = createLobbySocket();
+        return socket;
+    }
+
+    public static void notifiyAllSocketLobbys() {
+        Gson gson = new Gson();
+        String lobbies = gson.toJson(availableLobbies);
+        for(WebSocket.Out<String> out: lobbySockets) {
+            out.write(lobbies);
+        }
     }
 
     @SecuredAction

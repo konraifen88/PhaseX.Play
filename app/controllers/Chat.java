@@ -44,6 +44,7 @@ public class Chat extends Controller {
             } else {
                 availableLobbies.put(roomName, --i);
             }
+            Application.notifiyAllSocketLobbys();
         } else {
             System.err.println("You tried to get an nonexistent room");
         }

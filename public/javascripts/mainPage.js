@@ -7,6 +7,26 @@
 var mainPage = angular.module('mainPage', []);
 mainPage.controller('mainCtrl', function ($scope) {
 
+    var sock;
+
+    $scope.getSocket = function() {
+        var origin = window.location.origin.replace("https", "http");
+        origin = origin.replace("http", "ws");
+        sock = new WebSocket(origin + "/lobbySocket");
+        console.log(sock);
+        sock.onopen =function() {
+            console.log("socket initialised");
+            sock.send("update");
+        };
+        sock.onmessage = function(message) {
+            console.log(message);
+            $scope.lobbies = JSON.parse(message.data);
+            $scope.separateLobbies();
+        };
+    };
+
+    $scope.getSocket();
+
     $scope.getLobbies = function () {
         $scope.lobbies = JSON.parse($("#lobbyData").text());
     };
@@ -23,10 +43,12 @@ mainPage.controller('mainCtrl', function ($scope) {
     };
 
     $('#newLobbyBtn').on('click', $scope.joinLobby);
+    //$scope.freeLobbies = [];
 
     $scope.separateLobbies = function () {
         $scope.freeLobbies = [];
         $scope.fullLobbies = [];
+        console.log("lobbies %o", $scope.lobbies);
         angular.forEach($scope.lobbies, function (value, key) {
             if (parseInt(value) <= 1) {
                 $scope.freeLobbies.push(key);
@@ -34,10 +56,11 @@ mainPage.controller('mainCtrl', function ($scope) {
                 $scope.fullLobbies.push(key);
             }
         });
-
+        $scope.$apply();
+        console.log("free lobbies %o", $scope.freeLobbies);
     };
-    $scope.getLobbies();
-    $scope.separateLobbies();
+    //$scope.getLobbies();
+    //$scope.separateLobbies();
 
 });
 angular.element(document).ready(function() {

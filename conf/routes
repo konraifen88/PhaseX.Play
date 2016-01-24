@@ -7,9 +7,11 @@ GET        /                                              @controllers.Applicati
 GET        /userAware                                     @controllers.Application.userAware
 GET        /link-result                                   @controllers.Application.linkResult
 
+
 # Applicaton
 GET        /instruction                                   @controllers.Application.getInstruction
 GET        /ngApp/*roomName                               @controllers.Application.createGame(roomName: String)
+GET        /lobbySocket                                   controllers.Application.getLobbySocket
 
 GET        /json/update                                   @controllers.Application.getJsonUpdate
 GET        /json/drawHidden                               @controllers.Application.getDrawHidden
