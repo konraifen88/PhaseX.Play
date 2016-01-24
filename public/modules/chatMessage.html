@@ -1,0 +1,64 @@
+<!--
+A single user list with a username, and desc.
+
+##### Example
+
+	<x-chat-list username="name" message="hello" timestamp="1420145273945"></x-chat-list>
+
+-->
+<script src="../bower/time-elements/time-elements.js"></script>
+<dom-module id="chat-message">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                width: 100%;
+                border-bottom: 1px solid #e0e0e0;
+                font-size: 16px;
+                min-height: 72px;
+                z-index: 0;
+            }
+            .user-list {
+                padding: 16px;
+            }
+
+            .username {
+                text-transform: capitalize;
+                font-weight: 500;
+                color: #919191;
+                line-height: 1.3em;
+                max-width: 90%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            .timestamp {
+                font-size: 0.75em;
+                color: #919191;
+            }
+
+        </style>
+
+        <section class="user-list" layout horizontal>
+            <div flex>
+                <div class="username">{{username}}</div>
+                <div class="text">{{text}}</div>
+            </div>
+        </section>
+    </template>
+    <script>
+        Polymer({
+            is: 'chat-message',
+            properties: {
+                username: {
+                    type: String
+                },
+                text: {
+                    type: String
+                }
+            },
+
+        });
+    </script>
+</dom-module>

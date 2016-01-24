@@ -1,5 +1,6 @@
 <link rel="import" href="/assets/bower/paper-input/paper-input.html">
 <link rel="import" href="/assets/bower/iron-icons/iron-icons.html">
+<link rel="import" href="/assets/modules/chatMessage.html">
 
 
 <dom-module id="chat-view">
@@ -40,7 +41,7 @@
                 }
             },
             addMessage: function () {
-                var el = $('<p>' + this.chatMessage + '</p>');
+                var el = $("<chat-message username='" + $("#playerName").text() + "' text='" + this.chatMessage + "'></chat-message>");
                 $('#messages').append(el);
                 this.chatMessage = "";
             }
