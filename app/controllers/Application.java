@@ -97,6 +97,11 @@ public class Application extends Controller {
             @Override
             public void onReady(In<String> in, Out<String> out) {
                 lobbySockets.add(out);
+                in.onMessage((data)-> {
+                    Gson gson = new Gson();
+                    String lobbies = gson.toJson(availableLobbies);
+                    out.write(lobbies);
+                });
             }
         };
     }
