@@ -18,12 +18,8 @@ navBar.controller('navCtrl', function ($scope, $http) {
         return window.location.pathname.search("\/chat\/+") != -1;
     };
 
-    $scope.getEnv = function () {
-        if( !$scope.isUserLoggedIn() ) {
-            $http.get('/getEnv').success(function (data) {
-                $scope.env = parseJSON(data);
-            });
-        }
+    $scope.notInGame = function () {
+        return window.location.pathname.search("\/ngApp\/+") != -1;
     }
 
     $scope.hideLoginIcons = function () {

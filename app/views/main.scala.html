@@ -33,14 +33,9 @@ Html)
                 <div id="playerName" style="display: none" >@playerName</div>
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="#">PhaseX</a>
+                        <a class="navbar-brand" href="/">PhaseX</a>
                     </div>
                     <ul class="nav navbar-nav">
-                        <li ng-if="isHomePage()"><a id="backButton" href="/"><span
-                        class="glyphicon
-                        glyphicon-menu-left"></span>
-                            Back</a>
-                        </li>
                         <li ng-if="isUserLoggedIn()"><a id="profileInformation" href="/link-result"><span
                         class="glyphicon
                         glyphicon-user"></span> Profile
@@ -51,7 +46,7 @@ Html)
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li>
+                        <li ng-if="notInGame()">
                             <a href="#chat" data-toggle="modal" style="padding-top: 4px; padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
                                 <game-chat></game-chat>
                             </a>
