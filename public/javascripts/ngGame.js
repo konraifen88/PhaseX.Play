@@ -111,6 +111,25 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         }
     };
 
+    $scope.statusMessageParser = function (msg) {
+        var ret = "";
+        switch(msg) {
+            case "PlayerTurnNotFinished":
+                ret = "Play a phase or discard";
+                break;
+            case "PlayerTurnFinished":
+                ret = "Add to a phase or discard";
+                break;
+            case "DrawPhase":
+                ret = "Draw a Card";
+                break;
+            default:
+                ret = "THE END";
+        }
+
+        return ret;
+
+    };
 
     $scope.update = function (data) {
         $scope.debug = debug(data);
@@ -123,6 +142,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         $scope.stack4empty = data.map.stack4.length === 0;
         $scope.stack4 = data.map.stack4;
         $scope.roundState = data.map.roundState;
+        $scope.infoMessage = $scope.statusMessageParser($scope.roundState);
         $scope.currentPlayerPhase = data.map.currentPlayerPhase;
         $scope.currentPlayerName = data.map.currentPlayerName;
         $scope.currentPlayerNumber= data.map.currentPlayerStats.playerNumber;

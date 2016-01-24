@@ -6,6 +6,8 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.Application;
+import controllers.Chat;
 import play.cache.Cache;
 import play.libs.Akka;
 import play.libs.Json;
@@ -56,19 +58,24 @@ public class ChatRoom extends UntypedActor {
 
             // For each event received on the socket,
             in.onMessage(event -> {
-
-                // Send a Talk message to the room.
-                defaultRoom.tell(new Talk(username, event.get("text").asText()), null);
+                //System.out.println(event.elements());
+                if(event.get("stay") != null && event.get("stay").asText().equals("stayingAlive")) {
+                    System.out.println("Staying Alive");
+                } else {
+                    System.out.println("got a Message");
+                    defaultRoom.tell(new Talk(username, event.get("text").asText()), null);
+                }
 
             });
 
             // When the socket is closed.
             in.onClose(() -> {
-
+                System.out.println("Channel for user " + username + " closed.");
                 // Send a Quit message to the room.
                 defaultRoom.tell(new Quit(username), null);
-
+                Chat.playerLeftChat(roomName);
             });
+
 
         } else {
 
@@ -154,6 +161,7 @@ public class ChatRoom extends UntypedActor {
             this.channel = channel;
         }
     }
+
 
     public static class Talk {
 

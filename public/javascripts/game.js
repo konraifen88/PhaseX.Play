@@ -2,12 +2,15 @@
  * Created by tabuechn on 25.11.2015.
  */
 var socket;
-var playerCards = [["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"], ["1", "Blue"]];
+var playerCards = [["ONE", "BLUE"], ["ONE", "BLUE"], ["ONE", "BLUE"], ["ONE", "BLUE"],["ONE", "BLUE"], ["ONE", "BLUE"],["ONE", "BLUE"], ["ONE", "BLUE"],["ONE", "BLUE"], ["ONE", "BLUE"],["ONE", "BLUE"]];
 var opponentsCards = 10;
 
 var discardCard = null;
+var discardIsEmtpy = false;
 
-var stack1 = [['1', 'Yellow'], ['1', 'Yellow']];
+var roundState = "StartPhase";
+
+var stack1 = [['ONE', 'YELLOW'], ['ONE', 'YELLOW']];
 
 var stack2 = null;
 
@@ -18,8 +21,12 @@ var stack4 = null;
 var appURL = "phasex.herokuapp.com";
 //var appURL = "localhost:9000";
 
+var userID;
+
+
 $(function () {
-    updateGameField();
+    userID = $("#UID").text();
+    connect();
 });
 
 
@@ -66,34 +73,40 @@ function fillStack(stack) {
             stackarray = stack4;
     }
     //stackID += " .stackCards";
-    if (stackarray === null) {
+    if (stackarray === null || stackarray.length === 0) {
         var emptyCard = new Image;
         emptyCard.src = "/assets/images/Card/CardNO.png";
         emptyCard.className = "StackCard";
         $(stackID).append(emptyCard);
     } else {
         var cards = $(stackID);
-        stackarray.forEach(function (entry) {
-            cards.append(createCard(entry[0], entry[1], "StackCard"));
-        });
+        for(var cardCounter = 0; cardCounter < stackarray.length; cardCounter++) {
+            var entry = stackarray[cardCounter];
+            cards.append(createCard(entry.number, entry.color, "StackCard"));
+        }
     }
 }
+
 
 function createHand(hand) {
     var handID;
     var images;
+    var i;
     if (hand === "player") {
         handID = "#playerCardsContainer";
         images = "#playerCardsContainer img";
-        playerCards.forEach(function (entry) {
-            $(handID).append(createCard(entry[0], entry[1], "Card"));
+        $(handID).empty();
+        for(i=0; i < playerCards.length; i += 1) {
+            var entry = playerCards[i];
+            $(handID).append(createCard(entry.number, entry.color, "Card"));
 
-        });
+        }
     } else {
         handID = "#opponentCardsContainer";
         images = "#opponentCardsContainer img";
+        $(handID).empty();
         for (i = 0; i < opponentsCards; i += 1) {
-            $(handID).append(createCard("Back", "Back", "Card"));
+            $(handID).append(createCard("BACK", "BACK", "Card"));
         }
     }
 
@@ -136,6 +149,20 @@ function createHand(hand) {
     }
 }
 
+function getSelectedCards() {
+    var allCards = $("#playerCardsContainer").find("img");
+    var returnString = "";
+    for(var cardCounter = 0; cardCounter < allCards.length; cardCounter += 1) {
+        var classes = allCards[cardCounter].className.split(" ");
+        for (var classCounter = 0; classCounter < classes.length; classCounter += 1) {
+            if (classes[classCounter] === "CardUp") {
+                returnString += (" " + cardCounter);
+            }
+        }
+    }
+    return returnString;
+}
+
 function updateGameField() {
 
 
@@ -154,36 +181,94 @@ function updateGameField() {
         });
     });
 
-    $('#discardPile').append(createCard(null, null, "PileCard"));
+    var discardElement = $("#discardPile");
+
+    discardElement.empty();
+    discardElement.off();
+    if(discardIsEmtpy) {
+        discardElement.append(createCard(null, null, "PileCard"));
+    } else {
+        discardElement.append(createCard(discardCard.number, discardCard.color, "PileCard"));
+    }
+    discardElement.click(discardClick);
 
 
-    fillStack("stack1");
-    fillStack("stack2");
-    fillStack("stack3");
-    fillStack("stack4");
+    for(var stackCounter = 1; stackCounter <= 4; stackCounter += 1) {
+        var stackString = "#stack" + stackCounter;
+        $(stackString).empty();
+        fillStack(stackString.substring(1,stackString.length));
+    }
 }
 
-(function connect() {
-    socket = new WebSocket("ws://" + appURL + "/socket");
+function discardClick() {
+    if(roundState == "DrawPhase") {
+        socket.send("drawOpen");
+    }
+    if(roundState == "PlayerTurnFinished" || roundState == "PlayerTurnNotFinished") {
+        var selectedCards = "discard" + getSelectedCards();
+        if (selectedCards.split(" ").length == 2) {
+            socket.send(selectedCards);
+        } else {
+            alert("You cannot discard more than one Card");
+        }
+    }
+}
 
-    //message('Socket Status: ' + socket.readyState + ' (ready)');
+function stackClick(stackNumber) {
+    if(roundState === "PlayerTurnNotFinished") {
+        var selected = "playPhase" + getSelectedCards();
+        if(selected.length > 9) {
+            socket.send(selected);
+        }
+    } if(roundState === "PlayerTurnFinished") {
+        var selected = "addToPhase " + stackNumber + getSelectedCards();
+        if(selected.split(" ").length != 3 ) {
+            alert("You can only add 1 Card to a Phase");
+        } else {
+            socket.send(selected);
+        }
+    }
+}
 
+function drawHidden() {
+    if(roundState == "DrawPhase") {
+        socket.send("drawHidden");
+    }
+}
+
+function connect() {
+    var origin = window.location.origin.replace("http","ws");
+    socket = new WebSocket(origin + "/singlePlayer/socket/" + userID);
 
     socket.onopen = function () {
         console.log('Socket Status: ' + socket.readyState + ' (open)');
-        socket.send("DISCARD");
+        socket.send("update");
     };
 
     socket.onmessage = function (msg) {
-        console.log(msg);
-        var data = JSON.parse(msg.data);
-        console.log(data);
-        //changeState(data);
+        if(msg.data != "stayingAlive") {
+            console.log(msg.data);
+            var data = JSON.parse(msg.data);
+            console.log(data);
+            playerCards = data.map.playerHand;
+            opponentsCards = data.map.opponent.length;
+            stack1 = data.map.stack1;
+            stack2 = data.map.stack2;
+            stack3 = data.map.stack3;
+            stack4 = data.map.stack4;
+            roundState = data.map.roundState;
+            discardIsEmtpy = data.map.discardIsEmpty;
+            discardCard = data.map.discard[data.map.discard.length - 1];
+            updateGameField();
+        } else {
+            console.log("stayingAlive");
+        }
     };
 
     socket.onclose = function () {
         console.log('Socket Status: ' + socket.readyState + ' (Closed)');
     };
 
+    console.log("Socket Init done");
 
-})();
+}

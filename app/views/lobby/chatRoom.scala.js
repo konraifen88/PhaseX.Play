@@ -47,6 +47,7 @@ $(function () {
                 li.textContent = this;
                 $("#members").append(li);
             })
+            $('#messages')[0].scrollTop = 9999;
         }
 
     };
@@ -58,8 +59,29 @@ $(function () {
         }
     };
 
+    var errorHandler = function (event) {
+        console.log("Error!");
+        console.log(event);
+    };
+
     $("#talk").keypress(handleReturnKey);
 
-    chatSocket.onmessage = receiveEvent
+    chatSocket.onmessage = receiveEvent;
+    chatSocket.onerror = errorHandler;
+    console.log("init ready");
+    (function() {
+        console.log("stayingAlive");
+        if(chatSocket.readyState == 1) {
+            console.log("sending staying Alive");
+            var payload = new Object();
+            payload.stay = "stayingAlive";
+            chatSocket.send(JSON.stringify(payload));
+            setTimeout(arguments.callee,30000);
+        }else if(chatSocket.readyState == 0) {
+            setTimeout(arguments.callee,200);
+        } else {
+            console.log("Socket closed.")
+        }
+    })();
 
 });

@@ -1,12 +1,17 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.Inject;
+import com.sun.javafx.collections.MappingChange;
 import components.ChatRoom;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import securesocial.core.RuntimeEnvironment;
 import views.html.lobby.chatRoom;
+
+import java.rmi.UnexpectedException;
+import java.util.Map;
 
 /**
  * Main-Sources from
@@ -19,6 +24,8 @@ import views.html.lobby.chatRoom;
  */
 public class Chat extends Controller {
 
+    private static Map<String, Integer> availableLobbies = Application.availableLobbies;
+
     /**
      * Display the chat room.
      */
@@ -30,9 +37,25 @@ public class Chat extends Controller {
         return ok(chatRoom.render(username, roomName, env));
     }
 
+    public static  void playerLeftChat(String roomName) {
+        System.out.println("Player in Room " + roomName + " Left");
+        Integer i = availableLobbies.get(roomName);
+        if(i != null) {
+            if(i == 1) {
+                availableLobbies.remove(roomName);
+            } else {
+                availableLobbies.put(roomName,--i);
+            }
+        } else {
+            System.err.println("You tried to get an nonexistent room");
+        }
+
+    }
+
+    /*
     public Result chatRoomWithoutEnv(String username, String roomName) {
         return chatRoom(username, roomName, null);
-    }
+    }*/
 
     public Result chatRoomJs(String username, final String roomName) {
 
@@ -50,6 +73,7 @@ public class Chat extends Controller {
                 } catch (Exception ex) {
                     //ex.printStackTrace();
                 }
+
             }
         };
     }
