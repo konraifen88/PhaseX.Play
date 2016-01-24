@@ -27,10 +27,6 @@ mainPage.controller('mainCtrl', function ($scope) {
 
     $scope.getSocket();
 
-    $scope.getLobbies = function () {
-        $scope.lobbies = JSON.parse($("#lobbyData").text());
-    };
-
     $scope.joinLobby = function () {
         var newLobbyName = $('#newLobbyInput').val();
         var lobbyRegExp = new RegExp('^[a-zA-Z0-9]+$');
@@ -41,6 +37,10 @@ mainPage.controller('mainCtrl', function ($scope) {
         }
         //window.location.replace('/chat/' + $('#newLobbyInput').val());
     };
+
+    $scope.isError = function () {
+        return $("#errorState").text() != "";
+    }
 
     $('#newLobbyBtn').on('click', $scope.joinLobby);
     //$scope.freeLobbies = [];

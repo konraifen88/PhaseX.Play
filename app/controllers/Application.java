@@ -68,9 +68,7 @@ public class Application extends Controller {
 
     @UserAwareAction
     public Result getMainPage() {
-        Gson gson = new Gson();
-        String lobbies = gson.toJson(availableLobbies);
-        return ok(homePage.render(lobbies, getCurrentPlayerName(), env));
+        return ok(homePage.render(getCurrentPlayerName(), env));
     }
 
     @UserAwareAction
@@ -82,6 +80,7 @@ public class Application extends Controller {
     public Result goToChatRoom(String roomName) {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         if(player.isInGameOrLobby) {
+            flash("error", "WTF? Why do you want to play 2 games at the same time?");
             return redirect("/");
         }
         if (availableLobbies.containsKey(roomName) && availableLobbies.get(roomName) < 2) {

@@ -1,4 +1,4 @@
-@(lobbies: String, playerName: String, env: securesocial.core.RuntimeEnvironment)
+@(playerName: String, env: securesocial.core.RuntimeEnvironment)
 
 @scripts = {
     <script src="https://cdn.rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.min.js"></script>
@@ -8,7 +8,16 @@
 @main("PhaseX - Home", playerName, env, scripts) {
     <div id="lobbyApp">
         <div ng-controller="mainCtrl">
-            <div id="lobbyData" style="display: none" >@lobbies</div>
+            @if(flash.containsKey("error")) {
+
+                <div class="alert alert-danger">
+                    <p>
+                        @flash.get("error")
+                    </p>
+                </div>
+
+            }
+
             <div align="center">
                 <img src="assets/images/Logo.png"/>
             </div>
