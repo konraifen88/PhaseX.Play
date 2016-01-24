@@ -1,0 +1,36 @@
+<link rel="import" href="/assets/bower/polymer/polymer.html">
+<script src="/assets/bower/webcomponentsjs/webcomponents-lite.min.js"></script>
+<link rel="import" href="/assets/bower/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="/assets/bower/paper-badge/paper-badge.html">
+<link rel="import" href="/assets/bower/iron-icons/iron-icons.html">
+<link rel="import" href="/assets/bower/iron-icons/social-icons.html">
+
+<dom-module id="game-chat">
+    <template>
+        <style>
+            .chatButtonItem {
+            }
+        </style>
+
+        <div class="chatButtonItem">
+            <paper-icon-button id="icon" icon="account-box" alt="person">
+            </paper-icon-button>
+
+        </div>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "game-chat",
+            properties: {},
+            isActive: false,
+            onPress: function () {
+                this.isActive = !this.isActive;
+            }
+
+
+        })
+    </script>
+</dom-module>

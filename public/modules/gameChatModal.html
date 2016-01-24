@@ -1,0 +1,50 @@
+<link rel="import" href="/assets/bower/paper-input/paper-input.html">
+<link rel="import" href="/assets/bower/iron-icons/iron-icons.html">
+
+
+<dom-module id="chat-view">
+    <template>
+        <div class="modal fade" id="{{modalId}}" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Chat</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="messages"></div>
+                        <div class="row">
+                            <paper-input class="col-xs-9" label="Enter Message" no-label-float char-counter maxlength="50" on-keydown="checkForEnter" value="{{ chatMessage }}"></paper-input>
+                            <a class="btn btn-success col-xs-2" on-click="addMessage">Send</a>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-danger" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: "chat-view",
+            properties: {
+                modalId: {
+                    type: String
+                }
+            },
+            checkForEnter: function (e) {
+                // check if 'enter' was pressed
+                if (e.keyCode === 13) {
+                    this.addMessage()
+                }
+            },
+            addMessage: function () {
+                var el = $('<p>' + this.chatMessage + '</p>');
+                $('#messages').append(el);
+                this.chatMessage = "";
+            }
+
+        });
+    </script>
+</dom-module>

@@ -4,15 +4,15 @@ Html)
 @import securesocial.core.AuthenticationMethod._
 
 @login = {
-    @if(playerName != ""){
-        @env.providers.values.map { provider =>
-            @if(provider.authMethod == OAuth1 || provider.authMethod == OAuth2) {
-                @defining("images/providers/%s.png".format(provider.id)) { imageUrl =>
-                    <li><a ng-if="!isUserLoggedIn()" href="@env.routes.authenticationUrl(provider.id, Some("/"))"><img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
-                }
+@if(playerName != "") {
+    @env.providers.values.map { provider =>
+        @if(provider.authMethod == OAuth1 || provider.authMethod == OAuth2) {
+            @defining("images/providers/%s.png".format(provider.id)) { imageUrl =>
+                <li><a ng-if="!isUserLoggedIn()" href="@env.routes.authenticationUrl(provider.id, Some("/"))"><img src="@securesocial.controllers.routes.Assets.at(imageUrl)"/></a></li>
             }
         }
     }
+}
 }
 <html>
     <head>
@@ -23,6 +23,8 @@ Html)
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
         <script src="../assets/javascripts/navBar.js"></script>
+        <link rel="import" href="/assets/modules/gameChat.html">
+        <link rel="import" href="/assets/modules/gameChatModal.html">
         @scripts
     </head>
     <body>
@@ -34,7 +36,7 @@ Html)
                         <a class="navbar-brand" href="#">PhaseX</a>
                     </div>
                     <ul class="nav navbar-nav">
-                        <li ng-if="isHomePage()"><a id="backButton" href="#" onclick="history.go(-1);"><span
+                        <li ng-if="isHomePage()"><a id="backButton" href="/"><span
                         class="glyphicon
                         glyphicon-menu-left"></span>
                             Back</a>
@@ -49,20 +51,28 @@ Html)
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#chat" data-toggle="modal" style="padding-top: 4px; padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+                                <game-chat></game-chat>
+                            </a>
+                        </li>
                         <li ng-if="notInLobby()"><a id="disconnect" href="@routes.Application.getMainPage()"><span
                         class="glyphicon
                         glyphicon glyphicon-log-out"></span>
                             Leave Lobby</a>
                         </li>
-                        <li ng-if="isUserLoggedIn()"><a id="logout" href="/auth/logout"><span class="glyphicon glyphicon-off"></span>Logout</a></li>
+                        <li ng-if="isUserLoggedIn()"><a id="logout" href="/auth/logout"><span class="glyphicon glyphicon-off"></span>
+                            Logout</a></li>
                         @login
-                        <li ng-if="!isUserLoggedIn()"><a id="loginUserPass" href="/auth/login"><span class="glyphicon glyphicon-log-in"></span> Login with Account</a></li>
+                        <li ng-if="!isUserLoggedIn()"><a id="loginUserPass" href="/auth/login"><span class="glyphicon glyphicon-log-in"></span>
+                            Login with Account</a></li>
                     </ul>
                 </div>
             </nav>
         </div>
         <div class="content">
-            @content
+        @content
         </div>
+        <chat-view modal-id="chat"></chat-view>
     </body>
 </html>
