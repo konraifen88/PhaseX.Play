@@ -59,8 +59,20 @@ mainPage.controller('mainCtrl', function ($scope) {
         $scope.$apply();
         console.log("free lobbies %o", $scope.freeLobbies);
     };
-    //$scope.getLobbies();
-    //$scope.separateLobbies();
+    (function() {
+        console.log("stayingAlive");
+        if(sock.readyState == 1) {
+            console.log("sending staying Alive");
+            var payload = new Object();
+            payload.stay = "stayingAlive";
+            sock.send(JSON.stringify(payload));
+            setTimeout(arguments.callee,30000);
+        }else if(sock.readyState == 0) {
+            setTimeout(arguments.callee,200);
+        } else {
+            console.log("Socket closed.")
+        }
+    })();
 
 });
 angular.element(document).ready(function() {
