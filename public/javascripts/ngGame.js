@@ -85,7 +85,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
             } else {
                 console.log(message);
                 var el = $(message.data);
-                $("#messages").append(el);
+                $("#messagesContainer").append(el);
             }
 
         });

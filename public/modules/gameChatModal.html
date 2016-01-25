@@ -13,10 +13,10 @@
                     </div>
                     <div class="modal-body">
 
-                        <div id="messages"></div>
+                        <div id="messagesContainer"></div>
                         <div class="row">
                             <paper-input class="col-xs-9" label="Enter Message" no-label-float char-counter maxlength="50" on-keydown="checkForEnter" value="{{ chatMessage }}"></paper-input>
-                            <a class="btn btn-success col-xs-2" on-click="addMessage">Send</a>
+                            <a id="buttonSend" class="btn btn-success col-xs-2" on-click="addMessage">Send</a>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -43,7 +43,6 @@
             addMessage: function () {
                 var el = "<chat-message username='" + $("#playerName").text() + "' text='" + this.chatMessage + "'></chat-message>";
                 socket.send(el);
-//                $('#messages').append(el);
                 this.chatMessage = "";
             }
 
