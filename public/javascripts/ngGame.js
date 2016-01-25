@@ -126,7 +126,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
                 ret = "Play a phase or discard";
                 break;
             case "PlayerTurnFinished":
-                ret = "Add to a phase or discard";
+                ret = "Discard all cards";
                 break;
             case "DrawPhase":
                 ret = "Draw a Card";
