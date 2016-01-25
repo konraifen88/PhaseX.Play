@@ -7,7 +7,7 @@
 var navBar = angular.module('navBar', []);
 navBar.controller('navCtrl', function ($scope, $http) {
     $scope.isHomePage = function () {
-        return !(window.location.pathname === "/");
+        return window.location.pathname === "/";
     };
 
     $scope.isUserLoggedIn = function () {
