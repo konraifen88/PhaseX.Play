@@ -134,7 +134,18 @@ public class WUIController implements IObserver {
 
     private void quitEvent(boolean isPlayer1) {
 
-        if(player2 == null) {
+        if(player2 == null && isPlayer1) {
+            if(quitter != null) {
+                quitter.interrupt();
+            }
+            Application.deleteRoom(roomName);
+            return;
+        }
+
+        if(player1 == null && !isPlayer1) {
+            if(quitter != null) {
+                quitter.interrupt();
+            }
             Application.deleteRoom(roomName);
             return;
         }

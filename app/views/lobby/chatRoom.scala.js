@@ -30,6 +30,9 @@ $(function () {
             $("#onChat").show()
         }
         if (data.message === "GAME") {
+            setTimeout(function(){
+                //do what you need here
+            }, 1000);
             window.location.replace("../ngApp/" + '@roomName');
         } else {
             // Create the message element
@@ -48,6 +51,7 @@ $(function () {
                 $("#members").append(li);
             })
             $('#messages')[0].scrollTop = 9999;
+
         }
 
     };

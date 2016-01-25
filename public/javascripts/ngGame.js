@@ -47,6 +47,7 @@ phaseXApp.directive('pilecard', function () {
 });
 
 
+var messageCounter = 0;
 var socket;
 phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
     var getSocket = function (user) {
@@ -86,6 +87,11 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
                 console.log(message);
                 var el = $(message.data);
                 $("#messagesContainer").append(el);
+                $('#messagesContainer')[0].scrollTop = 9999;
+                if (!(message.data.indexOf("username='" + $('#playerName').text()) > -1) && !$("#chat").hasClass("in")) {
+                    messageCounter += 1;
+                    $('#gameChat')[0].num = messageCounter;
+                }
             }
 
         });

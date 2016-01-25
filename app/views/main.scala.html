@@ -52,7 +52,7 @@ Html)
                     <ul class="nav navbar-nav navbar-right">
                         <li ng-if="notInGame()">
                             <a href="#chat" data-toggle="modal" style="padding-top: 4px; padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
-                                <game-chat></game-chat>
+                                <game-chat id="gameChat"></game-chat>
                             </a>
                         </li>
                         <li ng-if="notInLobby()"><a id="disconnect" href="@routes.Application.getMainPage()"><span

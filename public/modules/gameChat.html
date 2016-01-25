@@ -3,28 +3,35 @@
 <link rel="import" href="/assets/bower/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="/assets/bower/paper-badge/paper-badge.html">
 <link rel="import" href="/assets/bower/iron-icons/iron-icons.html">
-<link rel="import" href="/assets/bower/iron-icons/social-icons.html">
 
 <dom-module id="game-chat">
     <template>
         <style>
-            .chatButtonItem {
+            #numberBadge{
+                left: 23px;
+                top: 2px;
             }
         </style>
 
         <div class="chatButtonItem">
-            <paper-icon-button id="icon" icon="account-box" alt="person">
-            </paper-icon-button>
-
+            <paper-icon-button on-click="resetNumMessage" id="icon" icon="account-box" alt="person"></paper-icon-button>
+            <paper-badge id="numberBadge" for="icon" label="{{num}}" class="red"></paper-badge>
         </div>
-
-
     </template>
 
     <script>
         Polymer({
             is: "game-chat",
-            properties: {}
+            properties: {
+                num : {
+                    type: Number,
+                    value: 0
+                }
+            },
+            resetNumMessage: function() {
+                this.num = 0;
+                messageCounter = 0;
+            }
         })
     </script>
 </dom-module>

@@ -144,7 +144,6 @@ public class ChatRoom extends UntypedActor {
 
             ArrayNode m = event.putArray("members");
             members.keySet().forEach(m::add);
-
             channel.write(event);
         }
     }
