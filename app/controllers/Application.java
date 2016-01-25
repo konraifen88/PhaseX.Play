@@ -89,8 +89,8 @@ public class Application extends Controller {
 
     public static synchronized void addToAvailableLobbies(String roomName){
         try {
-            //lobbySem.acquire();
-
+            lobbySem.acquire();
+            System.out.println("adding to room" + roomName);
             if(availableLobbies.containsKey(roomName)) {
                 int numberInRoom = availableLobbies.get(roomName);
                 availableLobbies.put(roomName,++numberInRoom);
@@ -99,17 +99,18 @@ public class Application extends Controller {
             }
 
             notifiyAllSocketLobbys();
-        //} catch (InterruptedException itre) {
+        } catch (InterruptedException itre) {
 
         } finally {
-            //lobbySem.release();
+            lobbySem.release();
         }
 
     }
 
     public static synchronized void deleteFromAvailableSockets(String roomName) {
         try {
-            //lobbySem.acquire();
+            lobbySem.acquire();
+            System.out.println("deleting from room" + roomName);
             int numberInRoom = availableLobbies.get(roomName);
             if(numberInRoom > 1) {
                 availableLobbies.put(roomName, --numberInRoom);
@@ -117,12 +118,18 @@ public class Application extends Controller {
                 availableLobbies.remove(roomName);
             }
             notifiyAllSocketLobbys();
-        //} catch (InterruptedException itre) {
+        } catch (InterruptedException itre) {
 
         } finally {
-            //lobbySem.release();
+            lobbySem.release();
         }
 
+    }
+
+    public static synchronized void deleteRoom(String roomName) {
+        gameControllerMap.remove(roomName);
+        roomPlayerMap.remove(roomName);
+        deleteFromAvailableSockets(roomName);
     }
 
     public WebSocket<String> createLobbySocket() {
@@ -134,6 +141,10 @@ public class Application extends Controller {
                     Gson gson = new Gson();
                     String lobbies = gson.toJson(availableLobbies);
                     out.write(lobbies);
+                });
+
+                in.onClose(()-> {
+                    lobbySockets.remove(out);
                 });
             }
         };

@@ -267,9 +267,13 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         }
     };
 
-    $http.get('/json/update').success(function (data) {
-        $scope.update(data);
-    });
+    (function() {
+        $http.get('/json/update').success(function (data) {
+            console.log("updating now");
+            $scope.update(data);
+        });
+    })();
+
 });
 
 angular.element(document).ready(function() {

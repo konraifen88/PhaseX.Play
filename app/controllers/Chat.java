@@ -38,7 +38,8 @@ public class Chat extends Controller {
     public static void playerLeftChat(String roomName) {
         System.out.println("Player in Room " + roomName + " Left");
         Integer i = availableLobbies.get(roomName);
-        if (i != null) {
+        Application.deleteFromAvailableSockets(roomName);
+        /*if (i != null) {
             if (i == 1) {
                 availableLobbies.remove(roomName);
             } else {
@@ -47,7 +48,7 @@ public class Chat extends Controller {
             Application.notifiyAllSocketLobbys();
         } else {
             System.err.println("You tried to get an nonexistent room");
-        }
+        }*/
 
     }
 

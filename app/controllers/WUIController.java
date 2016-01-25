@@ -133,11 +133,11 @@ public class WUIController implements IObserver {
     }
 
     private void quitEvent(boolean isPlayer1) {
-        /*
+
         if(player2 == null) {
-            this.homeApplication.quitGame(roomName);
+            Application.deleteRoom(roomName);
             return;
-        }*/
+        }
 
         WebSocket.Out otherPlayer;
         if (isPlayer1) {
