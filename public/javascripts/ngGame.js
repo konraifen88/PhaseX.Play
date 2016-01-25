@@ -161,7 +161,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
         $scope.state = data.map.state;
         $scope.selectedCards = [];
         if($scope.roundState === "EndPhase") {
-            if($scope.currentPlayerNumber == $scope.playerNumber) {
+            if(data.map.winner == $scope.playerNumber) {
                 window.location.replace("/winner");
             } else {
                 window.location.replace("/loser");

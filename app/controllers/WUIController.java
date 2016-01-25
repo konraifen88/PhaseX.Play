@@ -346,6 +346,11 @@ public class WUIController implements IObserver {
         } else {
             m.put("currentPlayerName", "player2");
         }
+        if(controller.getWinner() == null) {
+            m.put("winner",5);
+        } else {
+            m.put("winner",controller.getWinner().getPlayerNumber());
+        }
         Message message = new Message(m);
         return message;
     }
