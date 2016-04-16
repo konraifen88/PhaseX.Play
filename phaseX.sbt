@@ -18,8 +18,9 @@ libraryDependencies ++= Seq("ws.securesocial" %% "securesocial" % "master-SNAPSH
   "de.htwg.se.CardGame.PhaseX" % "PhaseX" % "1.0-SNAPSHOT",
   "com.google.code.gson" % "gson" % "2.5")
 
-resolvers += Resolver.sonatypeRepo("snapshots")
+
 resolvers += "PhaseX_Nexus" at "http://nexus-phasex.rhcloud.com/content/groups/public/"
+resolvers += Resolver.sonatypeRepo("snapshots")
 
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options")
 

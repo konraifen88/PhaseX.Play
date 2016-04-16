@@ -1,26 +1,20 @@
 package controllers;
 
-
 import controller.UIController;
 import model.card.ICard;
 import model.card.impl.Card;
-import model.deckOfCards.IDeckOfCards;
-import model.deckOfCards.impl.DeckOfCards;
+import model.deck.IDeckOfCards;
+import model.deck.impl.DeckOfCards;
 import model.stack.ICardStack;
 import models.Message;
 import phasex.Init;
-import play.api.mvc.WebSocket$;
-import play.libs.F;
-import play.mvc.Results;
 import play.mvc.WebSocket;
 import play.mvc.WebSocket.Out;
-import play.twirl.api.Html;
 import securesocial.core.java.SecuredAction;
 import service.DemoUser;
 import util.Event;
 import util.IObserver;
 import view.tui.TUI;
-import views.html.gamefield.gamefield;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -71,7 +65,7 @@ public class WUIController implements IObserver {
                 this.socketPlayer1 = createSocket(true);
             }
             return this.socketPlayer1;
-        } else  {
+        } else {
             if (this.socketPlayer2 == null) {
                 System.out.println("Player 2 rejoined the game");
                 this.quitter.interrupt();
@@ -88,7 +82,7 @@ public class WUIController implements IObserver {
             @Override
             public void onReady(In<String> in, Out<String> out) {
                 System.out.println("Init Socket for Player1");
-                if(isPlayer1) {
+                if (isPlayer1) {
                     outPlayer1 = out;
                 } else {
                     outPlayer2 = out;
@@ -98,7 +92,7 @@ public class WUIController implements IObserver {
                 in.onClose(() -> {
                     System.out.println("Player1 has quit the game");
                     running = false;
-                    if(isPlayer1) {
+                    if (isPlayer1) {
                         player1.isInGameOrLobby = false;
                     } else {
                         player2.isInGameOrLobby = false;
@@ -134,16 +128,16 @@ public class WUIController implements IObserver {
 
     private void quitEvent(boolean isPlayer1) {
 
-        if(player2 == null && isPlayer1) {
-            if(quitter != null) {
+        if (player2 == null && isPlayer1) {
+            if (quitter != null) {
                 quitter.interrupt();
             }
             Application.deleteRoom(roomName);
             return;
         }
 
-        if(player1 == null && !isPlayer1) {
-            if(quitter != null) {
+        if (player1 == null && !isPlayer1) {
+            if (quitter != null) {
                 quitter.interrupt();
             }
             Application.deleteRoom(roomName);
@@ -185,8 +179,9 @@ public class WUIController implements IObserver {
         return player2;
     }
 
-    public void setPlayer2(DemoUser user) {
+    public void setPlayer2(DemoUser user, String userName) {
         this.player2 = user;
+        controller.setSecondPlayerName(userName);
         this.player2.isInGameOrLobby = true;
         updateAll();
     }
@@ -206,8 +201,8 @@ public class WUIController implements IObserver {
         return ui;
     }
 
-    public void start() {
-        controller.startGame();
+    public void start(String currentPlayerName) {
+        controller.startGame(currentPlayerName);
     }
 
     public String getDrawOpen(DemoUser user) {
@@ -346,10 +341,10 @@ public class WUIController implements IObserver {
         } else {
             m.put("currentPlayerName", "player2");
         }
-        if(controller.getWinner() == null) {
-            m.put("winner",5);
+        if (controller.getWinner() == null) {
+            m.put("winner", 5);
         } else {
-            m.put("winner",controller.getWinner().getPlayerNumber());
+            m.put("winner", controller.getWinner().getPlayerNumber());
         }
         Message message = new Message(m);
         return message;
@@ -376,7 +371,7 @@ public class WUIController implements IObserver {
         updateAll();
     }
 
-    private String getUserName(DemoUser usr){
+    private String getUserName(DemoUser usr) {
         if (usr.main.fullName().isDefined()) {
             return usr.main.fullName().get();
         } else {

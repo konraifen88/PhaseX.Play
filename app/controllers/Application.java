@@ -20,7 +20,6 @@ import com.google.inject.Inject;
 import components.Players;
 import controller.UIController;
 import play.Logger;
-import play.api.mvc.WebSocket$;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.WebSocket;
@@ -32,15 +31,12 @@ import securesocial.core.java.UserAwareAction;
 import service.DemoUser;
 import views.html.common.homePage;
 import views.html.common.instruction;
-import views.html.gamefield.newGamefield;
 import views.html.gamefield.gamefield;
+import views.html.gamefield.newGamefield;
 import views.html.login.linkResult;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 
 public class Application extends Controller {
     public static Logger.ALogger logger = Logger.of("application.controllers.Application");
@@ -64,27 +60,6 @@ public class Application extends Controller {
     public Application(RuntimeEnvironment env) {
         this.env = env;
         chat = new Chat();
-    }
-
-    @UserAwareAction
-    public Result getMainPage() {
-        return ok(homePage.render(getCurrentPlayerName(), env));
-    }
-
-    @UserAwareAction
-    public Result getInstruction() {
-        return ok(instruction.render(getCurrentPlayerName(), env));
-    }
-
-    @SecuredAction
-    public Result goToChatRoom(String roomName) {
-        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        if(player.isInGameOrLobby) {
-            flash("error", "WTF? Why do you want to play 2 games at the same time?");
-            return redirect("/");
-        }
-        addToAvailableLobbies(roomName);
-        return chat.chatRoom(getCurrentPlayerName(), roomName, env);
     }
 
     public static synchronized void addToAvailableLobbies(String roomName){
@@ -132,6 +107,59 @@ public class Application extends Controller {
         deleteFromAvailableSockets(roomName);
     }
 
+    public static void notifiyAllSocketLobbys() {
+        Gson gson = new Gson();
+        String lobbies = gson.toJson(availableLobbies);
+        for (WebSocket.Out<String> out : lobbySockets) {
+            try {
+                out.write(lobbies);
+            } catch (NullPointerException npe) {
+                System.out.println("Socket no longer exists");
+            }
+
+        }
+    }
+
+    public static String getCurrentPlayerName() {
+        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if (user == null) {
+            return null;
+        }
+        try {
+            if (user.main.fullName().isDefined()) {
+                return user.main.fullName().get();
+            } else if (user.main.firstName().isDefined()) {
+                return user.main.fullName().get();
+            } else if (!user.main.userId().isEmpty()) {
+                return user.main.userId();
+            }
+            return null;
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    @UserAwareAction
+    public Result getMainPage() {
+        return ok(homePage.render(getCurrentPlayerName(), env));
+    }
+
+    @UserAwareAction
+    public Result getInstruction() {
+        return ok(instruction.render(getCurrentPlayerName(), env));
+    }
+
+    @SecuredAction
+    public Result goToChatRoom(String roomName) {
+        DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
+        if (player.isInGameOrLobby) {
+            flash("error", "WTF? Why do you want to play 2 games at the same time?");
+            return redirect("/");
+        }
+        addToAvailableLobbies(roomName);
+        return chat.chatRoom(getCurrentPlayerName(), roomName, env);
+    }
+
     public WebSocket<String> createLobbySocket() {
         return new WebSocket<String>() {
             @Override
@@ -150,7 +178,6 @@ public class Application extends Controller {
         };
     }
 
-
     @SecuredAction
     public Result quitGame(String roomName) {
         System.out.println("Player left the game");
@@ -165,20 +192,6 @@ public class Application extends Controller {
         WebSocket<String> socket = createLobbySocket();
         return socket;
     }
-
-    public static void notifiyAllSocketLobbys() {
-        Gson gson = new Gson();
-        String lobbies = gson.toJson(availableLobbies);
-        for(WebSocket.Out<String> out: lobbySockets) {
-            try {
-                out.write(lobbies);
-            } catch (NullPointerException npe) {
-                System.out.println("Socket no longer exists");
-            }
-
-        }
-    }
-
 
     @SecuredAction
     public Result getJsonUpdate() throws InterruptedException {
@@ -224,8 +237,6 @@ public class Application extends Controller {
         return ctrl.getSocket();
     }
 
-
-
     private WUI1PlayerController getSinglePlayerController(String userID) {
         WUI1PlayerController ctrl = null;
         for(DemoUser user : singlePlayerMap.keySet()) {
@@ -246,11 +257,9 @@ public class Application extends Controller {
         return ctrl;
     }
 
-
     public void quitSinglePlayer(DemoUser player) {
         player.isInGameOrLobby = false;
     }
-
 
     @SecuredAction
     public synchronized Result createGame(String roomName) throws InterruptedException {
@@ -281,7 +290,7 @@ public class Application extends Controller {
                 }
                 players.addPlayer2(newPlayer);
                 System.out.println("Player 2 is: " + getCurrentPlayerName());
-                gameControllerMap.get(roomName).setPlayer2(newPlayer);
+                gameControllerMap.get(roomName).setPlayer2(newPlayer, getCurrentPlayerName());
                 addToAvailableLobbies(roomName);
                 return ok(newGamefield.render(1, roomName, getCurrentPlayerName(), env));
             } else {
@@ -291,7 +300,7 @@ public class Application extends Controller {
                 System.out.println("Player 1 is: " + getCurrentPlayerName());
                 UIController controller = new controller.impl.Controller(2);
                 WUIController wuiController = new WUIController(controller, player1, roomName,this);
-                wuiController.start();
+                wuiController.start(getCurrentPlayerName());
                 System.out.println("Mapping Room and Players");
                 gameControllerMap.put(roomName, wuiController);
                 Players players = new Players(player1);
@@ -311,14 +320,11 @@ public class Application extends Controller {
 
     }
 
-
     @SecuredAction
     public Result getUserID() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         return ok(player.main.userId());
     }
-
-
 
     @SecuredAction
     public synchronized WebSocket<String> getSocket(String userID) throws InterruptedException {
@@ -414,25 +420,6 @@ public class Application extends Controller {
     public Result linkResult() {
         DemoUser current = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         return ok(linkResult.render(current, current.identities, env));
-    }
-
-    public static String getCurrentPlayerName() {
-        DemoUser user = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
-        if (user == null) {
-            return null;
-        }
-        try {
-            if (user.main.fullName().isDefined()) {
-                return user.main.fullName().get();
-            } else if (user.main.firstName().isDefined()) {
-                return user.main.fullName().get();
-            } else if (!user.main.userId().isEmpty()){
-                return user.main.userId();
-            }
-            return null;
-        } catch (NoSuchElementException e) {
-            return null;
-        }
     }
 
     public RuntimeEnvironment getEnv() {

@@ -4,8 +4,8 @@ package controllers;
 import controller.UIController;
 import model.card.ICard;
 import model.card.impl.Card;
-import model.deckOfCards.IDeckOfCards;
-import model.deckOfCards.impl.DeckOfCards;
+import model.deck.IDeckOfCards;
+import model.deck.impl.DeckOfCards;
 import model.stack.ICardStack;
 import models.Message;
 import phasex.Init;
@@ -149,7 +149,7 @@ public class WUI1PlayerController implements IObserver {
     }
 
     public Html start() {
-        controller.startGame();
+        controller.startGame("player1");
         return gamefield.render(getUI(), homeApplication.getEnv());
     }
 
