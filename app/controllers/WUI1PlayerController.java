@@ -8,6 +8,8 @@ import model.deck.IDeckOfCards;
 import model.deck.impl.DeckOfCards;
 import model.stack.ICardStack;
 import models.Message;
+import persistence.SaveSinglePlayerDAO;
+import persistence.hibernate.HibernateDAO;
 import phasex.Init;
 import play.mvc.WebSocket;
 import play.mvc.WebSocket.Out;
@@ -37,6 +39,7 @@ public class WUI1PlayerController implements IObserver {
 
     private boolean running;
     private String roomName;
+    private SaveSinglePlayerDAO saveDAO;
 
     public WUI1PlayerController(UIController controller, DemoUser player1, String roomName, Application app) {
         this.homeApplication = app;
@@ -47,6 +50,9 @@ public class WUI1PlayerController implements IObserver {
         this.roomName = roomName;
 
         socketPlayer1 = createSocket();
+        saveDAO = new HibernateDAO();
+
+
 
         System.out.println("Adding Observer");
         controller.addObserver(this);
@@ -100,6 +106,16 @@ public class WUI1PlayerController implements IObserver {
                         int cardNumber = Integer.parseInt(mesg.split(" ")[2]);
                         addToPhase(cardNumber,stackNumber,player1);
                     }
+                    if(mesg.startsWith("save")) {
+
+                        saveDAO.saveGame(controller);
+                        System.out.println("Saving the game of: " +controller.getPlayers()[0].getPlayerName());
+                    }
+                    if(mesg.startsWith("load")) {
+
+                        controller = saveDAO.loadGame(controller.getPlayers()[0]);
+                        System.out.println("Load the game of: " + controller.getPlayers()[0].getPlayerName());
+                    }
                     out.write(getJsonUpdate());
                 });
 
@@ -149,7 +165,9 @@ public class WUI1PlayerController implements IObserver {
     }
 
     public Html start() {
-        controller.startGame("player1");
+        String provider = player1.main.providerId();
+        String userID = player1.main.userId();
+        controller.startGame(provider + userID);
         return gamefield.render(getUI(), homeApplication.getEnv());
     }
 
