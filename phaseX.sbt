@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq("ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
-  "de.htwg.se.CardGame.PhaseX" % "PhaseX" % "1.0-SNAPSHOT",
+  "de.htwg.se.CardGame.PhaseX" % "PhaseX" % "1.1-SNAPSHOT",
   "com.google.code.gson" % "gson" % "2.5")
 
 
