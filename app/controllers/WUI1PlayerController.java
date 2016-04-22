@@ -107,14 +107,23 @@ public class WUI1PlayerController implements IObserver {
                         addToPhase(cardNumber,stackNumber,player1);
                     }
                     if(mesg.startsWith("save")) {
-
+                        System.out.println("Saving the game of: " + controller.getPlayers()[0].getPlayerName());
                         saveDAO.saveGame(controller);
-                        System.out.println("Saving the game of: " +controller.getPlayers()[0].getPlayerName());
+                        System.out.println("Saved the game of: " + controller.getPlayers()[0].getPlayerName());
                     }
                     if(mesg.startsWith("load")) {
 
-                        controller = saveDAO.loadGame(controller.getPlayers()[0]);
-                        System.out.println("Load the game of: " + controller.getPlayers()[0].getPlayerName());
+                        UIController tmpController = saveDAO.loadGame(controller.getPlayers()[0]);
+
+                        if(tmpController == null) {
+                            System.out.println("No saved game for player " + controller.getPlayers()[0].getPlayerName() + " found");
+                        } else {
+                            System.out.println("Loaded the game of: " + controller.getPlayers()[0].getPlayerName());
+                            System.out.println("Temp Deck: " + tmpController.getPlayers()[0].getDeckOfCards());
+                            System.out.println("Current Deck: " + controller.getPlayers()[0].getDeckOfCards());
+                            controller = tmpController;
+                        }
+
                     }
                     out.write(getJsonUpdate());
                 });

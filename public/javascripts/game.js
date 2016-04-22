@@ -238,12 +238,10 @@ function drawHidden() {
 
 function saveGame() {
     socket.send("save");
-    alert("Game has been saved");
 }
 
 function loadGame() {
     socket.send("load");
-    alert("Game has been loaded");
 }
 
 function connect() {
