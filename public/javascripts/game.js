@@ -255,6 +255,15 @@ function connect() {
 
     socket.onmessage = function (msg) {
         if(msg.data != "stayingAlive") {
+            if(msg.data == "saved") {
+                alert("The game has been saved");
+            }
+            if(msg.data == "loaded") {
+                alert("The game has been loaded");
+            }
+            if(msg.data == "not loaded") {
+                alert("Game could not be loaded");
+            }
             console.log(msg.data);
             var data = JSON.parse(msg.data);
             console.log(data);

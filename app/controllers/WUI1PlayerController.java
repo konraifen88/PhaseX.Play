@@ -110,6 +110,7 @@ public class WUI1PlayerController implements IObserver {
                         System.out.println("Saving the game of: " + controller.getPlayers()[0].getPlayerName());
                         saveDAO.saveGame(controller);
                         System.out.println("Saved the game of: " + controller.getPlayers()[0].getPlayerName());
+                        out.write("saved");
                     }
                     if(mesg.startsWith("load")) {
 
@@ -117,11 +118,13 @@ public class WUI1PlayerController implements IObserver {
 
                         if(tmpController == null) {
                             System.out.println("No saved game for player " + controller.getPlayers()[0].getPlayerName() + " found");
+                            out.write("not loaded");
                         } else {
                             System.out.println("Loaded the game of: " + controller.getPlayers()[0].getPlayerName());
                             System.out.println("Temp Deck: " + tmpController.getPlayers()[0].getDeckOfCards());
                             System.out.println("Current Deck: " + controller.getPlayers()[0].getDeckOfCards());
                             controller = tmpController;
+                            out.write("loaded");
                         }
 
                     }
