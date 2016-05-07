@@ -8,6 +8,8 @@ import model.deck.IDeckOfCards;
 import model.deck.impl.DeckOfCards;
 import model.stack.ICardStack;
 import models.Message;
+import persistence.DBEnum;
+import persistence.DatabaseAccess;
 import persistence.SaveSinglePlayerDAO;
 import persistence.hibernate.HibernateDAO;
 import phasex.Init;
@@ -39,7 +41,7 @@ public class WUI1PlayerController implements IObserver {
 
     private boolean running;
     private String roomName;
-    private SaveSinglePlayerDAO saveDAO;
+    private DatabaseAccess saveDAO;
 
     public WUI1PlayerController(UIController controller, DemoUser player1, String roomName, Application app) {
         this.homeApplication = app;
@@ -50,7 +52,7 @@ public class WUI1PlayerController implements IObserver {
         this.roomName = roomName;
 
         socketPlayer1 = createSocket();
-        saveDAO = new HibernateDAO();
+        saveDAO = new DatabaseAccess(DBEnum.HIBERNATE);
 
 
 
