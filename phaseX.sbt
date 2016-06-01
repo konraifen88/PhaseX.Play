@@ -15,8 +15,12 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq("ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
-  "de.htwg.se.CardGame.PhaseX" % "PhaseX" % "1.1-SNAPSHOT",
-  "com.google.code.gson" % "gson" % "2.5")
+  "de.htwg.se.CardGame.PhaseX" % "PhaseX" % "1.2-SNAPSHOT",
+  "com.google.code.gson" % "gson" % "2.5",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.4",
+  "com.typesafe.akka" %% "akka-testkit" % "2.4.4",
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.4"
+)
 
 
 resolvers += "PhaseX_Nexus" at "http://nexus-phasex.rhcloud.com/content/groups/public/"

@@ -171,7 +171,7 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
     };
 
     $scope.drawhidden = function () {
-        if ($scope.state === "DrawPhase") {
+        if ($scope.state === "DRAW_PHASE") {
             $http.get('/json/drawHidden').success(function (data) {
 
             });
@@ -189,9 +189,9 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
     };
 
     $scope.discardclick = function () {
-        if ($scope.state === "DrawPhase") {
+        if ($scope.state === "DRAW_PHASE") {
             $scope.drawdiscard();
-        } else if ($scope.state === "PlayerTurnFinished" || $scope.state === "PlayerTurnNotFinished") {
+        } else if ($scope.state === "PLAYER_TURN_FINISHED" || $scope.state === "PLAYER_TURN_NOT_FINISHED") {
             $scope.discard();
         }
     };
@@ -252,14 +252,14 @@ phaseXApp.controller('GameCtrl', function ($scope, $websocket, $http) {
     };
 
     $scope.stackClick = function (stacknumber) {
-        if ($scope.state === "PlayerTurnFinished") {
+        if ($scope.state === "PLAYER_TURN_FINISHED") {
             var selectedCards = $scope.getSelectedCards();
             if (selectedCards.length == 1) {
                 $http.get('/json/addToPhase/' + selectedCards[0] + "/" + stacknumber).success(function (data) {
 
                 });
             }
-        } else if ($scope.state === "PlayerTurnNotFinished") {
+        } else if ($scope.state === "PLAYER_TURN_NOT_FINISHED") {
             var selectedCards = $scope.getSelectedCards();
             if (selectedCards.length > 0) {
                 var cardString = "";

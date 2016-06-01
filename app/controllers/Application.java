@@ -225,7 +225,7 @@ public class Application extends Controller {
     public Result singlePlayer() {
         DemoUser player = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
         System.out.println("is defined)" + player);
-        WUI1PlayerController wctrl = new WUI1PlayerController(new controller.impl.Controller(2),player, getCurrentPlayerName(),this);
+        WUI1PlayerController wctrl = new WUI1PlayerController(new controller.impl.ActorController(),player, getCurrentPlayerName(),this);
         wctrl.start();
         singlePlayerMap.put(player,wctrl);
         return ok(gamefield.render(getCurrentPlayerName(), env));
@@ -298,7 +298,7 @@ public class Application extends Controller {
                 System.out.println("Creating a new Game Controller");
                 DemoUser player1 = (DemoUser) ctx().args.get(SecureSocial.USER_KEY);
                 System.out.println("Player 1 is: " + getCurrentPlayerName());
-                UIController controller = new controller.impl.Controller(2);
+                UIController controller = new controller.impl.ActorController();
                 WUIController wuiController = new WUIController(controller, player1, roomName,this);
                 wuiController.start(getCurrentPlayerName());
                 System.out.println("Mapping Room and Players");

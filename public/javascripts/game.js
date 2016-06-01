@@ -8,7 +8,7 @@ var opponentsCards = 10;
 var discardCard = null;
 var discardIsEmtpy = false;
 
-var roundState = "StartPhase";
+var roundState = "START_PHASE";
 
 var stack1 = [['ONE', 'YELLOW'], ['ONE', 'YELLOW']];
 
@@ -201,10 +201,10 @@ function updateGameField() {
 }
 
 function discardClick() {
-    if(roundState == "DrawPhase") {
+    if(roundState == "DRAW_PHASE") {
         socket.send("drawOpen");
     }
-    if(roundState == "PlayerTurnFinished" || roundState == "PlayerTurnNotFinished") {
+    if(roundState == "PLAYER_TURN_FINISHED" || roundState == "PLAYER_TURN_NOT_FINISHED") {
         var selectedCards = "discard" + getSelectedCards();
         if (selectedCards.split(" ").length == 2) {
             socket.send(selectedCards);
@@ -215,12 +215,12 @@ function discardClick() {
 }
 
 function stackClick(stackNumber) {
-    if(roundState === "PlayerTurnNotFinished") {
+    if(roundState === "PLAYER_TURN_NOT_FINISHED") {
         var selected = "playPhase" + getSelectedCards();
         if(selected.length > 9) {
             socket.send(selected);
         }
-    } if(roundState === "PlayerTurnFinished") {
+    } if(roundState === "PLAYER_TURN_FINISHED") {
         var selected = "addToPhase " + stackNumber + getSelectedCards();
         if(selected.split(" ").length != 3 ) {
             alert("You can only add 1 Card to a Phase");
@@ -231,7 +231,8 @@ function stackClick(stackNumber) {
 }
 
 function drawHidden() {
-    if(roundState == "DrawPhase") {
+    console.log("drawing hidden");
+    if(roundState == "DRAW_PHASE") {
         socket.send("drawHidden");
     }
 }

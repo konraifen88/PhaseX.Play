@@ -123,8 +123,6 @@ public class WUI1PlayerController implements IObserver {
                             out.write("not loaded");
                         } else {
                             System.out.println("Loaded the game of: " + controller.getPlayers()[0].getPlayerName());
-                            System.out.println("Temp Deck: " + tmpController.getPlayers()[0].getDeckOfCards());
-                            System.out.println("Current Deck: " + controller.getPlayers()[0].getDeckOfCards());
                             controller = tmpController;
                             out.write("loaded");
                         }
