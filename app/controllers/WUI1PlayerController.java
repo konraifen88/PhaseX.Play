@@ -10,8 +10,6 @@ import model.stack.ICardStack;
 import models.Message;
 import persistence.DBEnum;
 import persistence.DatabaseAccess;
-import persistence.SaveSinglePlayerDAO;
-import persistence.hibernate.HibernateDAO;
 import phasex.Init;
 import play.mvc.WebSocket;
 import play.mvc.WebSocket.Out;
@@ -52,7 +50,7 @@ public class WUI1PlayerController implements IObserver {
         this.roomName = roomName;
 
         socketPlayer1 = createSocket();
-        saveDAO = new DatabaseAccess(DBEnum.HIBERNATE);
+        saveDAO = new DatabaseAccess(DBEnum.COUCHEDB);
 
 
 
