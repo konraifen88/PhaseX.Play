@@ -107,20 +107,20 @@ public class WUI1PlayerController implements IObserver {
                         addToPhase(cardNumber,stackNumber,player1);
                     }
                     if(mesg.startsWith("save")) {
-                        System.out.println("Saving the game of: " + controller.getPlayers()[0].getPlayerName());
+                        System.out.println("Saving the game of: " + controller.getPlayersArray()[0].getPlayerName());
                         saveDAO.saveGame(controller);
-                        System.out.println("Saved the game of: " + controller.getPlayers()[0].getPlayerName());
+                        System.out.println("Saved the game of: " + controller.getPlayersArray()[0].getPlayerName());
                         out.write("saved");
                     }
                     if(mesg.startsWith("load")) {
 
-                        UIController tmpController = saveDAO.loadGame(controller.getPlayers()[0]);
+                        UIController tmpController = saveDAO.loadGame(controller.getPlayersArray()[0]);
 
                         if(tmpController == null) {
-                            System.out.println("No saved game for player " + controller.getPlayers()[0].getPlayerName() + " found");
+                            System.out.println("No saved game for player " + controller.getPlayersArray()[0].getPlayerName() + " found");
                             out.write("not loaded");
                         } else {
-                            System.out.println("Loaded the game of: " + controller.getPlayers()[0].getPlayerName());
+                            System.out.println("Loaded the game of: " + controller.getPlayersArray()[0].getPlayerName());
                             controller = tmpController;
                             out.write("loaded");
                         }
@@ -211,7 +211,7 @@ public class WUI1PlayerController implements IObserver {
 
     public String addToPhase(int cardIndex, int stackIndex, DemoUser user) {
         System.out.println("adding to Phase");
-        controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex), controller.getAllStacks().get(stackIndex));
+        controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex), stackIndex);
         Message message = getCurrentMessage();
         return message.toJson();
     }

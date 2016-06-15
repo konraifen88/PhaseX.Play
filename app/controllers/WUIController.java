@@ -260,7 +260,7 @@ public class WUIController implements IObserver {
         if (isCurrentPlayer(user)) {
             System.out.println("adding to Phase");
             controller.addToFinishedPhase(controller.getCurrentPlayersHand().get(cardIndex),
-                    controller.getAllStacks().get(stackIndex));
+                    stackIndex);
         }
         Message message = getCurrentMessage();
         return message.toJson();
