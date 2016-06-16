@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>d3Test</title>
-    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <style> /* set the CSS */
+<meta charset="utf-8">
+<style>
+
     body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: relative;
+        width: 960px;
+    }
+
+    .axis text {
         font: 10px sans-serif;
     }
 
@@ -16,38 +19,37 @@
         shape-rendering: crispEdges;
     }
 
+    .bar {
+        fill: steelblue;
+        fill-opacity: .9;
+    }
+
     .x.axis path {
         display: none;
     }
 
-    .line {
-        fill: none;
-        stroke: steelblue;
-        stroke-width: 1.5px;
+    label {
+        position: absolute;
+        top: 10px;
+        right: 10px;
     }
 
-    </style>
-<body>
-
-<!-- load the d3.js library -->
-<script src="http://d3js.org/d3.v3.min.js"></script>
-
+</style>
+<label><input type="checkbox"> Sort values</label>
+<script src="//d3js.org/d3.v3.min.js"></script>
 <script>
-    var selectedCities = ["Austin","New York"];
 
-    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-    var parseDate = d3.time.format("%Y%m%d").parse;
+    var formatPercent = d3.format(".0%");
 
-    var x = d3.time.scale()
-            .range([0, width]);
+    var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .1, 1);
 
     var y = d3.scale.linear()
             .range([height, 0]);
-
-    var color = d3.scale.category10();
 
     var xAxis = d3.svg.axis()
             .scale(x)
@@ -55,12 +57,8 @@
 
     var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left");
-
-    var line = d3.svg.line()
-            .interpolate("basis")
-            .x(function(d) { return x(d.date); })
-            .y(function(d) { return y(d.temperature); });
+            .orient("left")
+            .tickFormat(formatPercent);
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -69,39 +67,13 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.tsv("../assets/tsv/data.tsv", function(error, data) {
-        if (error) throw error;
-
-        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
 
         data.forEach(function(d) {
-            d.date = parseDate(d.date);
+            d.frequency = +d.frequency;
         });
 
-        var cities = color.domain().map(function(name) {
-                return {
-                    name: name,
-                    values: data.map(function(d) {
-                        return {date: d.date, temperature: +d[name]};
-                    })
-                };
-        });
-
-        var newList = [];
-
-        cities.forEach(function(city) {
-            if(containsInArray(selectedCities,city.name)) {
-                newList.push(city);
-            }
-        });
-
-        console.log(newList);
-
-        x.domain(d3.extent(data, function(d) { return d.date; }));
-
-        y.domain([
-            d3.min(newList, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
-            d3.max(newList, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
-        ]);
+        x.domain(data.map(function(d) { return d.letter; }));
+        y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
 
         svg.append("g")
                 .attr("class", "x axis")
@@ -116,34 +88,48 @@
                 .attr("y", 6)
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
-                .text("Temperature (ºF)");
+                .text("Frequency");
 
-        var city = svg.selectAll(".city")
-                .data(newList)
-                .enter().append("g")
-                .attr("class", "city");
+        svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function(d) { return x(d.letter); })
+                .attr("width", x.rangeBand())
+                .attr("y", function(d) { return y(d.frequency); })
+                .attr("height", function(d) { return height - y(d.frequency); });
 
-        city.append("path")
-                .attr("class", "line")
-                .attr("d", function(d) { return line(d.values); })
-                .style("stroke", function(d) { return color(d.name); });
+        d3.select("input").on("change", change);
 
-        city.append("text")
-                .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-                .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
-                .attr("x", 3)
-                .attr("dy", ".35em")
-                .text(function(d) { return d.name; });
+        var sortTimeout = setTimeout(function() {
+            d3.select("input").property("checked", true).each(change);
+        }, 2000);
+
+        function change() {
+            clearTimeout(sortTimeout);
+
+            // Copy-on-write since tweens are evaluated after a delay.
+            var x0 = x.domain(data.sort(this.checked
+                    ? function(a, b) { return b.frequency - a.frequency; }
+                    : function(a, b) { return d3.ascending(a.letter, b.letter); })
+                    .map(function(d) { return d.letter; }))
+                    .copy();
+
+            svg.selectAll(".bar")
+                    .sort(function(a, b) { return x0(a.letter) - x0(b.letter); });
+
+            var transition = svg.transition().duration(750),
+                    delay = function(d, i) { return i * 50; };
+
+            transition.selectAll(".bar")
+                    .delay(delay)
+                    .attr("x", function(d) { return x0(d.letter); });
+
+            transition.select(".x.axis")
+                    .call(xAxis)
+                    .selectAll("g")
+                    .delay(delay);
+        }
     });
 
-    function containsInArray(array,name) {
-        for(var i = 0; i < array.length; i++) {
-            if(array[i] === name) {
-                return true;
-            }
-        }
-        return false;
-    }
 </script>
-</body>
-</html>
